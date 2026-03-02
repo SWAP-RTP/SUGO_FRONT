@@ -71,3 +71,32 @@ export default defineConfig([
   },
 ])
 ```
+
+
+services:
+  sugo-back:
+    build:
+      context: ./SUGO-BACK
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./SUGO-BACK:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+
+  sugo-front:
+    build:
+      context: ./SUGO-FRONT
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./SUGO-FRONT:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - sugo-back
+
