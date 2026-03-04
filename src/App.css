@@ -1,4 +1,75 @@
-body {
-  background-color: rgb(2, 4, 8);
-  color: white;
+/* header */
+.menuBar {
+  margin: 0.8rem;
+  box-shadow: 0.5rem 0.5rem 1rem rgba(129, 128, 128, 0.2);
+}
+
+.menuBar a {
+  text-decoration: none !important;
+}
+
+.menuBar .p-menuitem-link {
+  margin-right: 1rem;
+  margin-left: -1rem;
+}
+
+/* Centrar y mover hacia abajo SOLO los links del menú */
+.menuBar .p-menubar-root-list {
+  justify-content: center !important;
+  margin-top: 0.4rem; /* Ajusta este valor para mover más o menos hacia abajo */
+}
+
+/* SUGO_MAIN */
+
+.texto_sugo {
+  color: rgba(121, 121, 119, 0.144) !important;
+  font-size: 6rem !important;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+}
+
+/* tabpanel */
+
+.p-tabview-nav .p-tabview-nav-link {
+  /* color: green !important; */
+  text-decoration: none !important;
+}
+
+/* card-formulario */
+.card-formulario {
+  /* Estilos específicos para la tarjeta del formulario de despacho */
+  width: 800px;
+  max-height: 500px;
+  text-align: center;
+  background-color: rgba(170, 173, 168, 0.466);
+  border-radius: 1rem;
+}
+
+h1 {
+  font-size: 1.2rem;
+}
+
+.titulo {
+  color: #928f8f;
+  height: 3rem;
+  padding-top: 0.5rem;
+  margin-right: 1.7rem;
+  margin-left: 1.7rem;
+}
+.card {
+  background-color: rgba(245, 245, 245, 0.466);
+  width: 800px;
+  min-height: 200px;
+  text-align: center;
+}
+
+Button {
+  border-radius: 0.7rem !important;
+}
+
+.select {
+  width: 180px;
+  height: 35px;
+  font-size: 1rem;
+  border-radius: 8px;
 }

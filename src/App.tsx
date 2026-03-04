@@ -1,13 +1,18 @@
-// Importa los estilos de Bootstrap y PrimeReact
-import "bootstrap/dist/css/bootstrap.min.css";
-
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Header } from "./components/Header";
+import { Sugo_main } from "./components/Sugo_main";
+import { FormularioRecepcion } from "./Recepcion/FormularioRecepcion";
+import { FormularioDespacho } from "./Despacho/FormularioDespacho";
 
 export const App = () => {
   return (
-    <>
-      <div>Nuevo sugo</div>
-    </>
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Sugo_main />} />
+        <Route path="/despacho" element={<FormularioDespacho />} />
+        <Route path="/recepcion" element={<FormularioRecepcion />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
