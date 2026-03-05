@@ -27,26 +27,26 @@ export const FormularioDespacho = () => {
                 {/* modulo */}
                 <span className="p-float-label">
                   <Dropdown
-                    inputId="dd-city"
+                    inputId="modulos"
                     value={selectModulo}
                     onChange={(e) => setSelectModulo(e.value)}
                     options={modulosOptions}
                     className="select"
                   />
-                  <label htmlFor="dd-city">Modulo</label>
+                  <label htmlFor="modulos">Modulo</label>
                 </span>
 
                 {/* economico */}
                 <span className="p-float-label">
                   <InputText className="select" />
-                  <label htmlFor="username">Economico</label>
+                  <label htmlFor="economico">Economico</label>
                 </span>
 
                 {/* motivos */}
                 <span className="p-float-label">
                   <Dropdown
                     className="select"
-                    inputId="dd-city"
+                    inputId="motivos"
                     value={selectModulo}
                     onChange={(e) => setSelectModulo(e.value)}
                     options={modulosOptions}
