@@ -1,6 +1,11 @@
 import { useModulos } from "./useModulos";
+import { useMotivoDespacho } from "./useMotivoDespacho";
 
 export const useHook_General = () => {
   const { modulosOptions } = useModulos();
-  return { modulosOptions };
+  const { motivosOptions } = useMotivoDespacho();
+  return {
+    modulosOptions, motivosOptions
+
+  };
 };
