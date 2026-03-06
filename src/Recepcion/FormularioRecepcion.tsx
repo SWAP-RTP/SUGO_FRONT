@@ -1,17 +1,15 @@
-import { TabView, TabPanel } from 'primereact/tabview';
-import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
-import { useState } from 'react';
+import { TabView, TabPanel } from "primereact/tabview";
+import { InputText } from "primereact/inputtext";
+import { Dropdown } from "primereact/dropdown";
+import { Button } from "primereact/button";
+import { useState } from "react";
 // hooks personalizados
 import { useHook_General } from "../hooks/useHook";
 
-
-
 export const FormularioRecepcion = () => {
-  const { modulosOptions } = useHook_General();
+  const { modulosOptions, motivosOptions } = useHook_General();
+  
   const [selectModulo, setSelectModulo] = useState(null);
-  const { motivosOptions } = useHook_General();
   const [motivos_select, setMotivos_select] = useState(null);
 
   return (
@@ -66,6 +64,5 @@ export const FormularioRecepcion = () => {
         </TabPanel>
       </TabView>
     </>
-  )
-
+  );
 };

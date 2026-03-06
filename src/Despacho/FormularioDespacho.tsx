@@ -8,9 +8,10 @@ import { useState } from "react";
 import { useHook_General } from "../hooks/useHook";
 
 export const FormularioDespacho = () => {
-  const { modulosOptions } = useHook_General();
+  const { modulosOptions, motivosOptions } = useHook_General();
 
   const [selectModulo, setSelectModulo] = useState(null);
+  const [motivos_select, setMotivos_select] = useState(null);
 
   return (
     <>
@@ -47,9 +48,9 @@ export const FormularioDespacho = () => {
                   <Dropdown
                     className="select"
                     inputId="dd-city"
-                    value={selectModulo}
-                    onChange={(e) => setSelectModulo(e.value)}
-                    options={modulosOptions}
+                    value={motivos_select}
+                    onChange={(e) => setMotivos_select(e.value)}
+                    options={motivosOptions}
                   />
                   <label htmlFor="dd-city">Motivos</label>
                 </span>
