@@ -19,6 +19,16 @@ export const Header = () => {
       icon: "pi pi-fw pi-calendar",
       command: () => navigate("/recepcion"),
     },
+    {
+      label: "Hora de Presentacion",
+      icon: "pi pi-fw pi-pencil",
+      command: () => navigate("/presentacion"),
+    },
+    {
+      label: "Mantenimiento",
+      icon: "pi pi-fw pi-wrench",
+      command: () => navigate("/mantenimiento"),
+    },
   ];
 
   // Referencia para el botón de cerrar sesión (logout)

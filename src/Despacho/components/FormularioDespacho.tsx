@@ -4,22 +4,23 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { useState } from "react";
 // hooks personalizados
-import { useHook_General } from "../hooks/useHook";
+import { useHook_General } from "../../General/hooks/useHook";
 
-export const FormularioRecepcion = () => {
+export const FormularioDespacho = () => {
   const { modulosOptions, motivosOptions } = useHook_General();
-  
+
   const [selectModulo, setSelectModulo] = useState(null);
   const [motivos_select, setMotivos_select] = useState(null);
+
 
   return (
     <>
       <TabView>
-        <TabPanel className="tabpanel" header="Recepcion">
+        <TabPanel className="tabpanel" header="Despacho">
           <div className="d-flex justify-content-center">
             <div className="card">
               <div className="titulo">
-                <h1>Formulario de Recepcion</h1>
+                <h1>Formulario de despacho</h1>
                 <hr />
               </div>
 

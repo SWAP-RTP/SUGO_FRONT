@@ -6,7 +6,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import "./App.css";
+import "./General/css/App.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
