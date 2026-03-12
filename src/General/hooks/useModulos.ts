@@ -1,37 +1,27 @@
 import { useState, useEffect } from "react";
-
-// Define el tipo de módulo
-type Modulo = {
-  id: number;
-  nombre: string;
-};
+// servicios
+import { obtenerModulos } from "../services/modulo.services";
 
 export const useModulos = () => {
-  // Datos simulados
-  const modulos_select: Modulo[] = [
-    { id: 0, nombre: "Oficinas centrales" },
-    { id: 1, nombre: "Modulo 1" },
-    { id: 2, nombre: "Modulo 2" },
-    { id: 3, nombre: "Modulo 3" },
-    { id: 4, nombre: "Modulo 4" },
-    { id: 5, nombre: "Modulo 5" },
-    { id: 6, nombre: "Modulo 6" },
-    { id: 7, nombre: "Modulo 7" },
-  ];
-
-  // Tipa el estado como array de Modulo
-  const [modulos, setModulos] = useState<Modulo[]>([]);
+  const [modulos, setModulos] = useState([]);
 
   useEffect(() => {
-    // Simula carga de datos
-    setModulos(modulos_select);
+    const getModulos = async () => {
+      try {
+        const modulosData = await obtenerModulos();
+        setModulos(modulosData);
+      } catch (error) {
+        console.error("Error al obtener los módulos:", error);
+      }
+    };
+
+    getModulos();
   }, []);
 
-  // Opciones para un select
-  const modulosOptions = modulos.map((modulo) => ({
-    ...modulo,
-    label: modulo.nombre,
-    value: modulo.id,
+  const modulosOptions = modulos.map((m: any) => ({
+    ...m,
+    label: `${m.mod_desc}`,
+    value: m.id,
   }));
 
   return { modulosOptions };

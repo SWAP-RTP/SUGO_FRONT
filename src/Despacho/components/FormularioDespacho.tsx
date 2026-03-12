@@ -12,7 +12,6 @@ export const FormularioDespacho = () => {
   const [selectModulo, setSelectModulo] = useState(null);
   const [motivos_select, setMotivos_select] = useState(null);
 
-
   return (
     <>
       <TabView>
