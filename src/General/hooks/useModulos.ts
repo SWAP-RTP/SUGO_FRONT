@@ -20,7 +20,7 @@ export const useModulos = () => {
 
   const modulosOptions = modulos.map((m: any) => ({
     ...m,
-    label: `${m.mod_desc}`,
+    label: `${m.descripcion}`,
     value: m.id,
   }));
 

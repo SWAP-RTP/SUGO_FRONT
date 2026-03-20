@@ -73,3 +73,70 @@ Button {
   font-size: 1rem;
   border-radius: 8px;
 }
+
+/* linea punteada */
+
+.linea_punteada {
+  border-top: 4px dashed #0fe921;
+  border-top: 4px dashed #04580b;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+/* card */
+
+.card_general {
+  display: block;
+  margin-left: 0;
+  margin-top: 0;
+}
+
+/* Contenedor flex para Card_Eco y formulario */
+.despacho-contenedor {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-top: 1rem;
+  width: 100vw;
+  max-width: 1200px;
+  margin-left: 10rem;
+  margin-right: auto;
+}
+
+.card {
+  margin-bottom: 8px; /* o el valor que prefieras */
+}
+
+.card_eco {
+  width: 300px;
+  height: 283px;
+  background-color: rgba(170, 173, 168, 0.466);
+  border-radius: 0.4rem;
+  padding: 10px;
+  padding-left: 10px;
+}
+
+.card_eco {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.card {
+  margin-bottom: 8px;
+}
+
+/* pv estados  */
+
+.title_pv {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-size: 20px;
+  color: rgb(87, 86, 86);
+}
+
+.pv_estados_tabla {
+  /* max-width: 80%; */
+}

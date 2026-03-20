@@ -1,11 +1,15 @@
 import { useModulos } from "./useModulos";
-import { useMotivoDespacho } from "./useMotivoDespacho";
+import { useMotivo } from "./useMotivo";
+import { useDate } from "./useDate";
 
 export const useHook_General = () => {
   const { modulosOptions } = useModulos();
-  const { motivosOptions } = useMotivoDespacho();
-  return {
-    modulosOptions, motivosOptions
+  const { motivosOptions } = useMotivo();
+  const date = useDate();
 
+  return {
+    modulosOptions,
+    motivosOptions,
+    date,
   };
 };

@@ -50,7 +50,7 @@ export const Header = () => {
           padding: 0,
           marginRight: "0.5rem",
         }}
-        title="Cerrar sesiónn"
+        title="Cerrar sesión"
         aria-label="Cerrar sesión"
         data-pr-tooltip="Cerrar sesión" // Texto del tooltip
       >
