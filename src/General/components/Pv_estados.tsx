@@ -1,23 +1,31 @@
+import { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { obtenerPvEstados } from "../services/pv_estados.services";
 
 export const Pv_estados = () => {
-  const products = [
-    {
-      code: "1000",
-      name: "Bamboo Watch",
-      category: "Accessories",
-      quantity: 24,
-    },
-    {
-      code: "1001",
-      name: "Black Watch",
-      category: "Accessories",
-      quantity: 61,
-    },
-    { code: "1002", name: "Blue Band", category: "Fitness", quantity: 2 },
-    { code: "1003", name: "Blue T-Shirt", category: "Clothing", quantity: 25 },
-  ];
+  const [pvEstados, setPvEstados] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPvEstados = async () => {
+      try {
+        setLoading(true);
+        const data = await obtenerPvEstados();
+        setPvEstados(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error al cargar pv_estados:", err);
+        setError("Error al cargar los datos");
+        setPvEstados([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPvEstados();
+  }, []);
 
   const header = (
     <div className="table-header">
@@ -31,46 +39,58 @@ export const Pv_estados = () => {
         <p className="title_pv">REGISTRO DE DESPACHO EN PARQUE VEHICULAR</p>
       </div>
 
-      <div className="pv_estados_tabla d-flex justify-content-center">
-        <DataTable
-          value={products}
-          paginator
-          rows={10}
-          dataKey="id"
-          filterDisplay="row"
-          globalFilterFields={[
-            "name",
-            "country.name",
-            "representative.name",
-            "status",
-          ]}
-          header={header}
-          emptyMessage="No customers found."
-        >
-          <Column
-            field="name"
-            header="Name"
-            filter
-            filterPlaceholder="Search by name"
-            style={{ minWidth: "12rem" }}
-          />
-          <Column
-            header="Country"
-            filterField="country.name"
-            style={{ minWidth: "12rem" }}
-            filter
-            filterPlaceholder="Search by country"
-          />
-          <Column
-            header="Agent"
-            filterField="representative"
-            showFilterMenu={false}
-            filterMenuStyle={{ width: "14rem" }}
-            style={{ minWidth: "14rem" }}
-            filter
-          />
-        </DataTable>
-      </div>
+      {loading && <p className="text-center">Cargando datos...</p>}
+      {error && <p className="text-center text-danger">{error}</p>}
+
+      {!loading && !error && (
+        <div className="pv_estados_tabla d-flex justify-content-center">
+          <DataTable
+            value={pvEstados}
+            paginator
+            rows={10}
+            dataKey="id"
+            filterDisplay="row"
+            header={header}
+            emptyMessage="No hay datos disponibles."
+          >
+            <Column
+              field="id"
+              header="ID"
+              filter
+              filterPlaceholder="Buscar por ID"
+              style={{ minWidth: "8rem" }}
+            />
+            <Column
+              field="modulo_puerta"
+              header="Puerta"
+              filter
+              filterPlaceholder="Buscar por descripción"
+              style={{ minWidth: "15rem" }}
+            />
+            <Column
+              field="eco"
+              header="Económico"
+              filter
+              filterPlaceholder="Buscar por momento"
+              style={{ minWidth: "12rem" }}
+            />
+            <Column
+              field="eco_estatus"
+              header="Estado del económico"
+              filter
+              filterPlaceholder="Buscar por módulo"
+              style={{ minWidth: "10rem" }}
+            />
+            <Column
+              field="momento"
+              header="Momento"
+              filter
+              filterPlaceholder="Buscar por estatus"
+              style={{ minWidth: "10rem" }}
+            />
+          </DataTable>
+        </div>
+      )}
     </>
   );
 };

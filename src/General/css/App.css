@@ -112,10 +112,13 @@ Button {
 .card_eco {
   width: 300px;
   height: 283px;
-  background-color: rgba(170, 173, 168, 0.466);
-  border-radius: 0.4rem;
+  background-color: rgba(3, 16, 56, 0.945);
+  border-radius: 0.6rem;
   padding: 10px;
   padding-left: 10px;
+  border-top: 6px solid #00c853; /* línea verde arriba */
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
 .card_eco {
@@ -123,6 +126,61 @@ Button {
   margin-bottom: 0px;
 }
 
+.disponible {
+  color: #00c853;
+  font-size: 1.3rem;
+  font-weight: bold;
+  /* background-color: transparent; */
+}
+.ecocnomico {
+  font-size: 1.3rem;
+  font-weight: bold;
+  /* background-color: transparent; */
+}
+
+.eco_numero {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-top: -7px;
+}
+
+.modadalidad_options {
+  color: white;
+  font-size: 0.8rem !important;
+  gap: 6px;
+}
+
+.separacion {
+  margin-top: -0.5rem;
+  color: white;
+}
+
+.pi-map-marker {
+  color: #00c853;
+  margin-right: 0.5rem;
+  margin-left: 2px;
+}
+.pi-clock {
+  color: #dd10aa;
+  margin-right: 0.5rem;
+  margin-left: 6px;
+}
+
+.estado {
+  margin-top: -10px;
+  margin-bottom: -10px;
+
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+.modulo {
+  font-size: 0.8rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  margin-top: 2px !important;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
 .card {
   margin-bottom: 8px;
 }
@@ -135,8 +193,4 @@ Button {
   letter-spacing: 0.5px;
   font-size: 20px;
   color: rgb(87, 86, 86);
-}
-
-.pv_estados_tabla {
-  /* max-width: 80%; */
 }

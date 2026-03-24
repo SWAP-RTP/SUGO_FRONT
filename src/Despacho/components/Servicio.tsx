@@ -1,7 +1,17 @@
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
+import { useState } from "react";
+// hooks personalizados
+import { useHook_General } from "../../General/hooks/useHook";
 
 export const Servicio = () => {
+  const { modalidadesOptions, rutasOptions } = useHook_General();
+
+  // estado para almacenar la modalidad seleccionada
+  const [modalidadSelect, setModalidadSelect] = useState(null);
+  // estado para las rutas seleccionada
+  const [rutaSelect, setRutaSelect] = useState(null);
+
   const ecoDe = [
     { label: "Planta", value: "Planta" },
     { label: "Postura", value: "Postura" },
@@ -39,12 +49,24 @@ export const Servicio = () => {
         </span>
         {/* Modalidad  */}
         <span className="p-float-label">
-          <Dropdown inputId="dd-city" className="select" options={ecoDe} />
+          <Dropdown
+            inputId="dd-city"
+            className="select"
+            options={modalidadesOptions}
+            value={modalidadSelect}
+            onChange={(e) => setModalidadSelect(e.value)}
+          />
           <label htmlFor="dd-city">Modalidad</label>
         </span>
         {/* Ruta  */}
         <span className="p-float-label">
-          <Dropdown inputId="dd-city" className="select" options={ecoDe} />
+          <Dropdown
+            inputId="dd-city"
+            className="select"
+            options={rutasOptions}
+            value={rutaSelect}
+            onChange={(e) => setRutaSelect(e.value)}
+          />
           <label htmlFor="dd-city">Ruta</label>
         </span>
       </div>
