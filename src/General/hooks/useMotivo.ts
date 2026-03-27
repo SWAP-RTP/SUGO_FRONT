@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { obtenerMotivos } from "../services/motivo.services";
+import { obtenerMotivos, obtenerMotivosRecepcion } from "../services/motivo.services";
 
 export const useMotivo = () => {
   //Tipa el estado como array de Motivo
@@ -27,3 +27,31 @@ export const useMotivo = () => {
 
   return { motivosOptions };
 };
+
+export const useMotivoRecepcion = () => {
+  //Tipa el estado como array de Motivo
+  const [motivosRecepcion, setMotivosRecepcion] = useState([]);
+
+  useEffect(() => {
+    const getMotivosRecepcion = async () => {
+      try {
+        const motivosDataRecepcion = await obtenerMotivosRecepcion();
+        setMotivosRecepcion(motivosDataRecepcion);
+      } catch (error) {
+        console.error("Error al obtener los motivos:", error);
+      }
+    };
+    getMotivosRecepcion();
+  }, []);
+
+  // Opciones para un select
+  const motivosOptionsRecepcion = motivosRecepcion.map((m: any) => ({
+    ...m,
+    label: `${m.desc}`,
+    value: m,
+  }));
+
+  return { motivosOptionsRecepcion };
+};
+
+
