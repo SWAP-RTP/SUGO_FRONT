@@ -27,48 +27,51 @@ export const FormularioDespacho = () => {
 
   return (
     <>
-      <TabView>
+      <TabView className="tabView">
         <TabPanel className="tabpanel" header="Despacho">
           <div className="despacho-contenedor d-flex flex-row justify-content-center align-items-start gap-5">
-            <Card_Eco />
+            {/* <Card_Eco /> */}
             <div className="card">
               <div className="titulo">
                 <h1>Formulario de despacho</h1>
-                <hr />
+                <hr className="linea_despacho" />
               </div>
 
-              <div className="d-flex flex-row gap-3 mt-4 py-2 p-4 d-flex justify-content-center">
-                {/* modulo */}
-                <span className="p-float-label">
-                  <Dropdown
-                    inputId="dd-city"
-                    value={selectModulo}
-                    onChange={(e) => setSelectModulo(e.value)}
-                    options={modulosOptions}
-                    className="select"
-                  />
-                  <label htmlFor="dd-city">Modulo</label>
-                </span>
-
-                {/* economico */}
-                <span className="p-float-label">
-                  <InputText className="select" />
-                  <label htmlFor="username">Economico</label>
-                </span>
-
-                {/* motivos */}
-                <span className="p-float-label">
-                  <Dropdown
-                    className="select"
-                    inputId="dd-city"
-                    value={motivos_select}
-                    onChange={(e) => setMotivos_select(e.value)}
-                    options={motivosOptions}
-                    optionLabel="desc"
-                    optionValue="value"
-                  />
-                  <label htmlFor="dd-city">Motivos</label>
-                </span>
+              <div className="mt-4 py-2 p-4 d-flex justify-content-center col-12 md:col-6">
+                <div className="w-100">
+                  {/* Fila para Módulo y Económico */}
+                  <div className="d-flex flex-row gap-2 mb-3 justify-content-center">
+                    <span className="p-float-label flex-grow-1">
+                      <Dropdown
+                        inputId="dd-modulo"
+                        value={selectModulo}
+                        onChange={(e) => setSelectModulo(e.value)}
+                        options={modulosOptions}
+                        className="select"
+                      />
+                      <label htmlFor="dd-modulo">Modulo</label>
+                    </span>
+                    <span className="p-float-label flex-grow-1">
+                      <InputText className="select" />
+                      <label htmlFor="economico">Economico</label>
+                    </span>
+                  </div>
+                  {/* Fila para Motivos */}
+                  <div className="mb-3 d-flex justify-content-center">
+                    <span className="p-float-label w-100">
+                      <Dropdown
+                        className="select motivos"
+                        inputId="dd-motivos"
+                        value={motivos_select}
+                        onChange={(e) => setMotivos_select(e.value)}
+                        options={motivosOptions}
+                        optionLabel="desc"
+                        optionValue="value"
+                      />
+                      <label htmlFor="dd-motivos">Motivos</label>
+                    </span>
+                  </div>
+                </div>
               </div>
 
               {/* componente dinamico de servicio */}
@@ -105,7 +108,7 @@ export const FormularioDespacho = () => {
 
       <hr className="linea_punteada" />
 
-      <Pv_estados />
+      {/* <Pv_estados /> */}
     </>
   );
 };
