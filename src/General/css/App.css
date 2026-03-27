@@ -1,6 +1,7 @@
 /* header */
 .menuBar {
   margin: 0.8rem;
+  margin-top: -5px;
   box-shadow: 0.5rem 0.5rem 1rem rgba(129, 128, 128, 0.2);
 }
 
@@ -68,10 +69,14 @@ Button {
 }
 
 .select {
-  width: 180px;
+  width: 150px;
   height: 35px;
   font-size: 1rem;
   border-radius: 8px;
+}
+
+.motivos {
+  margin-top: 15px;
 }
 
 /* linea punteada */
@@ -99,9 +104,10 @@ Button {
   align-items: flex-start;
   gap: 2rem;
   margin-top: 1rem;
-  width: 100vw;
-  max-width: 1200px;
-  margin-left: 10rem;
+  max-width: 900px; /* Ajusta según tu preferencia */
+  min-width: 600px; /* Opcional, para evitar que se comprima demasiado */
+  width: 100%;
+  margin-left: auto;
   margin-right: auto;
 }
 
@@ -181,9 +187,6 @@ Button {
   font-weight: bold;
   color: rgba(255, 255, 255, 0.6) !important;
 }
-.card {
-  margin-bottom: 8px;
-}
 
 /* pv estados  */
 
@@ -193,4 +196,34 @@ Button {
   letter-spacing: 0.5px;
   font-size: 20px;
   color: rgb(87, 86, 86);
+}
+
+/* media queries  */
+
+@media (max-width: 390px) {
+  .menuBar {
+    width: 95%;
+    /* height: 800px; */
+    /* background-color: #00c853 !important; */
+  }
+
+  .titulo h1 {
+    font-size: 25px;
+  }
+
+  .tabView {
+    width: 24.4rem;
+  }
+
+  .card {
+    flex-direction: column;
+    align-items: center;
+    width: 60%;
+    margin-right: 40%;
+    /* margin-left: 8%; */
+  }
+
+  .linea_despacho {
+    width: 95%;
+  }
 }
