@@ -35,49 +35,16 @@
   /* color: green !important; */
   text-decoration: none !important;
 }
-
-/* card-formulario */
-.card-formulario {
-  /* Estilos específicos para la tarjeta del formulario de despacho */
-  width: 800px;
-  max-height: 500px;
-  text-align: center;
-  background-color: rgba(170, 173, 168, 0.466);
-  border-radius: 1rem;
-}
-
+/* 
 h1 {
   font-size: 1.2rem;
+} */
+
+.formulario-inputs {
+  display: flex;
+  justify-content: center;
 }
 
-.titulo {
-  color: #928f8f;
-  height: 3rem;
-  padding-top: 0.5rem;
-  margin-right: 1.7rem;
-  margin-left: 1.7rem;
-}
-.card {
-  background-color: rgba(245, 245, 245, 0.466);
-  width: 800px;
-  min-height: 200px;
-  text-align: center;
-}
-
-Button {
-  border-radius: 0.7rem !important;
-}
-
-.select {
-  width: 150px;
-  height: 35px;
-  font-size: 1rem;
-  border-radius: 8px;
-}
-
-.motivos {
-  margin-top: 15px;
-}
 
 /* linea punteada */
 
@@ -86,29 +53,12 @@ Button {
   border-top: 4px dashed #04580b;
   margin-left: 2rem;
   margin-right: 2rem;
-}
-
-/* card */
+} /* card */
 
 .card_general {
   display: block;
   margin-left: 0;
   margin-top: 0;
-}
-
-/* Contenedor flex para Card_Eco y formulario */
-.despacho-contenedor {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 2rem;
-  margin-top: 1rem;
-  max-width: 900px; /* Ajusta según tu preferencia */
-  min-width: 600px; /* Opcional, para evitar que se comprima demasiado */
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .card {
@@ -199,31 +149,3 @@ Button {
 }
 
 /* media queries  */
-
-@media (max-width: 390px) {
-  .menuBar {
-    width: 95%;
-    /* height: 800px; */
-    /* background-color: #00c853 !important; */
-  }
-
-  .titulo h1 {
-    font-size: 25px;
-  }
-
-  .tabView {
-    width: 24.4rem;
-  }
-
-  .card {
-    flex-direction: column;
-    align-items: center;
-    width: 60%;
-    margin-right: 40%;
-    /* margin-left: 8%; */
-  }
-
-  .linea_despacho {
-    width: 95%;
-  }
-}
