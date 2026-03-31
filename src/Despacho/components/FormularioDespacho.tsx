@@ -6,8 +6,9 @@ import { useState } from "react";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
 import { Servicio } from "./Servicio";
-import { Card_Eco } from "../../General/components/Card_Eco";
-import { Pv_estados } from "../../General/components/Pv_estados";
+// import { Card_Eco } from "../../General/components/Card_Eco";
+// import { Pv_estados } from "../../General/components/Pv_estados";
+import "../css/despacho.css";
 
 export const FormularioDespacho = () => {
   const { modulosOptions, motivosOptions } = useHook_General();

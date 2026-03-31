@@ -27,63 +27,82 @@ export const Servicio = () => {
           <label htmlFor="username">Credencial</label>
         </span>
 
-        {/* turno */}
-        <span className="p-float-label">
+        <span className="p-float-label input-servicio">
           <InputText className="select" />
-          <label htmlFor="username">Turno</label>
-        </span>
-
-        {/* eco de  */}
-        <span className="p-float-label">
-          <Dropdown inputId="dd-city" className="select" options={ecoDe} />
-          <label htmlFor="dd-city">Eco de</label>
+          <label htmlFor="turno">Turno</label>
         </span>
       </div>
 
-      {/* segunda fila */}
-      <div className="formulario-grid">
-        {/* credencial */}
-        <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="username">No.Extintor</label>
-        </span>
-        {/* Modalidad  */}
-        <span className="p-float-label">
-          <Dropdown
-            inputId="dd-city"
-            className="select"
-            options={modalidadesOptions}
-            value={modalidadSelect}
-            onChange={(e) => setModalidadSelect(e.value)}
-          />
-          <label htmlFor="dd-city">Modalidad</label>
-        </span>
-        {/* Ruta  */}
-        <span className="p-float-label">
-          <Dropdown
-            inputId="dd-city"
-            className="select"
-            options={rutasOptions}
-            value={rutaSelect}
-            onChange={(e) => setRutaSelect(e.value)}
-          />
-          <label htmlFor="dd-city">Ruta</label>
-        </span>
-      </div>
-
-      {/* TERCERA fila */}
-      <div className="formulario-grid">
-        {/* credencial */}
-        <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="username">CC</label>
+      {/* segunda fila - Eco de y No.Extintor */}
+      <div className="d-flex flex-wrap gap-2 mt-3 py-2 px-2 justify-content-center">
+        <span className="p-float-label input-servicio">
+          <Dropdown inputId="dd-ecoDe" className="select" options={ecoDe} />
+          <label htmlFor="dd-ecoDe">Eco de</label>
         </span>
 
-        {/* Modalidad  */}
-        <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="username">Entrada de Operador</label>
-        </span>
+        {/* segunda fila */}
+        <div className="formulario-grid">
+          {/* credencial */}
+          <span className="p-float-label">
+            <InputText className="select" />
+            <label htmlFor="username">No.Extintor</label>
+          </span>
+          {/* Modalidad  */}
+          <span className="p-float-label">
+            <Dropdown
+              inputId="dd-city"
+              className="select"
+              options={modalidadesOptions}
+              value={modalidadSelect}
+              onChange={(e) => setModalidadSelect(e.value)}
+            />
+            <label htmlFor="dd-city">Modalidad</label>
+          </span>
+          {/* Ruta  */}
+          <span className="p-float-label">
+            <Dropdown
+              inputId="dd-city"
+              className="select"
+              options={rutasOptions}
+              value={rutaSelect}
+              onChange={(e) => setRutaSelect(e.value)}
+            />
+            <label htmlFor="dd-city">Ruta</label>
+          </span>
+        </div>
+
+        {/* TERCERA fila */}
+        <div className="formulario-grid">
+          {/* credencial */}
+          <span className="p-float-label">
+            <InputText className="select" />
+            <label htmlFor="username">CC</label>
+          </span>
+
+          <span className="p-float-label input-servicio">
+            <Dropdown
+              inputId="dd-ruta"
+              className="select"
+              options={rutasOptions}
+              value={rutaSelect}
+              onChange={(e) => setRutaSelect(e.value)}
+            />
+            <label htmlFor="dd-ruta">Ruta</label>
+          </span>
+        </div>
+
+        {/* cuarta fila - CC y Entrada Operador */}
+        <div className="d-flex flex-wrap gap-2 mt-3 py-2 px-2 justify-content-center">
+          <span className="p-float-label input-servicio">
+            <InputText className="select" />
+            <label htmlFor="cc">CC</label>
+          </span>
+
+          <span className="p-float-label input-servicio">
+            <InputText className="select" />
+            <label htmlFor="entrada">Entrada Operador</label>
+          </span>
+        </div>
       </div>
     </>
   );
