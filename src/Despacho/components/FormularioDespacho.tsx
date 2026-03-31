@@ -8,7 +8,6 @@ import { useHook_General } from "../../General/hooks/useHook";
 import { Servicio } from "./Servicio";
 // import { Card_Eco } from "../../General/components/Card_Eco";
 // import { Pv_estados } from "../../General/components/Pv_estados";
-import "../css/despacho.css";
 
 export const FormularioDespacho = () => {
   const { modulosOptions, motivosOptions } = useHook_General();
@@ -35,7 +34,7 @@ export const FormularioDespacho = () => {
             <div className="card">
               <div className="titulo">
                 <h1>Despacho</h1>
-                <hr/>
+                <hr />
               </div>
 
               <div className="formulario-grid">
@@ -66,13 +65,13 @@ export const FormularioDespacho = () => {
                     onChange={(e) => setMotivos_select(e.value)}
                     options={motivosOptions}
                     optionLabel="desc"
-                    optionValue="value"
                   />
                   <label htmlFor="dd-motivos">Motivos</label>
                 </span>
               </div>
+
               {/* componente dinamico de servicio */}
-              {motivos_select?.desc === "SERVICIO" && <Servicio />}
+                {motivos_select?.desc === "SERVICIO" && <Servicio />}
 
               {/* fecha y hora debajo de los inputs principales */}
               <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">

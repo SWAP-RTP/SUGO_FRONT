@@ -38,7 +38,7 @@ export const Header = () => {
   const end = (
     <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
       {/* Icono de usuario */}
-      <i className="pi pi-user" style={{ fontSize: "1.1rem" }}></i>
+      <i className="pi pi-user" style={{ fontSize: "1.25rem" }}></i>
 
       {/* Botón de cerrar sesión con tooltip */}
       <button

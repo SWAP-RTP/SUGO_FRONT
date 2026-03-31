@@ -16,6 +16,7 @@
 .menuBar {
   margin: 0.8rem;
   margin-top: -5px;
+  padding: 1.25rem;
   box-shadow: 0.5rem 0.5rem 1rem rgba(129, 128, 128, 0.2);
 }
 
@@ -31,6 +32,21 @@
 .menuBar .p-menubar-root-list {
   justify-content: center !important;
   margin-top: 0.4rem;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  text-decoration: none;
+
+}
+
+.sugo-logo {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 6rem;
+  margin: 0;
+  margin-bottom: 5rem;
+  text-align: center;
+  opacity: 0.2;
+  font-weight: bold;
 }
 
 /* =========================================
@@ -94,6 +110,20 @@
   border-radius: 8px;
 }
 
+.p-dropdown {
+  width: 100% !important;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.p-dropdown .p-dropdown-label {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
 
 .p-float-label {
   width: 100%;
@@ -130,16 +160,21 @@
 
 .formulario-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2.5rem 1.5rem;
   width: 100%;
   margin-top: 0.5rem;
   padding: 0 1rem;
 }
 
+.formulario-grid.sub-form {
+  margin-top: 2.5rem;
+}
+
 .formulario-grid .p-float-label,
 .formulario-grid .select,
-.formulario-grid input {
+.formulario-grid input,
+.formulario-grid .p-dropdown {
   width: 100% !important;
 }
 
@@ -157,14 +192,14 @@
   }
 
   .formulario-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem 1.5rem;
   }
 
-  /* En PC queremos que los inputs respiren pero en fila */
-  .p-float-label {
-    width: 250px;
-    /* Ancho fijo para que quepan 3 en fila */
+  .container-fecha-hora .p-inputtext {
+    max-width: 250px;
   }
+
 }
 
 /* Móvil (Pantallas menores a 768px) */
@@ -173,11 +208,9 @@
     padding: 1.5rem 1rem;
   }
 
-  /* Forzar que cada grupo de input + label ocupe su propia fila */
   .d-flex.flex-row {
     flex-direction: column !important;
     gap: 2rem !important;
-    /* Espacio extra para que el label que flota no choque */
   }
 
   .select {
@@ -186,6 +219,5 @@
 
   .p-button {
     width: 100%;
-    /* Botones grandes en móvil para el pulgar */
   }
 }

@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { useState } from "react";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
-import { Card_Eco } from "../../General/components/Card_Eco";
+// import { Card_Eco } from "../../General/components/Card_Eco";
 import { TerminoJornada } from "./TerminoJornada";
 
 
@@ -65,7 +65,6 @@ export const FormularioRecepcion = () => {
                     onChange={(e) => setMotivosRecepcion_select(e.value)}
                     options={motivosOptionsRecepcion}
                     optionLabel="desc"
-                    optionValue="value"
                   />
                   <label htmlFor="dd-motivos-recepcion">Motivos</label>
                 </span>
