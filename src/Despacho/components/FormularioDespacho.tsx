@@ -27,72 +27,72 @@ export const FormularioDespacho = () => {
 
   return (
     <>
-      <TabView className="tabView">
+      <TabView>
         <TabPanel className="tabpanel" header="Despacho">
-          <div className="despacho-contenedor d-flex flex-row justify-content-center align-items-start gap-5">
+          <div className="despacho-contenedor d-flex flex-wrap justify-content-center align-items-start gap-4">
             {/* <Card_Eco /> */}
             <div className="card">
               <div className="titulo">
-                <h1>Formulario de despacho</h1>
-                <hr className="linea_despacho" />
+                <h1>Despacho</h1>
+                <hr/>
               </div>
 
-              <div className="mt-4 py-2 p-4 d-flex justify-content-center col-12 md:col-6">
-                <div className="w-100">
-                  {/* Fila para Módulo y Económico */}
-                  <div className="d-flex flex-row gap-2 mb-3 justify-content-center">
-                    <span className="p-float-label flex-grow-1">
-                      <Dropdown
-                        inputId="dd-modulo"
-                        value={selectModulo}
-                        onChange={(e) => setSelectModulo(e.value)}
-                        options={modulosOptions}
-                        className="select"
-                      />
-                      <label htmlFor="dd-modulo">Modulo</label>
-                    </span>
-                    <span className="p-float-label flex-grow-1">
-                      <InputText className="select" />
-                      <label htmlFor="economico">Economico</label>
-                    </span>
-                  </div>
-                  {/* Fila para Motivos */}
-                  <div className="mb-3 d-flex justify-content-center">
-                    <span className="p-float-label w-100">
-                      <Dropdown
-                        className="select motivos"
-                        inputId="dd-motivos"
-                        value={motivos_select}
-                        onChange={(e) => setMotivos_select(e.value)}
-                        options={motivosOptions}
-                        optionLabel="desc"
-                        optionValue="value"
-                      />
-                      <label htmlFor="dd-motivos">Motivos</label>
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <div className="formulario-grid">
+                {/* modulo */}
+                <span className="p-float-label">
+                  <Dropdown
+                    inputId="dd-modulo"
+                    value={selectModulo}
+                    onChange={(e) => setSelectModulo(e.value)}
+                    options={modulosOptions}
+                    className="select w-100"
+                  />
+                  <label htmlFor="dd-modulo">Modulo</label>
+                </span>
 
+                {/* economico */}
+                <span className="p-float-label w-100">
+                  <InputText className="select" />
+                  <label htmlFor="economico">Economico</label>
+                </span>
+
+                {/* motivos */}
+                <span className="p-float-label">
+                  <Dropdown
+                    className="select w-100"
+                    inputId="dd-motivos"
+                    value={motivos_select}
+                    onChange={(e) => setMotivos_select(e.value)}
+                    options={motivosOptions}
+                    optionLabel="desc"
+                    optionValue="value"
+                  />
+                  <label htmlFor="dd-motivos">Motivos</label>
+                </span>
+              </div>
               {/* componente dinamico de servicio */}
               {motivos_select?.desc === "SERVICIO" && <Servicio />}
 
               {/* fecha y hora debajo de los inputs principales */}
-              <div className="d-flex flex-row gap-3 mt-2 py-2 px-2 justify-content-center">
-                <div className="flex align-items-center">
+              <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">
+                <div className="w-100 flex justify-content-center">
                   <InputText
                     value={horaActual}
                     readOnly
                     placeholder="Hora"
                     disabled
+                    className="w-100"
+                    style={{ textAlign: 'center' }}
                   />
                 </div>
-                <div className="flex align-items-center">
+                <div className="w-100 flex justify-content-center">
                   <InputText
                     value={fechaActual}
                     readOnly
                     placeholder="Fecha"
                     disabled
+                    className="w-100"
+                    style={{ textAlign: 'center' }}
                   />
                 </div>
               </div>

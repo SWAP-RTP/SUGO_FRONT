@@ -1,4 +1,18 @@
-/* header */
+/* =========================================
+   1. VARIABLES Y RESET GENERAL
+   ========================================= */
+:root {
+  --primary-green: #00c853;
+  --dark-blue: rgba(3, 16, 56, 0.945);
+  --bg-card: rgba(245, 245, 245, 0.466);
+  --text-gray: #928f8f;
+  --azul-claro: #CAE6FC;
+  --verde-claro: #d4ecd5;
+}
+
+/* =========================================
+   2. HEADER Y NAVEGACIÓN
+   ========================================= */
 .menuBar {
   margin: 0.8rem;
   margin-top: -5px;
@@ -14,216 +28,164 @@
   margin-left: -1rem;
 }
 
-/* Centrar y mover hacia abajo SOLO los links del menú */
 .menuBar .p-menubar-root-list {
   justify-content: center !important;
-  margin-top: 0.4rem; /* Ajusta este valor para mover más o menos hacia abajo */
+  margin-top: 0.4rem;
 }
 
-/* SUGO_MAIN */
-
-.texto_sugo {
-  color: rgba(121, 121, 119, 0.144) !important;
-  font-size: 6rem !important;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: bold;
+/* =========================================
+   3. CONTENEDORES PRINCIPALES (Layout)
+   ========================================= */
+.recepcion-contenedor,
+.despacho-contenedor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin: 1rem auto;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
-/* tabpanel */
-
-.p-tabview-nav .p-tabview-nav-link {
-  /* color: green !important; */
-  text-decoration: none !important;
-}
-
-/* card-formulario */
-.card-formulario {
-  /* Estilos específicos para la tarjeta del formulario de despacho */
-  width: 800px;
-  max-height: 500px;
+/* =========================================
+   4. TARJETA DEL FORMULARIO
+   ========================================= */
+.card,
+.card-recepcion {
+  width: 100%;
+  max-width: 800px;
+  min-height: 200px;
   text-align: center;
-  background-color: rgba(170, 173, 168, 0.466);
   border-radius: 1rem;
+  box-sizing: border-box;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-h1 {
-  font-size: 1.2rem;
+.card {
+  background-color: var(--verde-claro);
+}
+
+.card-recepcion {
+  background-color: var(--azul-claro);
 }
 
 .titulo {
-  color: #928f8f;
-  height: 3rem;
-  padding-top: 0.5rem;
-  margin-right: 1.7rem;
-  margin-left: 1.7rem;
-}
-.card {
-  background-color: rgba(245, 245, 245, 0.466);
-  width: 800px;
-  min-height: 200px;
-  text-align: center;
+  color: var(--text-gray);
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
 }
 
-Button {
-  border-radius: 0.7rem !important;
+.titulo h1 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
 }
 
+/* =========================================
+   5. INPUTS Y COMPONENTES (PrimeReact)
+   ========================================= */
 .select {
-  width: 150px;
-  height: 35px;
+  width: 100% !important;
+  height: 45px;
   font-size: 1rem;
   border-radius: 8px;
 }
 
-.motivos {
-  margin-top: 15px;
-}
 
-/* linea punteada */
-
-.linea_punteada {
-  border-top: 4px dashed #0fe921;
-  border-top: 4px dashed #04580b;
-  margin-left: 2rem;
-  margin-right: 2rem;
-}
-
-/* card */
-
-.card_general {
-  display: block;
-  margin-left: 0;
-  margin-top: 0;
-}
-
-/* Contenedor flex para Card_Eco y formulario */
-.despacho-contenedor {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 2rem;
-  margin-top: 1rem;
-  max-width: 900px; /* Ajusta según tu preferencia */
-  min-width: 600px; /* Opcional, para evitar que se comprima demasiado */
+.p-float-label {
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
 }
 
-.card {
-  margin-bottom: 8px; /* o el valor que prefieras */
+.p-float-label label {
+  left: 0.75rem;
+}
+
+/* Botones */
+.p-button {
+  border-radius: 0.7rem !important;
+  padding: 0.8rem 2rem;
+}
+
+/* =========================================
+   6. ELEMENTOS VISUALES ESPECÍFICOS
+   ========================================= */
+.linea_punteada {
+  border-top: 4px dashed #04580b;
+  margin: 2rem;
 }
 
 .card_eco {
   width: 300px;
-  height: 283px;
-  background-color: rgba(3, 16, 56, 0.945);
+  background-color: var(--dark-blue);
   border-radius: 0.6rem;
-  padding: 10px;
-  padding-left: 10px;
-  border-top: 6px solid #00c853; /* línea verde arriba */
+  padding: 15px;
+  border-top: 6px solid var(--primary-green);
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-}
-
-.card_eco {
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-
-.disponible {
-  color: #00c853;
-  font-size: 1.3rem;
-  font-weight: bold;
-  /* background-color: transparent; */
-}
-.ecocnomico {
-  font-size: 1.3rem;
-  font-weight: bold;
-  /* background-color: transparent; */
-}
-
-.eco_numero {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-top: -7px;
-}
-
-.modadalidad_options {
-  color: white;
-  font-size: 0.8rem !important;
-  gap: 6px;
-}
-
-.separacion {
-  margin-top: -0.5rem;
   color: white;
 }
 
-.pi-map-marker {
-  color: #00c853;
-  margin-right: 0.5rem;
-  margin-left: 2px;
-}
-.pi-clock {
-  color: #dd10aa;
-  margin-right: 0.5rem;
-  margin-left: 6px;
+.formulario-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem 1.5rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0 1rem;
 }
 
-.estado {
-  margin-top: -10px;
-  margin-bottom: -10px;
-
-  font-weight: bold;
-  font-size: 0.95rem;
-}
-.modulo {
-  font-size: 0.8rem !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  margin-top: 2px !important;
-  font-weight: bold;
-  color: rgba(255, 255, 255, 0.6) !important;
+.formulario-grid .p-float-label,
+.formulario-grid .select,
+.formulario-grid input {
+  width: 100% !important;
 }
 
-/* pv estados  */
+/* =========================================
+   7. MEDIA QUERIES
+   ========================================= */
 
-.title_pv {
-  font-family: "Roboto", sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  font-size: 20px;
-  color: rgb(87, 86, 86);
-}
+/* Tablets y Escritorio (Pantallas mayores a 768px) */
+@media (min-width: 769px) {
 
-/* media queries  */
-
-@media (max-width: 390px) {
-  .menuBar {
-    width: 95%;
-    /* height: 800px; */
-    /* background-color: #00c853 !important; */
+  .recepcion-contenedor,
+  .despacho-contenedor {
+    flex-direction: row;
+    align-items: flex-start;
   }
 
-  .titulo h1 {
-    font-size: 25px;
+  .formulario-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .tabView {
-    width: 24.4rem;
+  /* En PC queremos que los inputs respiren pero en fila */
+  .p-float-label {
+    width: 250px;
+    /* Ancho fijo para que quepan 3 en fila */
   }
+}
 
+/* Móvil (Pantallas menores a 768px) */
+@media (max-width: 768px) {
   .card {
-    flex-direction: column;
-    align-items: center;
-    width: 60%;
-    margin-right: 40%;
-    /* margin-left: 8%; */
+    padding: 1.5rem 1rem;
   }
 
-  .linea_despacho {
-    width: 95%;
+  /* Forzar que cada grupo de input + label ocupe su propia fila */
+  .d-flex.flex-row {
+    flex-direction: column !important;
+    gap: 2rem !important;
+    /* Espacio extra para que el label que flota no choque */
+  }
+
+  .select {
+    max-width: 100%;
+  }
+
+  .p-button {
+    width: 100%;
+    /* Botones grandes en móvil para el pulgar */
   }
 }

@@ -20,7 +20,7 @@ export const Servicio = () => {
   return (
     <>
       {/* primera fila */}
-      <div className="d-flex flex-row gap-3 mt-4 py-2 px-2 justify-content-center">
+      <div className="formulario-grid">
         {/* credencial */}
         <span className="p-float-label">
           <InputText className="select" />
@@ -41,7 +41,7 @@ export const Servicio = () => {
       </div>
 
       {/* segunda fila */}
-      <div className="d-flex flex-row gap-3 mt-4 py-2 px-2 justify-content-center">
+      <div className="formulario-grid">
         {/* credencial */}
         <span className="p-float-label">
           <InputText className="select" />
@@ -72,7 +72,7 @@ export const Servicio = () => {
       </div>
 
       {/* TERCERA fila */}
-      <div className="d-flex flex-row gap-3 mt-4 py-2 px-2 justify-content-center">
+      <div className="formulario-grid">
         {/* credencial */}
         <span className="p-float-label">
           <InputText className="select" />
