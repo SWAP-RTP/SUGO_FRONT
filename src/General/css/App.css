@@ -6,7 +6,7 @@
   --dark-blue: rgba(3, 16, 56, 0.945);
   --bg-card: rgba(245, 245, 245, 0.466);
   --text-gray: #928f8f;
-  --azul-claro: #CAE6FC;
+  --azul-claro: #cae6fc;
   --verde-claro: #d4ecd5;
 }
 
@@ -36,11 +36,11 @@
 
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
   text-decoration: none;
-
 }
 
 .sugo-logo {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 6rem;
   margin: 0;
   margin-bottom: 5rem;
@@ -184,7 +184,6 @@
 
 /* Tablets y Escritorio (Pantallas mayores a 768px) */
 @media (min-width: 769px) {
-
   .recepcion-contenedor,
   .despacho-contenedor {
     flex-direction: row;
@@ -199,7 +198,6 @@
   .container-fecha-hora .p-inputtext {
     max-width: 250px;
   }
-
 }
 
 /* Móvil (Pantallas menores a 768px) */
@@ -220,4 +218,11 @@
   .p-button {
     width: 100%;
   }
+}
+
+.title_pv {
+  font-size: 1.5rem;
+  color: var(--text-gray);
+  margin-bottom: 1rem;
+  font-weight: bold;
 }
