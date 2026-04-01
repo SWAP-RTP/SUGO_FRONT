@@ -1,0 +1,47 @@
+.contenedor-tabla {
+    background-color: #e2e8f0;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1800px;
+    padding: 0 15px;
+}
+
+table.dataTable thead th {
+    background-color: #475569;
+    color: white;
+    letter-spacing: 0.05rem;
+    padding: 10px;
+    border-bottom: 2px solid #e2e8f0;
+    text-align: center;
+    border-radius: 10px;
+}
+
+table.dataTable tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+    color: #1E293B;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: center;
+    white-space: nowrap;
+    width: 1%;
+}
+
+table.dataTable tbody tr:hover {
+    background-color: #f1f5f9;
+    cursor: default;
+}
+
+.dt-search input {
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: all 0.2s;
+}
+
+.dt-search input:focus {
+    border-color: #3b82f6;
+}
