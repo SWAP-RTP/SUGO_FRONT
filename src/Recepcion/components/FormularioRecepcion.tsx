@@ -20,17 +20,17 @@ export const FormularioRecepcion = () => {
 
   //pruebas de datatables
   const columnas = [
-    { title: "ECO", data: 0,responsivePriority: 1 },
-    { title: "PUERTA", data: 1,responsivePriority: 2 },
-    { title: "EDO.ECO", data: 2,responsivePriority: 3 },
-    { title: "MOMENTO", data: 3,responsivePriority: 4 },
-    { title: "TIPO DE REGISTRO", data: 4,responsivePriority: 5 },
-    { title: "MOTIVO", data: 5,responsivePriority: 6 },
-    { title: "RUTA", data: 6,responsivePriority: 7 },
-    { title: "MODALIDAD", data: 7,responsivePriority: 8 },
-    { title: "OPERADOR", data: 8,responsivePriority: 9 },
-    { title: "TURNO", data: 9,responsivePriority: 10 },
-    { title: "EXTINTOR", data: 10,responsivePriority: 11 }
+    { title: "ECO", data: 0, responsivePriority: 1 },
+    { title: "PUERTA", data: 1, responsivePriority: 2 },
+    { title: "EDO.ECO", data: 2, responsivePriority: 3 },
+    { title: "MOMENTO", data: 3, responsivePriority: 4 },
+    { title: "TIPO DE REGISTRO", data: 4, responsivePriority: 5 },
+    { title: "MOTIVO", data: 5, responsivePriority: 6 },
+    { title: "RUTA", data: 6, responsivePriority: 7 },
+    { title: "MODALIDAD", data: 7, responsivePriority: 8 },
+    { title: "OPERADOR", data: 8, responsivePriority: 9 },
+    { title: "TURNO", data: 9, responsivePriority: 10 },
+    { title: "EXTINTOR", data: 10, responsivePriority: 11 }
   ];
   const datosDePrueba = [
     ["7036", "M02", "Disponible", "2023-01-15 11:16:08 a.m.", "Recepcion", "Falta de relevo", "9X", "ORDINARIO", "5155", "2", "62"],
@@ -147,7 +147,7 @@ export const FormularioRecepcion = () => {
       <hr className="linea_punteada" />
 
       <div style={{ padding: "40px", fontFamily: "sans-serif" }}>
-        <h2>REGISTRO DE ACTUALIZACIONES REALIZADOS</h2>
+        <h2 className="text-center mb-5">REGISTRO DE ACTUALIZACIONES REALIZADOS</h2>
         <hr />
 
         {/* 3. Renderizamos el componente con los datos ficticios */}
