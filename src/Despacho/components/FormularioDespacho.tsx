@@ -71,7 +71,7 @@ export const FormularioDespacho = () => {
               </div>
 
               {/* componente dinamico de servicio */}
-                {motivos_select?.desc === "SERVICIO" && <Servicio />}
+              {motivos_select?.desc === "SERVICIO" && <Servicio />}
 
               {/* fecha y hora debajo de los inputs principales */}
               <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">
