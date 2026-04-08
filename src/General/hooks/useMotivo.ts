@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
-import { obtenerMotivos, obtenerMotivosRecepcion } from "../services/motivo.services";
+import {
+  obtenerMotivos,
+  obtenerMotivosRecepcion,
+} from "../services/motivo.services";
 
 export const useMotivo = () => {
   //Tipa el estado como array de Motivo
@@ -19,14 +22,20 @@ export const useMotivo = () => {
   }, []);
 
   // Opciones para un select
-  const motivosOptions = motivos.map((m: any) => ({
-    ...m,
-    label: `${m.desc}`,
-    value: m,
-  }));
+  const motivosOptions = useMemo(
+    () =>
+      motivos.map((m: any) => ({
+        ...m,
+        label: `${m.desc}`,
+        value: m,
+      })),
+    [motivos],
+  );
 
   return { motivosOptions };
 };
+
+// RECEPCION
 
 export const useMotivoRecepcion = () => {
   //Tipa el estado como array de Motivo
@@ -45,13 +54,15 @@ export const useMotivoRecepcion = () => {
   }, []);
 
   // Opciones para un select
-  const motivosOptionsRecepcion = motivosRecepcion.map((m: any) => ({
-    ...m,
-    label: `${m.desc}`,
-    value: m,
-  }));
+  const motivosOptionsRecepcion = useMemo(
+    () =>
+      motivosRecepcion.map((m: any) => ({
+        ...m,
+        label: `${m.desc}`,
+        value: m,
+      })),
+    [motivosRecepcion],
+  );
 
   return { motivosOptionsRecepcion };
 };
-
-

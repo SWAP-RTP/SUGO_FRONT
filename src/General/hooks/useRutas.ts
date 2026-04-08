@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { obtenerRutas } from "../services/rutas.services";
 
 export const useRutas = () => {
-  // estado para almacenar las rutas
   const [rutas, setRutas] = useState([]);
 
   useEffect(() => {
@@ -17,11 +16,15 @@ export const useRutas = () => {
     getRutas();
   }, []);
 
-  const rutasOptions = rutas.map((r: any) => ({
-    ...r,
-    label: `${r.ruta_origen_cve} - ${r.ruta_destino_cve}`,
-    value: r.ruta_cve_ruta,
-  }));
+  const rutasOptions = useMemo(
+    () =>
+      rutas.map((r: any) => ({
+        ...r,
+        label: `${r.nombre_origen} - ${r.nombre_destino}`,
+        value: r.ruta_cve_sist, // Cambiar a ruta_cve_sist en lugar de ruta_cve_ruta
+      })),
+    [rutas],
+  );
 
   return { rutasOptions };
 };

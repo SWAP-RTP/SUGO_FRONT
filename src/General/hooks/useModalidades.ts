@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { obtenerModalidades } from "../services/modalidades.services";
 
 export const useModalidades = () => {
@@ -17,11 +17,15 @@ export const useModalidades = () => {
     getModalidades();
   }, []);
 
-  const modalidadesOptions = modalidades.map((m: any) => ({
-    ...m,
-    label: `${m.servicio_descrip}`,
-    value: m.ruta_cve_servicio,
-  }));
+  const modalidadesOptions = useMemo(
+    () =>
+      modalidades.map((m: any) => ({
+        ...m,
+        label: `${m.servicio_descrip}`,
+        value: m.ruta_cve_servicio,
+      })),
+    [modalidades],
+  );
 
   return { modalidadesOptions };
 };

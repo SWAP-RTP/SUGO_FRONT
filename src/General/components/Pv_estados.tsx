@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { obtenerPvEstados } from "../services/pv_estados.services";
 
-export const Pv_estados = () => {
+const Pv_estadosComponent = () => {
   const [pvEstados, setPvEstados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,12 +25,6 @@ export const Pv_estados = () => {
     };
     fetchPvEstados();
   }, []);
-
-  const header = (
-    <div className="table-header">
-      <h5 className="table-title">Estados en Parque Vehicular</h5>
-    </div>
-  );
 
   return (
     <>
@@ -59,7 +53,6 @@ export const Pv_estados = () => {
             ]}
             dataKey="id"
             filterDisplay="row"
-            header={header}
             emptyMessage="No hay datos disponibles."
             scrollable
             scrollHeight="600px"
@@ -163,3 +156,6 @@ export const Pv_estados = () => {
     </>
   );
 };
+
+// Memoizar el componente de tabla para evitar renders innecesarios
+export const Pv_estados = memo(Pv_estadosComponent);

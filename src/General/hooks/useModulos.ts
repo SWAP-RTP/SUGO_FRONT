@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 // servicios
 import { obtenerModulos } from "../services/modulo.services";
 
@@ -18,11 +18,15 @@ export const useModulos = () => {
     getModulos();
   }, []);
 
-  const modulosOptions = modulos.map((m: any) => ({
-    ...m,
-    label: `${m.descripcion}`,
-    value: m.id,
-  }));
+  const modulosOptions = useMemo(
+    () =>
+      modulos.map((m: any) => ({
+        ...m,
+        label: `${m.descripcion}`,
+        value: m.id,
+      })),
+    [modulos],
+  );
 
   return { modulosOptions };
 };
