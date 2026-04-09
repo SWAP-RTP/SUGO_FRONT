@@ -4,13 +4,14 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
 import { usePeticiones } from "../../General/hooks/usePeticiones";
 import { Servicio } from "./Servicio";
+import { Datatables } from "../../General/components/Datatables";
+import { obtenerPvEstados } from "../../General/services/pv_estados.services";
 // import { Card_Eco } from "../../General/components/Card_Eco";
-import { Pv_estados } from "../../General/components/Pv_estados";
 // UTILS
 import { crearPvEstadoPayload } from "../../General/utils/crearPvEstadoPayload";
 
@@ -32,13 +33,56 @@ const FORMULARIO_INICIAL = {
 export const FormularioDespacho = () => {
   // hooks para obtener opciones de modulos y motivos
   const { modulosOptions, motivosOptions, date } = useHook_General();
-  // hook para guardar datos
   const { guardarModulo } = usePeticiones();
-
-  // Consolidar todos los estados en uno solo
   const [formularioData, setFormularioData] = useState(FORMULARIO_INICIAL);
-
+  const [pvEstados, setPvEstados] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const toast = useRef<Toast>(null);
+
+  //LIMPIEZA DE LA FECHA Y HORA
+  const formatearFecha = (fecha) => {
+    if (!fecha) return "---";
+    return new Date(fecha).toLocaleString("es-MX", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  const columnas = [
+    { title: "ECO", data: "eco", responsivePriority: 1 },
+    { title: "PUERTA", data: "modulo_puerta", responsivePriority: 2 },
+    { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
+    { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data) => formatearFecha(data) },
+    { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
+    { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
+    { title: "RUTA", data: "ruta", responsivePriority: 7 },
+    { title: "MODALIDAD", data: "ruta_modalidad", responsivePriority: 8 },
+    { title: "OPERADOR", data: "op_cred", responsivePriority: 9 },
+    { title: "TURNO", data: "op_turno", responsivePriority: 10 },
+    { title: "EXTINTOR", data: "extintor", responsivePriority: 11 }
+  ];
+
+  useEffect(() => {
+    const fetchPvEstados = async () => {
+      try {
+        setLoading(true);
+        const data = await obtenerPvEstados();
+        setPvEstados(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error al cargar pv_estados:", err);
+        setError("Error al cargar los datos");
+        setPvEstados([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPvEstados();
+  }, []);
 
   // Handler genérico para actualizar el formulario
   const handleFormChange = useCallback((field: string, value: any) => {
@@ -99,6 +143,8 @@ export const FormularioDespacho = () => {
 
   return (
     <>
+      {loading && <p className="text-center">Cargando datos...</p>}
+      {error && <p className="text-center text-danger">{error}</p>}
       <Toast ref={toast} style={{ margin: 25 }} />
       <TabView>
         <TabPanel className="tabpanel" header="Despacho">
@@ -204,8 +250,14 @@ export const FormularioDespacho = () => {
       </TabView>
 
       <hr className="linea_punteada" />
-
-      <Pv_estados />
+      <div style={{ padding: "40px", fontFamily: "sans-serif" }}>
+        <h2 className="text-center mb-5">REGISTRO DE DESPACHOS REALIZADOS</h2>
+        <hr />
+        <Datatables
+          data={pvEstados}
+          columns={columnas}
+        />
+      </div>
     </>
   );
 };

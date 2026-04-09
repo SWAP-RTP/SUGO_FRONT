@@ -2,58 +2,70 @@ import { TabView, TabPanel } from "primereact/tabview";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
 // import { Card_Eco } from "../../General/components/Card_Eco";
 import { TerminoJornada } from "./TerminoJornada";
 import { Datatables } from "../../General/components/Datatables";
+import { obtenerPvEstados_Recepcion } from "../../General/services/pv_estados.services";
 
 
 export const FormularioRecepcion = () => {
+  //HOOKS USADOS EN EL COMPONENTE
   const { modulosOptions, motivosOptionsRecepcion } = useHook_General();
-
   const [selectModulo, setSelectModulo] = useState(null);
   const [motivosRecepcion_select, setMotivosRecepcion_select] = useState(null);
-
+  const [pvEstados, setPvEstados] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { date } = useHook_General();
 
-  //pruebas de datatables
+  //LIMPIEZA DE LA FECHA Y HORA
+  const formatearFecha = (fecha) => {
+    if (!fecha) return "---";
+    return new Date(fecha).toLocaleString("es-MX", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  // DECLARAMOS LAS COLUMNAS DE DATATABLE
   const columnas = [
-    { title: "ECO", data: 0, responsivePriority: 1 },
-    { title: "PUERTA", data: 1, responsivePriority: 2 },
-    { title: "EDO.ECO", data: 2, responsivePriority: 3 },
-    { title: "MOMENTO", data: 3, responsivePriority: 4 },
-    { title: "TIPO DE REGISTRO", data: 4, responsivePriority: 5 },
-    { title: "MOTIVO", data: 5, responsivePriority: 6 },
-    { title: "RUTA", data: 6, responsivePriority: 7 },
-    { title: "MODALIDAD", data: 7, responsivePriority: 8 },
-    { title: "OPERADOR", data: 8, responsivePriority: 9 },
-    { title: "TURNO", data: 9, responsivePriority: 10 },
-    { title: "EXTINTOR", data: 10, responsivePriority: 11 }
+    { title: "ECO", data: "eco", responsivePriority: 1 },
+    { title: "MODULO", data: "modulo_puerta", responsivePriority: 2 },
+    { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
+    { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data) => formatearFecha(data) },
+    { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
+    { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
+    { title: "RUTA", data: "ruta", responsivePriority: 7 },
+    { title: "MODALIDAD", data: "ruta_modalidad", responsivePriority: 8 },
+    { title: "OPERADOR", data: "op_cred", responsivePriority: 9 },
+    { title: "TURNO", data: "op_turno", responsivePriority: 10 },
+    { title: "EXTINTOR", data: "extintor", responsivePriority: 11 }
   ];
-  const datosDePrueba = [
-    ["7036", "M02", "Disponible", "2023-01-15 11:16:08 a.m.", "Recepcion", "Falta de relevo", "9X", "ORDINARIO", "5155", "2", "62"],
-    ["8142", "M05", "Fuera de Servicio", "2023-02-10 08:22:15 a.m.", "Recepcion", "Termino de Jornada", "12A", "ORDINARIO", "4201", "1", "45"],
-    ["3055", "M01", "Disponible", "2023-02-11 09:45:30 p.m.", "Recepcion", "Cambio de Turno", "45", "EXPRESO", "6612", "3", "12"],
-    ["9921", "M03", "Mantenimiento", "2023-03-01 10:12:00 a.m.", "Recepcion", "Falla Mecánica", "11B", "ORDINARIO", "3309", "2", "88"],
-    ["4410", "M02", "Disponible", "2023-03-05 06:05:44 p.m.", "Recepcion", "Falta de relevo", "7", "ATENEA", "1022", "1", "23"],
-    ["6722", "M07", "Disponible", "2023-04-12 12:30:11 p.m.", "Recepcion", "Termino de Jornada", "22", "ORDINARIO", "9011", "2", "54"],
-    ["1208", "M02", "En Ruta", "2023-04-20 02:14:55 p.m.", "Recepcion", "Siniestro", "5C", "EXPRESO", "8821", "4", "09"],
-    ["5567", "M05", "Disponible", "2023-05-02 07:40:22 a.m.", "Recepcion", "Falta de relevo", "18", "ORDINARIO", "4415", "1", "31"],
-    ["2190", "M01", "Fuera de Servicio", "2023-05-18 11:55:00 p.m.", "Recepcion", "Termino de Jornada", "33", "ORDINARIO", "2020", "2", "77"],
-    ["8834", "M03", "Disponible", "2023-06-01 05:01:18 a.m.", "Recepcion", "Cambio de Turno", "10X", "EXPRESO", "7112", "3", "40"],
-    ["6044", "M04", "En Turno", "2023-06-15 09:10:22 a.m.", "Recepcion", "Falta de relevo", "15", "ORDINARIO", "5050", "2", "11"],
-    ["3321", "M01", "Disponible", "2023-07-04 02:30:45 p.m.", "Recepcion", "Termino de Jornada", "2", "ORDINARIO", "4432", "1", "90"],
-    ["7089", "M06", "Mantenimiento", "2023-07-20 11:45:10 a.m.", "Recepcion", "Ponchadura", "116", "EXPRESO", "8871", "3", "34"],
-    ["4512", "M02", "Disponible", "2023-08-05 07:12:00 a.m.", "Recepcion", "Cambio de Turno", "46C", "ORDINARIO", "1120", "2", "22"],
-    ["9021", "M05", "Fuera de Servicio", "2023-08-22 10:05:33 p.m.", "Recepcion", "Falla Eléctrica", "12", "ATENEA", "6541", "1", "56"],
-    ["1155", "M01", "Disponible", "2023-09-10 06:40:15 a.m.", "Recepcion", "Termino de Jornada", "9X", "ORDINARIO", "9901", "3", "08"],
-    ["6630", "M03", "Disponible", "2023-09-25 12:15:44 p.m.", "Recepcion", "Falta de relevo", "55", "EXPRESO", "3341", "2", "67"],
-    ["2288", "M07", "En Ruta", "2023-10-05 03:22:09 p.m.", "Recepcion", "Siniestro", "27A", "ORDINARIO", "4410", "4", "19"],
-    ["5051", "M02", "Disponible", "2023-11-12 08:50:00 a.m.", "Recepcion", "Termino de Jornada", "101", "ORDINARIO", "2121", "1", "82"],
-    ["7740", "M04", "Fuera de Servicio", "2023-12-01 11:30:12 p.m.", "Recepcion", "Limpieza Profunda", "45", "ORDINARIO", "7007", "2", "39"]
-  ];
+
+  //CARGAMOS LOS DATOS DESDE LA API 
+  useEffect(() => {
+    const fetchPvEstados = async () => {
+      try {
+        setLoading(true);
+        const data = await obtenerPvEstados_Recepcion();
+        setPvEstados(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error al cargar pv_estados:", err);
+        setError("Error al cargar los datos");
+        setPvEstados([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPvEstados();
+  }, []);
 
 
   // Formatear fecha y hora
@@ -64,8 +76,11 @@ export const FormularioRecepcion = () => {
   });
   const fechaActual = date.toLocaleDateString("es-MX");
 
+
   return (
     <>
+      {loading && <p className="text-center">Cargando datos...</p>}
+      {error && <p className="text-center text-danger">{error}</p>}
       <TabView>
         <TabPanel className="tabpanel" header="Recepcion">
           <div className="despacho-contenedor d-flex flex-wrap justify-content-center align-items-start gap-4">
@@ -147,12 +162,10 @@ export const FormularioRecepcion = () => {
       <hr className="linea_punteada" />
 
       <div style={{ padding: "40px", fontFamily: "sans-serif" }}>
-        <h2 className="text-center mb-5">REGISTRO DE ACTUALIZACIONES REALIZADOS</h2>
+        <h2 className="text-center mb-5">REGISTRO DE RECEPCIONES REALIZADOS</h2>
         <hr />
-
-        {/* 3. Renderizamos el componente con los datos ficticios */}
         <Datatables
-          data={datosDePrueba}
+          data={pvEstados}
           columns={columnas}
         />
       </div>
