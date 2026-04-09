@@ -10,6 +10,16 @@ export const Header = () => {
   // Definición de los ítems del menú principal
   const items = [
     {
+      label: "Rol",
+      icon: "pi pi-fw pi-book",
+      command: () => navigate("/rol"),
+    },
+    {
+      label: "Despacho",
+      icon: "pi pi-fw pi-home",
+      command: () => navigate("/despacho"),
+    },
+    {
       label: "Despacho",
       icon: "pi pi-fw pi-home",
       command: () => navigate("/despacho"),
