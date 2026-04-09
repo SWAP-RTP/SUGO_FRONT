@@ -20,11 +20,6 @@ export const Header = () => {
       command: () => navigate("/despacho"),
     },
     {
-      label: "Despacho",
-      icon: "pi pi-fw pi-home",
-      command: () => navigate("/despacho"),
-    },
-    {
       label: "Recepcion",
       icon: "pi pi-fw pi-calendar",
       command: () => navigate("/recepcion"),
