@@ -33,7 +33,7 @@ export const Roles = () => {
       );
       try {
         const resultado = await guardarCabeceraRol(datosCabecera);
-        console.log("Guardado:", resultado);
+        console.log("Guardadoo:", resultado);
         alert("Datos guardados exitosamente");
         setDatosCabecera(null);
         fileUploadRef.current?.clear();
