@@ -11,7 +11,7 @@ import { usePeticiones } from "../../General/hooks/usePeticiones";
 import { Servicio } from "./Servicio";
 import { Datatables } from "../../General/components/Datatables";
 import { obtenerPvEstados } from "../../General/services/pv_estados.services";
-// import { Card_Eco } from "../../General/components/Card_Eco";
+import { Card_Eco } from "../../General/components/Card_Eco";
 // UTILS
 import { crearPvEstadoPayload } from "../../General/utils/crearPvEstadoPayload";
 
@@ -38,6 +38,7 @@ export const FormularioDespacho = () => {
   const [pvEstados, setPvEstados] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [ecoEncontrado, setecoEncontrado] = useState<any>(null);
   const toast = useRef<Toast>(null);
 
   //LIMPIEZA DE LA FECHA Y HORA
@@ -54,7 +55,7 @@ export const FormularioDespacho = () => {
 
   const columnas = [
     { title: "ECO", data: "eco", responsivePriority: 1 },
-    { title: "PUERTA", data: "modulo_puerta", responsivePriority: 2 },
+    { title: "MODULO", data: "modulo", responsivePriority: 2 },
     { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
     { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data) => formatearFecha(data) },
     { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
@@ -66,23 +67,27 @@ export const FormularioDespacho = () => {
     { title: "EXTINTOR", data: "extintor", responsivePriority: 11 }
   ];
 
-  useEffect(() => {
-    const fetchPvEstados = async () => {
-      try {
-        setLoading(true);
-        const data = await obtenerPvEstados();
-        setPvEstados(data);
-        setError(null);
-      } catch (err) {
-        console.error("Error al cargar pv_estados:", err);
-        setError("Error al cargar los datos");
-        setPvEstados([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPvEstados();
+  //FETCH EN UNA FUNCION REUTILIZABLE 
+  const fetchPvEstados = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await obtenerPvEstados();
+      setPvEstados(data);
+      setError(null);
+    } catch (err) {
+      console.error("Error al cargar pv_estados:", err);
+      setError("Error al cargar los datos");
+      setPvEstados([]);
+    } finally {
+      setLoading(false);
+    }
+
   }, []);
+
+  useEffect(() => {
+    fetchPvEstados();
+  }, [fetchPvEstados]);
+
 
   // Handler genérico para actualizar el formulario
   const handleFormChange = useCallback((field: string, value: any) => {
@@ -127,6 +132,7 @@ export const FormularioDespacho = () => {
       });
       // Limpiar formulario
       setFormularioData(FORMULARIO_INICIAL);
+      fetchPvEstados();
     } else {
       toast.current?.show({
         severity: "error",
@@ -134,12 +140,44 @@ export const FormularioDespacho = () => {
         detail: "Error al guardar los datos",
       });
     }
-  }, [formularioData, guardarModulo]);
+  }, [formularioData, guardarModulo, fetchPvEstados]);
 
   // Handler para limpiar formulario
   const handleLimpiar = useCallback(() => {
     setFormularioData(FORMULARIO_INICIAL);
   }, []);
+
+  //HANDLER ELIMINAR 
+  const handleEliminar = useCallback(async (rowData: any) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/pv_estados/${rowData.id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        toast.current?.show({
+          severity: "success",
+          summary: "Eliminado",
+          detail: "Registro eliminado correctamente"
+        });
+        await fetchPvEstados();
+      }
+    } catch (err) {
+      toast.current?.show({ severity: "error", summary: "Error", detail: "Hubo un error al eliminar el registro" });
+    }
+  }, [fetchPvEstados]);
+
+  //HANDLER PARA BUSCAR EL ECONOMICO CUANDO SE INGRESA EL NUMERO
+  const handleEcoChange = useCallback((value: string) => {
+    handleFormChange("select_economico", value);
+    if (!value) {
+      setecoEncontrado(null);
+      return;
+    }
+    //BUSCA EN PVESTADOS EL ECO QUE COINCIDA
+    const encontrado = pvEstados.find((item: any) =>
+      String(item.eco) === String(value));
+    setecoEncontrado(encontrado || null);
+  }, [pvEstados, handleFormChange]);
 
   return (
     <>
@@ -149,7 +187,7 @@ export const FormularioDespacho = () => {
       <TabView>
         <TabPanel className="tabpanel" header="Despacho">
           <div className="despacho-contenedor d-flex flex-wrap justify-content-center align-items-start gap-4">
-            {/* <Card_Eco /> */}
+            {ecoEncontrado && <Card_Eco data={ecoEncontrado} />}
             <div className="card">
               <div className="titulo">
                 <h1>Despacho</h1>
@@ -175,7 +213,7 @@ export const FormularioDespacho = () => {
                     className="select"
                     value={formularioData.select_economico}
                     onChange={(e) =>
-                      handleFormChange("select_economico", e.target.value)
+                      handleEcoChange(e.target.value)
                     }
                   />
                   <label htmlFor="economico">Economico</label>
@@ -256,6 +294,7 @@ export const FormularioDespacho = () => {
         <Datatables
           data={pvEstados}
           columns={columnas}
+          onEliminar={handleEliminar}
         />
       </div>
     </>

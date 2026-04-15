@@ -1,25 +1,46 @@
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+//COMPONENTES PRIME REACT
 import { TabView, TabPanel } from "primereact/tabview";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { useState, useEffect } from "react";
+import { Toast } from "primereact/toast";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
-// import { Card_Eco } from "../../General/components/Card_Eco";
 import { TerminoJornada } from "./TerminoJornada";
 import { Datatables } from "../../General/components/Datatables";
+import { usePeticiones } from "../../General/hooks/usePeticiones";
 import { obtenerPvEstados_Recepcion } from "../../General/services/pv_estados.services";
+import { Card_Eco } from "../../General/components/Card_Eco";
+//UTILS
+import { crearPvEstadoPayloadRec } from "../../General/utils/crearPvEstadoPayload";
+
+//Estado inicial del formulario 
+const FormularioInicial = {
+  eco: "",
+  selectModulo: null,
+  motivos_recepcion_select: null,
+  credencial: "",
+  turno: "",
+  noExtintor: "",
+  modalidadSelect: null,
+  rutaSelect: null,
+  cc: null,
+  selectedTermino: null
+};
 
 
 export const FormularioRecepcion = () => {
   //HOOKS USADOS EN EL COMPONENTE
-  const { modulosOptions, motivosOptionsRecepcion } = useHook_General();
-  const [selectModulo, setSelectModulo] = useState(null);
-  const [motivosRecepcion_select, setMotivosRecepcion_select] = useState(null);
+  const { guardarModulo } = usePeticiones();
+  const { modulosOptions, motivosOptionsRecepcion, date } = useHook_General();
+  const [formularioData, setformularioData] = useState(FormularioInicial);
   const [pvEstados, setPvEstados] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { date } = useHook_General();
+  const [ecoEncontrado, setecoEncontrado] = useState<any>(null);
+  const toast = useRef<Toast>(null);
+
 
   //LIMPIEZA DE LA FECHA Y HORA
   const formatearFecha = (fecha) => {
@@ -36,7 +57,7 @@ export const FormularioRecepcion = () => {
   // DECLARAMOS LAS COLUMNAS DE DATATABLE
   const columnas = [
     { title: "ECO", data: "eco", responsivePriority: 1 },
-    { title: "MODULO", data: "modulo_puerta", responsivePriority: 2 },
+    { title: "MODULO", data: "modulo", responsivePriority: 2 },
     { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
     { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data) => formatearFecha(data) },
     { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
@@ -48,43 +69,127 @@ export const FormularioRecepcion = () => {
     { title: "EXTINTOR", data: "extintor", responsivePriority: 11 }
   ];
 
+  //FETCH EN UNA FUNCION REUTILIZABLE 
+  const fetchPvEstados = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await obtenerPvEstados_Recepcion();
+      setPvEstados(data);
+      setError(null);
+    } catch (err) {
+      console.error("Error al cargar pv_estados:", err);
+      setError("Error al cargar los datos");
+      setPvEstados([]);
+    } finally {
+      setLoading(false);
+    }
+
+  }, []);
+
   //CARGAMOS LOS DATOS DESDE LA API 
   useEffect(() => {
-    const fetchPvEstados = async () => {
-      try {
-        setLoading(true);
-        const data = await obtenerPvEstados_Recepcion();
-        setPvEstados(data);
-        setError(null);
-      } catch (err) {
-        console.error("Error al cargar pv_estados:", err);
-        setError("Error al cargar los datos");
-        setPvEstados([]);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchPvEstados();
+  }, [fetchPvEstados]);
+
+  //HANDLER GENERICO PARA ACTUALIZAR EL FORMULARIO
+  const handleFormChange = useCallback((field: string, value: any) => {
+    setformularioData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   }, []);
 
 
   // Formatear fecha y hora
-  const horaActual = date.toLocaleTimeString("es-MX", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-  const fechaActual = date.toLocaleDateString("es-MX");
+  const horaActual = useMemo(
+    () =>
+      date.toLocaleTimeString("es-MX", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
+    [date],
+  );
+
+  // formatear fecha actual
+  const fechaActual = useMemo(() => date.toLocaleDateString("es-MX"), [date]);
+
+  //FUNCION PARA GUARDAR EL MODULO SELECCIONADO
+  const handleEnviar = useCallback(async () => {
+    if (!formularioData.selectModulo) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Atencion",
+        detail: "Seleccione un modulo"
+      });
+      return;
+    }
+    try {
+      const payload = crearPvEstadoPayloadRec(formularioData);
+      await guardarModulo(payload);
+      toast.current?.show({
+        severity: "success",
+        summary: "Exito",
+        detail: "Datos guardados correctamente"
+      });
+      setformularioData(FormularioInicial);
+      fetchPvEstados();
+    } catch (err) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Hubo un error al guardar los datos"
+      });
+    }
+  }, [formularioData, fetchPvEstados]);
+
+  //HANDLER PARA LIMPIAR EL FORMULARIO
+  const handleLimpiar = useCallback(() => {
+    setformularioData(FormularioInicial);
+  }, []);
+
+  //HANDLER ELIMINAR
+  const handleEliminar = useCallback(async (rowData: any) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/pv_estados/${rowData.id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        toast.current?.show({
+          severity: "success",
+          summary: "Eliminado",
+          detail: "Registro eliminado correctamente"
+        });
+        await fetchPvEstados();
+      }
+    } catch (err) {
+      toast.current?.show({ severity: "error", summary: "Error", detail: "Hubo un error al eliminar el registro" });
+    }
+  }, [fetchPvEstados]);
+
+  //HANDLER PARA BUSCAR EL ECONOMICO CUANDO SE INGRESA EL NUMERO
+  const handleEcoChange = useCallback((value: string) => {
+    handleFormChange("eco", value);
+    if (!value) {
+      setecoEncontrado(null);
+      return;
+    }
+    //BUSCA EN PVESTADOS EL ECO QUE COINCIDA
+    const encontrado = pvEstados.find((item: any) =>
+      String(item.eco) === String(value));
+    setecoEncontrado(encontrado || null);
+  }, [pvEstados]);
 
 
   return (
     <>
+      <Toast ref={toast} />
       {loading && <p className="text-center">Cargando datos...</p>}
       {error && <p className="text-center text-danger">{error}</p>}
       <TabView>
         <TabPanel className="tabpanel" header="Recepcion">
           <div className="despacho-contenedor d-flex flex-wrap justify-content-center align-items-start gap-4">
-            {/* <Card_Eco /> */}
+            {ecoEncontrado && <Card_Eco data={ecoEncontrado} />}
             <div className="card-recepcion">
               <div className="titulo">
                 <h1>Recepcion</h1>
@@ -96,8 +201,8 @@ export const FormularioRecepcion = () => {
                 <span className="p-float-label">
                   <Dropdown
                     inputId="dd-modulo"
-                    value={selectModulo}
-                    onChange={(e) => setSelectModulo(e.value)}
+                    value={formularioData.selectModulo}
+                    onChange={(e) => handleFormChange("selectModulo", e.value)}
                     options={modulosOptions}
                     className="select w-100"
                   />
@@ -106,8 +211,13 @@ export const FormularioRecepcion = () => {
 
                 {/* economico */}
                 <span className="p-float-label w-100">
-                  <InputText className="select" />
-                  <label htmlFor="username">Economico</label>
+                  <InputText
+                    id="eco"
+                    className="select"
+                    value={formularioData.eco}
+                    onChange={(e) => handleEcoChange(e.target.value)} 
+                  />
+                  <label htmlFor="eco">Economico</label>
                 </span>
 
                 {/* motivos */}
@@ -115,8 +225,8 @@ export const FormularioRecepcion = () => {
                   <Dropdown
                     className="select w-100"
                     inputId="dd-motivos-recepcion"
-                    value={motivosRecepcion_select}
-                    onChange={(e) => setMotivosRecepcion_select(e.value)}
+                    value={formularioData.motivos_recepcion_select}
+                    onChange={(e) => handleFormChange("motivos_recepcion_select", e.value)}
                     options={motivosOptionsRecepcion}
                     optionLabel="desc"
                   />
@@ -124,7 +234,20 @@ export const FormularioRecepcion = () => {
                 </span>
               </div>
 
-              {motivosRecepcion_select?.desc === "TERMINO DE JORNADA" && <TerminoJornada />}
+              {formularioData.motivos_recepcion_select?.desc === "TERMINO DE JORNADA" && (
+                <TerminoJornada
+                  values={{
+                    credencial: formularioData.credencial,
+                    turno: formularioData.turno,
+                    noExtintor: formularioData.noExtintor,
+                    modalidadSelect: formularioData.modalidadSelect,
+                    rutaSelect: formularioData.rutaSelect,
+                    cc: formularioData.cc,
+                    selectedTermino: formularioData.selectedTermino
+                  }}
+                  onChange={handleFormChange}
+                />
+              )}
 
               {/* fecha y hora debajo de los inputs principales */}
               <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">
@@ -151,8 +274,8 @@ export const FormularioRecepcion = () => {
               </div>
 
               <div className="d-flex justify-content-center gap-3 mt-4 mb-4">
-                <Button icon="pi pi-check" label="Enviar" severity="success" />
-                <Button icon="pi pi-times" label="Limpiar" severity="danger" />
+                <Button icon="pi pi-check" label="Enviar" severity="success" onClick={handleEnviar} />
+                <Button icon="pi pi-times" label="Limpiar" severity="danger" onClick={handleLimpiar} />
               </div>
             </div>
           </div>
@@ -167,6 +290,7 @@ export const FormularioRecepcion = () => {
         <Datatables
           data={pvEstados}
           columns={columnas}
+          onEliminar={handleEliminar}
         />
       </div>
     </>

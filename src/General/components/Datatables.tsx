@@ -10,10 +10,35 @@ DataTable.use(DT);
 interface DatatablesProps {
   data: any[];
   columns: any[];
+  onEliminar?: (rowData: any) => void;
 }
 
-export const Datatables = ({ data, columns }: DatatablesProps) => {
+export const Datatables = ({ data, columns, onEliminar }: DatatablesProps) => {
   const tableRef = useRef<any>(null);
+  const contenedorRef = useRef<HTMLDivElement>(null);
+
+  //USEEFFECT PARA EL MANEJO DE EVENTOS EN EL BOTON ELIMINAR
+  useEffect(() => {
+    const contenedor = contenedorRef.current;
+    // console.log("Contenedor de la tabla:", contenedor);//DEBUG ELIMINAR DESPUES
+    if (!contenedor) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const btnEliminar = (e.target as HTMLElement).closest(".btn-eliminar");
+      if (!btnEliminar) return;
+
+      const dt = tableRef.current?.dt();
+      if (!dt) return;
+
+      const fila = (btnEliminar as HTMLElement).closest("tr");
+      const rowData = dt.row(fila).data();
+      // console.log("rowData", rowData);//DEBUG ELIMINAR DESPUES
+      onEliminar?.(rowData);
+    };
+
+    contenedor.addEventListener("click", handleClick);
+    return () => contenedor.removeEventListener("click", handleClick);
+  }, [onEliminar]);
 
   const columnaBoton = useMemo(
     () => [
@@ -81,7 +106,7 @@ export const Datatables = ({ data, columns }: DatatablesProps) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   return (
-    <div className="contenedor-tabla">
+    <div className="contenedor-tabla" ref={contenedorRef}>
       <DataTable
         ref={tableRef}
         data={memoData}

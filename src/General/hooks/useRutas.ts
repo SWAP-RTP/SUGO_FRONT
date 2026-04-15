@@ -21,7 +21,7 @@ export const useRutas = () => {
       rutas.map((r: any) => ({
         ...r,
         label: `${r.nombre_origen} - ${r.nombre_destino}`,
-        value: r.ruta_cve_sist, // Cambiar a ruta_cve_sist en lugar de ruta_cve_ruta
+        // value: r.ruta_cve_sist,
       })),
     [rutas],
   );
