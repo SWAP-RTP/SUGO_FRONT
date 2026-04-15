@@ -311,7 +311,7 @@ export const Roles = () => {
           <div className="mt-4">
             <Accordion activeIndex={0}>
               <AccordionTab
-                header="Lectuta del Roles"
+                header="Lectura del Roles"
                 headerClassName="my-custom-header"
               >
                 {datosCabecera ? (
