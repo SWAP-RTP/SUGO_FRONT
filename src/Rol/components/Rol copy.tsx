@@ -4,11 +4,9 @@ import { Button } from "primereact/button";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import * as XLSX from "xlsx";
 import { Dropdown } from "primereact/dropdown";
-import { FloatLabel } from "primereact/floatlabel";
 import { useState, useRef } from "react";
 import { useRolesGuardar } from "../hooks/useRolGuardar";
 import "../css/rol.css";
-import { useHook_General } from "../../General/hooks/useHook";
 
 interface CabeceraRol {
   periodos: number;
@@ -22,10 +20,11 @@ interface CabeceraRol {
 export const Roles = () => {
   // Estado específico para los datos de la cabecera
   const [datosCabecera, setDatosCabecera] = useState<CabeceraRol | null>(null);
-  const [numHojas, setNumHojas] = useState<number>(0);
-  const [nombresHojas, setNombresHojas] = useState<string[]>([]);
+  const [turnos, setTurnos] = useState([]);
   const { guardarCabeceraRol, cargando, error } = useRolesGuardar();
   const fileUploadRef = useRef(null);
+
+  // const [excelData, setExcelData] = useState(null); // Lo conservo por si luego quieres mostrar la tabla
 
   const manejarbuttonGuardar = async () => {
     if (datosCabecera) {
@@ -47,39 +46,11 @@ export const Roles = () => {
     }
   };
 
-  const manejarArchivoExcel = async (e: any) => {
+  const manejarArchivoExcel = (e: any) => {
     const archivo = e.files[0];
 
     if (!archivo) {
       console.error("No hay archivo");
-      return;
-    }
-
-    // Enviar el archivo al backend para contar hojas
-    try {
-      const formData = new FormData();
-      formData.append("file", archivo);
-
-      const response = await fetch("http://localhost:3000/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const resultado = await response.json();
-
-      if (response.ok) {
-        setNumHojas(resultado.numSheets);
-        setNombresHojas(resultado.sheetNames);
-        console.log("✅ Hojas contadas:", resultado.numSheets);
-        console.log("✅ Nombres de hojas:", resultado.sheetNames);
-      } else {
-        console.error("Error al subir archivo:", resultado.error);
-        alert("Error al subir el archivo");
-        return;
-      }
-    } catch (error) {
-      console.error("Error en la petición:", error);
-      alert("Error al procesar el archivo");
       return;
     }
 
@@ -228,8 +199,10 @@ export const Roles = () => {
     reader.readAsArrayBuffer(archivo);
   };
 
-  const { modulosOptions } = useHook_General();
-  const [moduloSeleccionado, setModuloSeleccionado] = useState<any>(null);
+  const cities = [
+    { name: "New York", code: "NY" },
+    { name: "Rome", code: "RM" },
+  ];
 
   return (
     <>
@@ -240,30 +213,13 @@ export const Roles = () => {
               className="d-flex flex-row flex-wrap justify-content-center justify-content-md-center align-items-center"
               style={{ gap: "5px" }}
             >
-              <div style={{ flex: " 0 auto", minWidth: "150px" }}>
-                <span className="p-float-label">
-                  <Dropdown
-                    inputId="dd-modulo"
-                    value={moduloSeleccionado}
-                    onChange={(e) => setModuloSeleccionado(e.value)}
-                    options={modulosOptions}
-                    className="select w-100"
-                  />
-                  <label htmlFor="dd-modulo">Modulo</label>
-                </span>
-              </div>
-
-              <div style={{ flex: "0 0 auto", minWidth: "150px" }}>
-                <span className="p-float-label">
-                  <Dropdown
-                    inputId="dd-periodos"
-                    value={moduloSeleccionado}
-                    onChange={(e) => setModuloSeleccionado(e.value)}
-                    options={modulosOptions}
-                    className="select w-100"
-                  />
-                  <label htmlFor="dd-periodos">Periodos</label>
-                </span>
+              <div style={{ flex: "0 0 auto" }}>
+                <Dropdown
+                  options={cities}
+                  optionLabel="name"
+                  placeholder="Selecciona un Periodo"
+                  className="w-full md:w-14rem"
+                />
               </div>
 
               <div style={{ flex: "0 0 auto" }}>
@@ -280,6 +236,24 @@ export const Roles = () => {
                   onSelect={manejarArchivoExcel}
                 />
               </div>
+
+              {/* <div style={{ flex: "0 0 auto" }}>
+                <Button
+                  label="Descargar Plantilla"
+                  icon="pi pi-check"
+                  severity="success"
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href =
+                      "../../../public/programacion_del_servicio (4).xlsx";
+                    link.download = "programacion_del_servicio (4).xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                  style={{ height: "100%" }}
+                />
+              </div> */}
 
               <div style={{ flex: "0 0 auto" }}>
                 <Button
@@ -311,29 +285,87 @@ export const Roles = () => {
           <div className="mt-4">
             <Accordion activeIndex={0}>
               <AccordionTab
-                header="Lectuta del Rol"
+                header="Cabecera del Rol"
                 headerClassName="my-custom-header"
               >
                 {datosCabecera ? (
                   <div className="p-3">
                     <p>
-                      <strong>Número de hojas:</strong> {numHojas}
+                      <strong>Periodo:</strong> {datosCabecera.periodos}
                     </p>
-                    {nombresHojas.length > 0 && (
-                      <div>
-                        <strong>Nombres de las hojas:</strong>
-                        <ul>
-                          {nombresHojas.map((nombre, index) => (
-                            <li key={index}>{nombre}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    <p>
+                      <strong>Ruta:</strong> {datosCabecera.ruta}
+                    </p>
+                    <p>
+                      <strong>Origen:</strong> {datosCabecera.origen}
+                    </p>
+                    <p>
+                      <strong>Modalidad:</strong> {datosCabecera.modalidad}
+                    </p>
+                    <p>
+                      <strong>Destino:</strong> {datosCabecera.destino}
+                    </p>
+                    <p>
+                      <strong>Módulo:</strong> {datosCabecera.modulo}
+                    </p>
                   </div>
                 ) : (
                   <p>
                     Sube un archivo Excel para extraer la información principal
                   </p>
+                )}
+              </AccordionTab>
+            </Accordion>
+          </div>
+
+          <div className="mt-4">
+            <Accordion activeIndex={0}>
+              <AccordionTab header="TURNOS" headerClassName="my-custom-header">
+                {turnos && turnos.length > 0 ? (
+                  <div className="p-3">
+                    <table
+                      style={{ width: "100%", borderCollapse: "collapse" }}
+                    >
+                      <thead>
+                        <tr style={{ backgroundColor: "#f0f0f0" }}>
+                          {turnos.length > 0 &&
+                            Object.keys(turnos[0]).map((col) => (
+                              <th
+                                key={col}
+                                style={{
+                                  border: "1px solid #ddd",
+                                  padding: "8px",
+                                  textAlign: "left",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {col}
+                              </th>
+                            ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {turnos.map((turno, idx) => (
+                          <tr key={idx}>
+                            {Object.values(turno).map((valor, colIdx) => (
+                              <td
+                                key={colIdx}
+                                style={{
+                                  border: "1px solid #ddd",
+                                  padding: "8px",
+                                  textAlign: "center",
+                                }}
+                              >
+                                {valor}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p>Sube un archivo Excel para ver los turnos</p>
                 )}
               </AccordionTab>
             </Accordion>
