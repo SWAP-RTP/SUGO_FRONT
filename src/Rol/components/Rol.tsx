@@ -4,9 +4,11 @@ import { Button } from "primereact/button";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import * as XLSX from "xlsx";
 import { Dropdown } from "primereact/dropdown";
+import { FloatLabel } from "primereact/floatlabel";
 import { useState, useRef } from "react";
 import { useRolesGuardar } from "../hooks/useRolGuardar";
 import "../css/rol.css";
+import { useHook_General } from "../../General/hooks/useHook";
 
 interface CabeceraRol {
   periodos: number;
@@ -20,13 +22,10 @@ interface CabeceraRol {
 export const Roles = () => {
   // Estado específico para los datos de la cabecera
   const [datosCabecera, setDatosCabecera] = useState<CabeceraRol | null>(null);
-  const [turnos, setTurnos] = useState([]);
   const [numHojas, setNumHojas] = useState<number>(0);
   const [nombresHojas, setNombresHojas] = useState<string[]>([]);
   const { guardarCabeceraRol, cargando, error } = useRolesGuardar();
   const fileUploadRef = useRef(null);
-
-  // const [excelData, setExcelData] = useState(null); // Lo conservo por si luego quieres mostrar la tabla
 
   const manejarbuttonGuardar = async () => {
     if (datosCabecera) {
@@ -229,10 +228,8 @@ export const Roles = () => {
     reader.readAsArrayBuffer(archivo);
   };
 
-  const cities = [
-    { name: "New York", code: "NY" },
-    { name: "Rome", code: "RM" },
-  ];
+  const { modulosOptions } = useHook_General();
+  const [moduloSeleccionado, setModuloSeleccionado] = useState<any>(null);
 
   return (
     <>
@@ -243,14 +240,31 @@ export const Roles = () => {
               className="d-flex flex-row flex-wrap justify-content-center justify-content-md-center align-items-center"
               style={{ gap: "5px" }}
             >
-              {/* <div style={{ flex: "0 0 auto" }}>
-                <Dropdown
-                  options={cities}
-                  optionLabel="name"
-                  placeholder="Selecciona un Periodo"
-                  className="w-full md:w-14rem"
-                />
-              </div> */}
+              <div style={{ flex: " 0 auto", minWidth: "150px" }}>
+                <span className="p-float-label">
+                  <Dropdown
+                    inputId="dd-modulo"
+                    value={moduloSeleccionado}
+                    onChange={(e) => setModuloSeleccionado(e.value)}
+                    options={modulosOptions}
+                    className="select w-100"
+                  />
+                  <label htmlFor="dd-modulo">Modulo</label>
+                </span>
+              </div>
+
+              <div style={{ flex: "0 0 auto", minWidth: "150px" }}>
+                <span className="p-float-label">
+                  <Dropdown
+                    inputId="dd-periodos"
+                    value={moduloSeleccionado}
+                    onChange={(e) => setModuloSeleccionado(e.value)}
+                    options={modulosOptions}
+                    className="select w-100"
+                  />
+                  <label htmlFor="dd-periodos">Periodos</label>
+                </span>
+              </div>
 
               <div style={{ flex: "0 0 auto" }}>
                 <FileUpload
