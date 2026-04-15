@@ -34,3 +34,38 @@ export function crearPvEstadoPayload({
     createdBy_modulo: 1,
   };
 }
+export function crearPvEstadoPayloadRec({
+  selectModulo,
+  eco,
+  motivos_recepcion_select,
+  credencial,
+  turno,
+  noExtintor,
+  modalidadSelect,
+  rutaSelect,
+  cc
+}: any) {
+  return {
+    tipo: 2,
+    eco: eco,
+    eco_estatus: 1,
+    eco_tipo: 1,
+    motivo_id: motivos_recepcion_select?.id,
+    motivo_desc: motivos_recepcion_select?.desc,
+    modulo: selectModulo,
+    direccion: "Dirección ejemplo",
+    ruta: rutaSelect?.ruta_origen_cve || "Ruta ejemplo",
+    ruta_modalidad: modalidadSelect || "Modalidad ejemplo",
+    ruta_cc: cc?? "CC ejemplo",
+    op_cred: credencial,
+    op_turno: turno,
+    extintor: noExtintor,
+    estatus: 2,
+    modulo_puerta: "Puerta ejemplo",
+    momento: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    createdBy: 1,
+    createdBy_modulo: 1,
+  };
+}
+
