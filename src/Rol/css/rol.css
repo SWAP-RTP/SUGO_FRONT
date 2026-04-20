@@ -16,3 +16,13 @@
   text-decoration: none !important;
   color: #0b2c8a !important;
 }
+
+/* tamaño telefono */
+@media screen and (min-width: 340px) {
+  .selects {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+}

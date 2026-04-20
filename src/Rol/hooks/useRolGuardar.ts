@@ -2,37 +2,47 @@ import { useState } from "react";
 
 export const useRolesGuardar = () => {
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const guardarCabeceraRol = async (datos) => {
+  const guardarArchivoRol = async (
+    archivo: File,
+    modulo: number,
+    periodo: number,
+  ) => {
     setCargando(true);
     setError(null);
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/rol_cabecera_post",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(datos),
-        },
-      );
+      const formData = new FormData();
+      formData.append("file", archivo);
+      formData.append("modulo", String(modulo));
+      formData.append("periodo", String(periodo));
+
+      const response = await fetch("http://localhost:3000/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.error || `Error: ${response.status}`);
       }
 
       const resultado = await response.json();
       setCargando(false);
       return resultado;
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : "Error desconocido");
       setCargando(false);
       throw err;
     }
   };
 
-  return { guardarCabeceraRol, cargando, error };
+  return {
+    guardarArchivoRol,
+    // Compatibilidad temporal con componentes antiguos.
+    guardarCabeceraRol: guardarArchivoRol,
+    cargando,
+    error,
+  };
 };
