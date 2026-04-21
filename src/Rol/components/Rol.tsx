@@ -1,4 +1,7 @@
 import { TabView, TabPanel } from "primereact/tabview";
+import { Skeleton } from "primereact/skeleton";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 import { FileUpload } from "primereact/fileupload";
 import { Button } from "primereact/button";
 import { Accordion, AccordionTab } from "primereact/accordion";
@@ -36,6 +39,13 @@ const meses: Record<string, number> = {
   NOVIEMBRE: 10,
   DICIEMBRE: 11,
 };
+
+const items = [
+  { code: "1000", name: "Apple", category: "Fruit", quantity: 10 },
+  { code: "1001", name: "Carrot", category: "Vegetable", quantity: 20 },
+  { code: "1002", name: "Banana", category: "Fruit", quantity: 15 },
+  { code: "1003", name: "Broccoli", category: "Vegetable", quantity: 5 },
+];
 
 const normalizarTexto = (texto: string): string =>
   texto
@@ -387,8 +397,33 @@ export const Roles = () => {
             </Accordion>
           </div>
         </TabPanel>
-        <TabPanel header="Editar">
-          <p>Content for editar</p>
+        <TabPanel header="Consultar Roles">
+          <DataTable value={items} className="p-datatable-striped">
+            <Column
+              field="code"
+              header="Code"
+              style={{ width: "25%" }}
+              body={<Skeleton />}
+            ></Column>
+            <Column
+              field="name"
+              header="Name"
+              style={{ width: "25%" }}
+              body={<Skeleton />}
+            ></Column>
+            <Column
+              field="category"
+              header="Category"
+              style={{ width: "25%" }}
+              body={<Skeleton />}
+            ></Column>
+            <Column
+              field="quantity"
+              header="Quantity"
+              style={{ width: "25%" }}
+              body={<Skeleton />}
+            ></Column>
+          </DataTable>
         </TabPanel>
       </TabView>
     </>
