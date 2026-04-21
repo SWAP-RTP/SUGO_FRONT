@@ -1,5 +1,5 @@
 import { TabView, TabPanel } from "primereact/tabview";
-
+import { QRCodeSVG } from "qrcode.react";
 import { Skeleton } from "primereact/skeleton";
 import { Button } from "primereact/button";
 
@@ -50,6 +50,20 @@ export const Hora_Presentacion = () => {
           </div>
         </TabPanel>
       </TabView>
+
+      <div
+        style={{ padding: "20px" }}
+        className="d-flex justify-content-center"
+      >
+        <QRCodeSVG
+          value="https://www.rtp.cdmx.gob.mx/"
+          size={256}
+          bgColor="#ffffff"
+          fgColor="#000000"
+          level="H" // Nivel de corrección de errores (L, M, Q, H)
+          includeMargin={true}
+        />
+      </div>
     </>
   );
 };

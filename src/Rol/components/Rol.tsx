@@ -1,6 +1,6 @@
 import { TabView, TabPanel } from "primereact/tabview";
-import { Skeleton } from "primereact/skeleton";
 import { DataTable } from "primereact/datatable";
+import { Toast } from "primereact/toast";
 import { Column } from "primereact/column";
 import { FileUpload } from "primereact/fileupload";
 import { Button } from "primereact/button";
@@ -24,6 +24,20 @@ interface PeriodoOption {
   fecha_fin: string;
 }
 
+interface FilaRol {
+  id: string;
+  economico: string;
+  sistema: string;
+  primerTurno: string;
+  segundoTurno: string;
+  tercerTurno: string;
+}
+
+interface HojaRolData {
+  nombreHoja: string;
+  filas: FilaRol[];
+}
+
 const meses: Record<string, number> = {
   ENERO: 0,
   FEBRERO: 1,
@@ -39,13 +53,6 @@ const meses: Record<string, number> = {
   NOVIEMBRE: 10,
   DICIEMBRE: 11,
 };
-
-const items = [
-  { code: "1000", name: "Apple", category: "Fruit", quantity: 10 },
-  { code: "1001", name: "Carrot", category: "Vegetable", quantity: 20 },
-  { code: "1002", name: "Banana", category: "Fruit", quantity: 15 },
-  { code: "1003", name: "Broccoli", category: "Vegetable", quantity: 5 },
-];
 
 const normalizarTexto = (texto: string): string =>
   texto
@@ -132,9 +139,182 @@ const mismaFecha = (a: Date, b: Date): boolean =>
   a.getMonth() === b.getMonth() &&
   a.getDate() === b.getDate();
 
+const valorCeldaTexto = (valor: unknown): string => {
+  if (valor === null || valor === undefined) return "";
+  if (typeof valor === "string") return valor.trim();
+  return String(valor).trim();
+};
+
+const contieneTexto = (candidatos: string[], valor: string): boolean =>
+  candidatos.some((texto) => valor.includes(texto));
+
+const detectarEncabezadosRoles = (matriz: unknown[][]) => {
+  for (let filaIndex = 0; filaIndex < matriz.length; filaIndex += 1) {
+    const fila = matriz[filaIndex] ?? [];
+    const celdasNormalizadas = fila.map((celda) =>
+      normalizarTexto(valorCeldaTexto(celda)),
+    );
+
+    let idxNo = -1;
+    let idxEconomico = -1;
+    let idxSistema = -1;
+    let idxPrimerTurno = -1;
+    let idxSegundoTurno = -1;
+    let idxTercerTurno = -1;
+
+    celdasNormalizadas.forEach((texto, colIndex) => {
+      if (idxNo === -1 && contieneTexto(["NO", "NRO", "NUMERO"], texto)) {
+        idxNo = colIndex;
+      }
+
+      if (
+        idxEconomico === -1 &&
+        contieneTexto(["ECONOMICO", "ECONOM."], texto)
+      ) {
+        idxEconomico = colIndex;
+      }
+
+      if (
+        idxSistema === -1 &&
+        contieneTexto(["SISTEMA", "TIPO SISTEMA"], texto)
+      ) {
+        idxSistema = colIndex;
+      }
+
+      if (
+        idxPrimerTurno === -1 &&
+        contieneTexto(["1ER TURNO", "PRIMER TURNO", "1 TURNO"], texto)
+      ) {
+        idxPrimerTurno = colIndex;
+      }
+
+      if (
+        idxSegundoTurno === -1 &&
+        contieneTexto(["2DO TURNO", "SEGUNDO TURNO", "2 TURNO"], texto)
+      ) {
+        idxSegundoTurno = colIndex;
+      }
+
+      if (
+        idxTercerTurno === -1 &&
+        contieneTexto(["3ER TURNO", "TERCER TURNO", "3 TURNO"], texto)
+      ) {
+        idxTercerTurno = colIndex;
+      }
+    });
+
+    if (
+      idxNo !== -1 &&
+      idxEconomico !== -1 &&
+      idxSistema !== -1 &&
+      idxPrimerTurno !== -1 &&
+      idxSegundoTurno !== -1 &&
+      idxTercerTurno !== -1
+    ) {
+      return {
+        filaIndex,
+        idxNo,
+        idxEconomico,
+        idxSistema,
+        idxPrimerTurno,
+        idxSegundoTurno,
+        idxTercerTurno,
+      };
+    }
+  }
+
+  return null;
+};
+
+const extraerFilasRoles = (matriz: unknown[][]): FilaRol[] => {
+  const encabezados = detectarEncabezadosRoles(matriz);
+  if (!encabezados) return [];
+
+  const filas: FilaRol[] = [];
+
+  const esFilaOperativa = (fila: FilaRol): boolean => {
+    const textoCompleto = normalizarTexto(
+      [
+        fila.id,
+        fila.economico,
+        fila.sistema,
+        fila.primerTurno,
+        fila.segundoTurno,
+        fila.tercerTurno,
+      ].join(" "),
+    );
+
+    const bloqueadas = [
+      "JORNADA EXCEPCIONAL",
+      "ELABORO",
+      "CRED",
+      "LUGAR",
+      "HORA DE INICIO",
+      "HORA DE TERMINO",
+      "CONTROLADOR DE TIEMPO",
+    ];
+
+    if (bloqueadas.some((texto) => textoCompleto.includes(texto))) {
+      return false;
+    }
+
+    // El No (id) debe existir y ser numerico para considerarlo una fila valida de operador.
+    return /^\d+$/.test(fila.id);
+  };
+
+  for (
+    let rowIndex = encabezados.filaIndex + 1;
+    rowIndex < matriz.length;
+    rowIndex += 1
+  ) {
+    const fila = matriz[rowIndex] ?? [];
+    const id = valorCeldaTexto(fila[encabezados.idxNo]);
+    const economico = valorCeldaTexto(fila[encabezados.idxEconomico]);
+    const sistema = valorCeldaTexto(fila[encabezados.idxSistema]);
+    const primerTurno = valorCeldaTexto(fila[encabezados.idxPrimerTurno]);
+    const segundoTurno = valorCeldaTexto(fila[encabezados.idxSegundoTurno]);
+    const tercerTurno = valorCeldaTexto(fila[encabezados.idxTercerTurno]);
+
+    if (
+      !id &&
+      !economico &&
+      !sistema &&
+      !primerTurno &&
+      !segundoTurno &&
+      !tercerTurno
+    ) {
+      continue;
+    }
+
+    filas.push({
+      id,
+      economico,
+      sistema,
+      primerTurno,
+      segundoTurno,
+      tercerTurno,
+    });
+
+    const ultimaFila = filas[filas.length - 1];
+    if (!esFilaOperativa(ultimaFila)) {
+      filas.pop();
+    }
+  }
+
+  return filas;
+};
+
+// empieza el componente principal
+
 export const Roles = () => {
+  // alertas
+  const toastBL = useRef<Toast | null>(null);
+  const toastTL = useRef<Toast | null>(null);
+
   const [numHojas, setNumHojas] = useState<number>(0);
   const [nombresHojas, setNombresHojas] = useState<string[]>([]);
+  const [hojasRoles, setHojasRoles] = useState<HojaRolData[]>([]);
+  const [hojasAbiertas, setHojasAbiertas] = useState<string[]>([]);
   const [periodoDetectadoTexto, setPeriodoDetectadoTexto] = useState<
     string | null
   >(null);
@@ -184,31 +364,77 @@ export const Roles = () => {
     );
   }, [rangoPeriodoArchivo, rangoPeriodoSeleccionado]);
 
+  const alternarHoja = (nombreHoja: string) => {
+    setHojasAbiertas((previas) =>
+      previas.includes(nombreHoja)
+        ? previas.filter((hoja) => hoja !== nombreHoja)
+        : [...previas, nombreHoja],
+    );
+  };
+
+  const limpiarLecturaExcel = () => {
+    setNumHojas(0);
+    setNombresHojas([]);
+    setHojasRoles([]);
+    setHojasAbiertas([]);
+    setPeriodoDetectadoTexto(null);
+    setRangoPeriodoArchivo(null);
+    setArchivoSeleccionado(null);
+    fileUploadRef.current?.clear();
+  };
+
   const manejarbuttonGuardar = async () => {
     if (!archivoSeleccionado) {
-      alert("Selecciona un archivo antes de guardar");
+      toastBL.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No has seleccionado un archivo para guardar",
+        life: 4000,
+      });
       return;
     }
 
     if (moduloSeleccionado === null || periodosSeleccionados === null) {
-      alert("Selecciona modulo y periodo antes de guardar");
-      return;
+      toastBL.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail:
+          "Selecciona un modulo y periodo antes de guardar la informacion",
+        life: 4000,
+      });
     }
 
     if (!rangoPeriodoArchivo) {
-      alert(
-        "No se detectó un periodo válido en el archivo (DEL {fecha} AL {fecha})",
-      );
+      toastBL.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail:
+          "No se pudo interpretar el periodo del archivo, asegúrate de que el formato del titulo del periodo sea correcto",
+        life: 4000,
+      });
       return;
     }
 
     if (!rangoPeriodoSeleccionado) {
-      alert("No se pudo interpretar el periodo seleccionado");
+      toastBL.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail:
+          "No se pudo interpretar el periodo seleccionado, asegúrate de que el formato del titulo del periodo sea correcto",
+        life: 4000,
+      });
       return;
     }
 
     if (!periodoCoincideConSeleccion) {
-      alert("El periodo del archivo no coincide con el periodo seleccionado");
+      toastBL.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail:
+          "El periodo del archivo no coincide con el periodo seleccionado",
+        life: 4000,
+      });
+
       return;
     }
 
@@ -219,12 +445,23 @@ export const Roles = () => {
         Number(periodosSeleccionados),
       );
       console.log("Guardadoo:", resultado);
-      alert("Datos guardados exitosamente");
+      toastTL.current?.show({
+        severity: "success",
+        summary: "Éxito",
+        detail: "Datos guardados exitosamente",
+        life: 4000,
+      });
+
       fileUploadRef.current?.clear();
       setArchivoSeleccionado(null);
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al guardar los datos");
+      toastTL.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Error al guardar los datos",
+        life: 4000,
+      });
     }
   };
 
@@ -237,12 +474,22 @@ export const Roles = () => {
     }
 
     try {
-      setArchivoSeleccionado(archivo);
-
       const datos = new Uint8Array(await archivo.arrayBuffer());
       const workbook = XLSX.read(datos, { type: "array" });
-      setNumHojas(workbook.SheetNames.length);
-      setNombresHojas(workbook.SheetNames);
+
+      const detallePorHoja: HojaRolData[] = workbook.SheetNames.map(
+        (nombreHoja) => {
+          const hojaActual = workbook.Sheets[nombreHoja];
+          const matriz = XLSX.utils.sheet_to_json(hojaActual, {
+            header: 1,
+          }) as unknown[][];
+
+          return {
+            nombreHoja,
+            filas: extraerFilasRoles(matriz),
+          };
+        },
+      );
 
       const nombrePrimeraHoja = workbook.SheetNames[0];
       const hoja = workbook.Sheets[nombrePrimeraHoja];
@@ -251,14 +498,62 @@ export const Roles = () => {
       }) as unknown[][];
 
       const tituloPeriodo = extraerTituloPeriodo(hojaMatriz);
-      setPeriodoDetectadoTexto(tituloPeriodo);
-      setRangoPeriodoArchivo(
-        tituloPeriodo ? parseRangoPeriodo(tituloPeriodo) : null,
+      const rangoDetectado = tituloPeriodo
+        ? parseRangoPeriodo(tituloPeriodo)
+        : null;
+
+      const tieneEstructuraRol = detallePorHoja.some(
+        (hojaActual) => hojaActual.filas.length > 0,
       );
+
+      if (!tieneEstructuraRol) {
+        alert(
+          "El archivo Excel no tiene la estructura esperada de roles (No, Economico, Sistema y turnos).",
+        );
+        limpiarLecturaExcel();
+        return;
+      }
+
+      if (!rangoDetectado) {
+        alert("No se detecto un periodo valido en el archivo Excel.");
+        limpiarLecturaExcel();
+        return;
+      }
+
+      if (!rangoPeriodoSeleccionado) {
+        alert("Selecciona un periodo valido antes de cargar el Excel.");
+        limpiarLecturaExcel();
+        return;
+      }
+
+      const coincidePeriodo =
+        mismaFecha(rangoDetectado.inicio, rangoPeriodoSeleccionado.inicio) &&
+        mismaFecha(rangoDetectado.fin, rangoPeriodoSeleccionado.fin);
+
+      if (!coincidePeriodo) {
+        toastBL.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail:
+            "El periodo del archivo no coincide con el periodo seleccionado",
+          life: 4000,
+        });
+        limpiarLecturaExcel();
+        return;
+      }
+
+      setArchivoSeleccionado(archivo);
+      setNumHojas(workbook.SheetNames.length);
+      setNombresHojas(workbook.SheetNames);
+      setHojasRoles(detallePorHoja);
+      setHojasAbiertas([]);
+      setPeriodoDetectadoTexto(tituloPeriodo);
+      setRangoPeriodoArchivo(rangoDetectado);
 
       console.log("✅ Hojas contadas:", workbook.SheetNames.length);
       console.log("✅ Nombres de hojas:", workbook.SheetNames);
       console.log("✅ Periodo detectado:", tituloPeriodo);
+      console.log("✅ Detalle por hoja:", detallePorHoja);
     } catch (error) {
       console.error("Error procesando Excel:", error);
       alert("Error al procesar el archivo");
@@ -267,6 +562,10 @@ export const Roles = () => {
 
   return (
     <>
+      {/* toast */}
+      <Toast ref={toastBL} position="bottom-left" />;
+      <Toast ref={toastTL} position="top-left" />
+      {/* fin de toast */}
       <TabView>
         <TabPanel header="Carga de Roles">
           <div className="container">
@@ -324,7 +623,7 @@ export const Roles = () => {
                 <Button
                   label="Guardar"
                   icon="pi pi-check"
-                  severity="info"
+                  severity="success"
                   onClick={manejarbuttonGuardar}
                   loading={cargando}
                   disabled={cargando}
@@ -338,14 +637,9 @@ export const Roles = () => {
                   icon="pi pi-trash"
                   severity="danger"
                   onClick={() => {
-                    setNumHojas(0);
-                    setNombresHojas([]);
-                    setPeriodoDetectadoTexto(null);
-                    setRangoPeriodoArchivo(null);
-                    setArchivoSeleccionado(null);
+                    limpiarLecturaExcel();
                     setModuloSeleccionado(null);
                     setPeriodos(null);
-                    fileUploadRef.current?.clear();
                   }}
                   style={{ height: "100%" }}
                 />
@@ -377,53 +671,120 @@ export const Roles = () => {
                         : "No coincide con el seleccionado"}
                     </p>
                   )}
-                  {nombresHojas.length > 0 ? (
-                    <div>
-                      <strong>Nombres de las hojas:</strong>
-                      <ul>
-                        {nombresHojas.map((nombre, index) => (
-                          <li key={index}>{nombre}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : (
+                  {nombresHojas.length === 0 && (
                     <p>
                       Sube un archivo Excel para extraer la información
                       principal
                     </p>
                   )}
+
+                  {hojasRoles.length > 0 && (
+                    <div className="mt-4">
+                      <strong>Rutas/Hojas:</strong>
+                      <div
+                        className="d-flex flex-column mt-2"
+                        style={{ gap: "8px" }}
+                      >
+                        {hojasRoles.map((hoja) => {
+                          const abierta = hojasAbiertas.includes(
+                            hoja.nombreHoja,
+                          );
+
+                          return (
+                            <div
+                              key={hoja.nombreHoja}
+                              style={{
+                                border: "1px solid #d9d9d9",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              <div
+                                className="d-flex justify-content-between align-items-center p-2"
+                                style={{
+                                  background: "#f8f9fa",
+                                  borderRadius: "8px 8px 0 0",
+                                }}
+                              >
+                                <div>
+                                  <strong>{hoja.nombreHoja}</strong>
+                                  <span
+                                    style={{
+                                      marginLeft: "8px",
+                                      color: "#64748b",
+                                    }}
+                                  >
+                                    ({hoja.filas.length} registros)
+                                  </span>
+                                </div>
+
+                                <Button
+                                  type="button"
+                                  icon={abierta ? "pi pi-minus" : "pi pi-plus"}
+                                  rounded
+                                  text
+                                  aria-label={`Expandir hoja ${hoja.nombreHoja}`}
+                                  onClick={() => alternarHoja(hoja.nombreHoja)}
+                                />
+                              </div>
+
+                              {abierta && (
+                                <div className="p-2">
+                                  {hoja.filas.length > 0 ? (
+                                    <DataTable
+                                      value={hoja.filas}
+                                      size="small"
+                                      stripedRows
+                                      showGridlines
+                                    >
+                                      <Column
+                                        field="id"
+                                        header="No"
+                                        style={{ minWidth: "90px" }}
+                                      />
+                                      <Column
+                                        field="economico"
+                                        header="Economico"
+                                        style={{ minWidth: "120px" }}
+                                      />
+                                      <Column
+                                        field="sistema"
+                                        header="Sistema"
+                                        style={{ minWidth: "120px" }}
+                                      />
+                                      <Column
+                                        field="primerTurno"
+                                        header="1er Turno"
+                                        style={{ minWidth: "120px" }}
+                                      />
+                                      <Column
+                                        field="segundoTurno"
+                                        header="2do Turno"
+                                        style={{ minWidth: "120px" }}
+                                      />
+                                      <Column
+                                        field="tercerTurno"
+                                        header="3er Turno"
+                                        style={{ minWidth: "120px" }}
+                                      />
+                                    </DataTable>
+                                  ) : (
+                                    <p className="mb-0">
+                                      No se detectaron columnas de roles en esta
+                                      hoja.
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </AccordionTab>
             </Accordion>
           </div>
-        </TabPanel>
-        <TabPanel header="Consultar Roles">
-          <DataTable value={items} className="p-datatable-striped">
-            <Column
-              field="code"
-              header="Code"
-              style={{ width: "25%" }}
-              body={<Skeleton />}
-            ></Column>
-            <Column
-              field="name"
-              header="Name"
-              style={{ width: "25%" }}
-              body={<Skeleton />}
-            ></Column>
-            <Column
-              field="category"
-              header="Category"
-              style={{ width: "25%" }}
-              body={<Skeleton />}
-            ></Column>
-            <Column
-              field="quantity"
-              header="Quantity"
-              style={{ width: "25%" }}
-              body={<Skeleton />}
-            ></Column>
-          </DataTable>
         </TabPanel>
       </TabView>
     </>
