@@ -1,5 +1,17 @@
 import { useState } from "react";
 
+interface HojaRolData {
+  nombreHoja: string;
+  filas: Array<{
+    id: string;
+    economico: string;
+    sistema: string;
+    primerTurno: string;
+    segundoTurno: string;
+    tercerTurno: string;
+  }>;
+}
+
 export const useRolesGuardar = () => {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -8,6 +20,7 @@ export const useRolesGuardar = () => {
     archivo: File,
     modulo: number,
     periodo: number,
+    hojasRoles?: HojaRolData[],
   ) => {
     setCargando(true);
     setError(null);
@@ -17,6 +30,10 @@ export const useRolesGuardar = () => {
       formData.append("file", archivo);
       formData.append("modulo", String(modulo));
       formData.append("periodo", String(periodo));
+
+      if (hojasRoles) {
+        formData.append("hojasRoles", JSON.stringify(hojasRoles));
+      }
 
       const response = await fetch("http://localhost:3000/api/upload", {
         method: "POST",

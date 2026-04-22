@@ -443,17 +443,19 @@ export const Roles = () => {
         archivoSeleccionado,
         Number(moduloSeleccionado),
         Number(periodosSeleccionados),
+        hojasRoles,
       );
       console.log("Guardadoo:", resultado);
       toastTL.current?.show({
         severity: "success",
         summary: "Éxito",
-        detail: "Datos guardados exitosamente",
+        detail: `Datos guardados exitosamente: ${resultado.turnos_guardados || 0} turnos guardados`,
         life: 4000,
       });
 
       fileUploadRef.current?.clear();
       setArchivoSeleccionado(null);
+      limpiarLecturaExcel();
     } catch (error) {
       console.error("Error:", error);
       toastTL.current?.show({
@@ -563,7 +565,7 @@ export const Roles = () => {
   return (
     <>
       {/* toast */}
-      <Toast ref={toastBL} position="bottom-left" />;
+      <Toast ref={toastBL} position="bottom-left" />
       <Toast ref={toastTL} position="top-left" />
       {/* fin de toast */}
       <TabView>
