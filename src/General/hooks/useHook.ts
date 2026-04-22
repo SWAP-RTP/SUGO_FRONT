@@ -13,7 +13,7 @@ export const useHook_General = () => {
   const { modalidadesOptions } = useModalidades();
   const { rutasOptions } = useRutas();
   const { motivosOptionsRecepcion } = useMotivoRecepcion();
-  const { periodosOptions } = usePeriodos();
+  const { periodosOptions, periodoPorDefecto } = usePeriodos();
   const date = useDate();
 
   return {
@@ -24,5 +24,6 @@ export const useHook_General = () => {
     date,
     motivosOptionsRecepcion,
     periodosOptions,
+    periodoPorDefecto,
   };
 };

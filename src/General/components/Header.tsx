@@ -15,6 +15,11 @@ export const Header = () => {
       command: () => navigate("/rol"),
     },
     {
+      label: "Hora de Presentacion",
+      icon: "pi pi-fw pi-pencil",
+      command: () => navigate("/presentacion"),
+    },
+    {
       label: "Despacho",
       icon: "pi pi-fw pi-home",
       command: () => navigate("/despacho"),
@@ -23,11 +28,6 @@ export const Header = () => {
       label: "Recepcion",
       icon: "pi pi-fw pi-calendar",
       command: () => navigate("/recepcion"),
-    },
-    {
-      label: "Hora de Presentacion",
-      icon: "pi pi-fw pi-pencil",
-      command: () => navigate("/presentacion"),
     },
     {
       label: "Mantenimiento",
