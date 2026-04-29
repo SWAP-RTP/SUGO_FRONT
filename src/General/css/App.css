@@ -8,6 +8,7 @@
   --text-gray: #928f8f;
   --azul-claro: #cae6fc;
   --verde-claro: #d4ecd5;
+  --rojo-oscuro: #b71c1c;
 }
 
 /* =========================================
@@ -213,4 +214,48 @@
   color: var(--text-gray);
   margin-bottom: 1rem;
   font-weight: bold;
+}
+
+/* error de conexion */
+
+
+.error-conexion {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
+.error-conexion h1 {
+  font-size: 1.9rem;
+  margin-bottom: 0.5rem;
+   font-family: "Montserrat", sans-serif;
+   font-weight: bold;
+   color: var(--text-gray);
+
+}
+
+@keyframes shake-error {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-5px);
+  }
+  40%, 80% {
+    transform: translateX(5px);
+  }
+  50% {
+    transform: scale(1.1);
+    color: #e74c3c; /* Un rojo más intenso al vibrar */
+  }
+}
+
+.icons {
+  font-size: 2rem;
+  color: var(--rojo-oscuro);
+  margin-bottom: 0.5rem;
+animation: shake-error 0.5s ease-in-out infinite;
+
 }
