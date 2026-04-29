@@ -15,6 +15,8 @@ import { Card_Eco } from "../../General/components/Card_Eco";
 // UTILS
 import { crearPvEstadoPayload } from "../../General/utils/crearPvEstadoPayload";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // Estado inicial consolidado
 const FORMULARIO_INICIAL = {
   selectModulo: null,
@@ -34,15 +36,15 @@ export const FormularioDespacho = () => {
   // hooks para obtener opciones de modulos y motivos
   const { modulosOptions, motivosOptions, date } = useHook_General();
   const { guardarModulo } = usePeticiones();
-  const [formularioData, setFormularioData] = useState(FORMULARIO_INICIAL);
+  const [formularioData, setFormularioData] = useState<any>(FORMULARIO_INICIAL);
   const [pvEstados, setPvEstados] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [ecoEncontrado, setecoEncontrado] = useState<any>(null);
   const toast = useRef<Toast>(null);
 
   //LIMPIEZA DE LA FECHA Y HORA
-  const formatearFecha = (fecha) => {
+  const formatearFecha = (fecha: any) => {
     if (!fecha) return "---";
     return new Date(fecha).toLocaleString("es-MX", {
       day: "2-digit",
@@ -57,7 +59,7 @@ export const FormularioDespacho = () => {
     { title: "ECO", data: "eco", responsivePriority: 1 },
     { title: "MODULO", data: "modulo", responsivePriority: 2 },
     { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
-    { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data) => formatearFecha(data) },
+    { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data: any) => formatearFecha(data) },
     { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
     { title: "RUTA", data: "ruta", responsivePriority: 7 },
@@ -150,7 +152,7 @@ export const FormularioDespacho = () => {
   //HANDLER ELIMINAR 
   const handleEliminar = useCallback(async (rowData: any) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/pv_estados/${rowData.id}`, {
+      const response = await fetch(`${API_URL}/pv_estados/${rowData.id}`, {
         method: "DELETE",
       });
       if (response.ok) {

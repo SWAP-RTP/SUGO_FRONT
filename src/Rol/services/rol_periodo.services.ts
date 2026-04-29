@@ -1,6 +1,8 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const obtenerPeriodos = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/periodos");
+    const response = await fetch(`${API_URL}/periodos`);
     if (!response.ok) {
       throw new Error(`Error al obtener los periodos: ${response.statusText}`);
     }
