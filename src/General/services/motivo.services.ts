@@ -1,6 +1,10 @@
+
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const obtenerMotivos = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/motivos");
+    const response = await fetch(`${API_URL}/motivos`);
     if (!response.ok) {
       throw new Error(`Error al obtener los motivos: ${response.statusText}`);
     }
@@ -14,7 +18,7 @@ export const obtenerMotivos = async () => {
 
 export const obtenerMotivosRecepcion = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/motivosRecepcion");
+    const response = await fetch(`${API_URL}/motivosRecepcion`);
     if (!response.ok) {
       throw new Error(`Error al obtener los motivos: ${response.statusText}`);
     }

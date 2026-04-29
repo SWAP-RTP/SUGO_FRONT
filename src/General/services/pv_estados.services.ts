@@ -1,6 +1,9 @@
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const obtenerPvEstados = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/pv_estados");
+    const response = await fetch(`${API_URL}/pv_estados`);
     if (!response.ok) {
       throw new Error(`Error al obtener los estados: ${response.statusText}`);
     }
@@ -14,7 +17,7 @@ export const obtenerPvEstados = async () => {
 
 export const obtenerPvEstados_Recepcion = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/pv_estados_Recepcion");
+    const response = await fetch(`${API_URL}/pv_estados_Recepcion`);
     if (!response.ok) {
       throw new Error(`Error al obtener los estados de recepcion: ${response.statusText}`);
     }
