@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 
 export const Header = () => {
+
+  const nombre = ['GERARDO RAMIREZ ALCANTARA']
   // uso del hook useNavigate para la navegación programática entre rutas
   const navigate = useNavigate();
 
@@ -43,6 +45,17 @@ export const Header = () => {
   const end = (
     <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
       {/* Icono de usuario */}
+      <span
+        style={{
+          fontSize: "1.25rem",
+          color: "#868181ff",
+          fontWeight: "bold",
+          fontFamily: "'Segoe UI', sans-serif",
+          textTransform: "uppercase",
+        }}
+      >
+        {nombre}
+      </span>
       <i className="pi pi-user" style={{ fontSize: "1.25rem" }}></i>
 
       {/* Botón de cerrar sesión con tooltip */}
