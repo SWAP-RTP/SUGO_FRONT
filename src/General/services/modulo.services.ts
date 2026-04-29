@@ -11,3 +11,4 @@ export const obtenerModulos = async () => {
     throw error;
   }
 };
+ 
