@@ -4,6 +4,8 @@ import { useDate } from "./useDate";
 import { useModalidades } from "./useModalidades";
 import { useRutas } from "./useRutas";
 import { useMotivoRecepcion } from "./useMotivo";
+// Hook proveniente de ROL
+import { usePeriodos } from "../../Rol/hooks/usePeriodos";
 
 export const useHook_General = () => {
   const { modulosOptions } = useModulos();
@@ -11,7 +13,7 @@ export const useHook_General = () => {
   const { modalidadesOptions } = useModalidades();
   const { rutasOptions } = useRutas();
   const { motivosOptionsRecepcion } = useMotivoRecepcion();
-
+  const { periodosOptions, periodoPorDefecto } = usePeriodos();
   const date = useDate();
 
   return {
@@ -20,6 +22,8 @@ export const useHook_General = () => {
     modalidadesOptions,
     rutasOptions,
     date,
-    motivosOptionsRecepcion
+    motivosOptionsRecepcion,
+    periodosOptions,
+    periodoPorDefecto,
   };
 };
