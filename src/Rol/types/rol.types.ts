@@ -17,6 +17,13 @@ export interface FilaRol {
   primerTurno: string;
   segundoTurno: string;
   tercerTurno: string;
+  lunes: string;
+  martes: string;
+  miercoles: string;
+  jueves: string;
+  viernes: string;
+  sabado: string;
+  domingo: string;
 }
 
 export interface FilaTurnosLV {

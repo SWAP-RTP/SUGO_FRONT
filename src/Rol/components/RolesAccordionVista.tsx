@@ -84,6 +84,13 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
                                 <Column field="primerTurno" header="1er Turno" style={{ minWidth: "120px" }} />
                                 <Column field="segundoTurno" header="2do Turno" style={{ minWidth: "120px" }} />
                                 <Column field="tercerTurno" header="3er Turno" style={{ minWidth: "120px" }} />
+                                <Column field="lunes" header="L" style={{ minWidth: "40px" }} align="center" />
+                                <Column field="martes" header="M" style={{ minWidth: "40px" }} align="center" />
+                                <Column field="miercoles" header="X" style={{ minWidth: "40px" }} align="center" />
+                                <Column field="jueves" header="J" style={{ minWidth: "40px" }} align="center" />
+                                <Column field="viernes" header="V" style={{ minWidth: "40px" }} align="center" />
+                                <Column field="sabado" header="S" style={{ minWidth: "40px" }} align="center" />
+                                <Column field="domingo" header="D" style={{ minWidth: "40px" }} align="center" />
                               </DataTable>
                             ) : (
                               <p className="mb-0">
