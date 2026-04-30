@@ -12,6 +12,7 @@ import { Servicio } from "./Servicio";
 import { Datatables } from "../../General/components/Datatables";
 import { obtenerPvEstados } from "../../General/services/pv_estados.services";
 import { Card_Eco } from "../../General/components/Card_Eco";
+import { Catalogo_economicos } from "./catalogo_economicos";
 // UTILS
 import { crearPvEstadoPayload } from "../../General/utils/crearPvEstadoPayload";
 
@@ -36,15 +37,15 @@ export const FormularioDespacho = () => {
   // hooks para obtener opciones de modulos y motivos
   const { modulosOptions, motivosOptions, date } = useHook_General();
   const { guardarModulo } = usePeticiones();
-  const [formularioData, setFormularioData] = useState<any>(FORMULARIO_INICIAL);
+  const [formularioData, setFormularioData] = useState(FORMULARIO_INICIAL);
   const [pvEstados, setPvEstados] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [ecoEncontrado, setecoEncontrado] = useState<any>(null);
   const toast = useRef<Toast>(null);
 
   //LIMPIEZA DE LA FECHA Y HORA
-  const formatearFecha = (fecha: any) => {
+  const formatearFecha = (fecha) => {
     if (!fecha) return "---";
     return new Date(fecha).toLocaleString("es-MX", {
       day: "2-digit",
@@ -59,7 +60,7 @@ export const FormularioDespacho = () => {
     { title: "ECO", data: "eco", responsivePriority: 1 },
     { title: "MODULO", data: "modulo", responsivePriority: 2 },
     { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
-    { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data: any) => formatearFecha(data) },
+    { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data) => formatearFecha(data) },
     { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
     { title: "RUTA", data: "ruta", responsivePriority: 7 },
@@ -183,11 +184,16 @@ export const FormularioDespacho = () => {
 
   return (
     <>
-      {loading && <p className="text-center">Cargando datos...</p>}
-      {error && <p className="text-center text-danger">{error}</p>}
+      {/* {loading && <p className="text-center">Cargando datos...</p>} */}
+      {/* {error && <p className="text-center text-danger">{error}</p>} */}
       <Toast ref={toast} style={{ margin: 25 }} />
       <TabView>
         <TabPanel className="tabpanel" header="Despacho">
+          <div className="catalogos">
+            <Catalogo_economicos /> 
+          </div>
+
+
           <div className="despacho-contenedor d-flex flex-wrap justify-content-center align-items-start gap-4">
             {ecoEncontrado && <Card_Eco data={ecoEncontrado} />}
             <div className="card">
