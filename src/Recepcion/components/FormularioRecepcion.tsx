@@ -36,16 +36,16 @@ export const FormularioRecepcion = () => {
   //HOOKS USADOS EN EL COMPONENTE
   const { guardarModulo } = usePeticiones();
   const { modulosOptions, motivosOptionsRecepcion, date } = useHook_General();
-  const [formularioData, setformularioData] = useState<any>(FormularioInicial);
+  const [formularioData, setformularioData] = useState(FormularioInicial);
   const [pvEstados, setPvEstados] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [ecoEncontrado, setecoEncontrado] = useState<any>(null);
   const toast = useRef<Toast>(null);
 
 
   //LIMPIEZA DE LA FECHA Y HORA
-  const formatearFecha = (fecha: any) => {
+  const formatearFecha = (fecha) => {
     if (!fecha) return "---";
     return new Date(fecha).toLocaleString("es-MX", {
       day: "2-digit",
@@ -61,7 +61,7 @@ export const FormularioRecepcion = () => {
     { title: "ECO", data: "eco", responsivePriority: 1 },
     { title: "MODULO", data: "modulo", responsivePriority: 2 },
     { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
-    { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data: any) => formatearFecha(data) },
+    { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data) => formatearFecha(data) },
     { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
     { title: "RUTA", data: "ruta", responsivePriority: 7 },

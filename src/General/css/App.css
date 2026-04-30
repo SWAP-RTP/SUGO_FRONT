@@ -256,6 +256,17 @@
   font-size: 2rem;
   color: var(--rojo-oscuro);
   margin-bottom: 0.5rem;
-animation: shake-error 0.5s ease-in-out infinite;
+  animation: shake-error 0.5s ease-in-out infinite;
+
+}
+
+
+/* modal catalogo */
+
+.menu_modal {
+  background-color: #fcfcfc56;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  padding: .5rem;
 
 }

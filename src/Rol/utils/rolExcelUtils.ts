@@ -142,6 +142,14 @@ export const detectarEncabezadosRoles = (matriz: unknown[][]) => {
     let idxSegundoTurno = -1;
     let idxTercerTurno = -1;
 
+    let idxLunes = -1;
+    let idxMartes = -1;
+    let idxMiercoles = -1;
+    let idxJueves = -1;
+    let idxViernes = -1;
+    let idxSabado = -1;
+    let idxDomingo = -1;
+
     celdasNormalizadas.forEach((texto, colIndex) => {
       if (idxNo === -1 && contieneTexto(["NO", "NRO", "NUMERO"], texto)) {
         idxNo = colIndex;
@@ -181,7 +189,30 @@ export const detectarEncabezadosRoles = (matriz: unknown[][]) => {
       ) {
         idxTercerTurno = colIndex;
       }
+
+      if (idxLunes === -1 && (contieneTexto(["LUNES", "LUN"], texto) || texto === "L")) idxLunes = colIndex;
+      if (idxMartes === -1 && (contieneTexto(["MARTES", "MAR"], texto) || texto === "M" || texto === "MA")) idxMartes = colIndex;
+      if (idxMiercoles === -1 && (contieneTexto(["MIERCOLES", "MIE"], texto) || texto === "X" || texto === "MI")) idxMiercoles = colIndex;
+      if (texto === "M" && idxMartes !== -1 && idxMartes !== colIndex && idxMiercoles === -1) idxMiercoles = colIndex;
+      if (idxJueves === -1 && (contieneTexto(["JUEVES", "JUE"], texto) || texto === "J")) idxJueves = colIndex;
+      if (idxViernes === -1 && (contieneTexto(["VIERNES", "VIE"], texto) || texto === "V")) idxViernes = colIndex;
+      if (idxSabado === -1 && (contieneTexto(["SABADO", "SAB"], texto) || texto === "S")) idxSabado = colIndex;
+      if (idxDomingo === -1 && (contieneTexto(["DOMINGO", "DOM"], texto) || texto === "D")) idxDomingo = colIndex;
     });
+
+    // Fallback: Si aún no se encuentran, buscar en toda la matriz la fila que contenga los días
+    if (idxLunes === -1 || idxMartes === -1) {
+      // Intentamos asumir que están inmediatamente después del 3er Turno, si es que existen
+      if (idxTercerTurno !== -1) {
+        idxLunes = idxTercerTurno + 1;
+        idxMartes = idxTercerTurno + 2;
+        idxMiercoles = idxTercerTurno + 3;
+        idxJueves = idxTercerTurno + 4;
+        idxViernes = idxTercerTurno + 5;
+        idxSabado = idxTercerTurno + 6;
+        idxDomingo = idxTercerTurno + 7;
+      }
+    }
 
     if (
       idxNo !== -1 &&
@@ -199,6 +230,13 @@ export const detectarEncabezadosRoles = (matriz: unknown[][]) => {
         idxPrimerTurno,
         idxSegundoTurno,
         idxTercerTurno,
+        idxLunes,
+        idxMartes,
+        idxMiercoles,
+        idxJueves,
+        idxViernes,
+        idxSabado,
+        idxDomingo,
       };
     }
   }
@@ -255,6 +293,14 @@ export const extraerFilasRoles = (matriz: unknown[][]): FilaRol[] => {
     const segundoTurno = valorCeldaTexto(fila[encabezados.idxSegundoTurno]);
     const tercerTurno = valorCeldaTexto(fila[encabezados.idxTercerTurno]);
 
+    const lunes = encabezados.idxLunes !== -1 ? valorCeldaTexto(fila[encabezados.idxLunes]) : "";
+    const martes = encabezados.idxMartes !== -1 ? valorCeldaTexto(fila[encabezados.idxMartes]) : "";
+    const miercoles = encabezados.idxMiercoles !== -1 ? valorCeldaTexto(fila[encabezados.idxMiercoles]) : "";
+    const jueves = encabezados.idxJueves !== -1 ? valorCeldaTexto(fila[encabezados.idxJueves]) : "";
+    const viernes = encabezados.idxViernes !== -1 ? valorCeldaTexto(fila[encabezados.idxViernes]) : "";
+    const sabado = encabezados.idxSabado !== -1 ? valorCeldaTexto(fila[encabezados.idxSabado]) : "";
+    const domingo = encabezados.idxDomingo !== -1 ? valorCeldaTexto(fila[encabezados.idxDomingo]) : "";
+
     if (
       !id &&
       !economico &&
@@ -273,6 +319,13 @@ export const extraerFilasRoles = (matriz: unknown[][]): FilaRol[] => {
       primerTurno,
       segundoTurno,
       tercerTurno,
+      lunes,
+      martes,
+      miercoles,
+      jueves,
+      viernes,
+      sabado,
+      domingo,
     });
 
     const ultimaFila = filas[filas.length - 1];
