@@ -3,6 +3,7 @@ import { Toast } from "primereact/toast";
 import { useRolesExcel } from "../hooks/useRolesExcel";
 import { RolesCargaFiltros } from "./RolesCargaFiltros";
 import { RolesAccordionVista } from "./RolesAccordionVista";
+import EditarRol from "./EditarRol";
 import "../css/rol.css";
 
 export const Roles = () => {
@@ -23,8 +24,7 @@ export const Roles = () => {
           <RolesAccordionVista states={states} actions={actions} />
         </TabPanel>
         <TabPanel header="Editar de Roles">
-
-          <h3>dsfsfsd</h3>
+          <EditarRol />
         </TabPanel>
         <TabPanel header="Consultar de Roles"></TabPanel>
       </TabView>
