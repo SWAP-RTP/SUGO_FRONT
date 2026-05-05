@@ -39,6 +39,13 @@ export const Header = ({ user, onLogout }: any) => {
   // Referencia para el botón de cerrar sesión (logout)
   const logoutBtnRef = useRef(null);
 
+  const today = new Date().toLocaleDateString("es-MX", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   // Elementos que se mostrarán al final (lado derecho) del Menubar
   const end = (
     <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
@@ -73,6 +80,17 @@ export const Header = ({ user, onLogout }: any) => {
             }}
           >
             Módulo: {user?.modulo || "No asignado"}
+          </span>
+          <span
+            style={{
+              fontSize: "0.85rem",
+              color: "#868181ff",
+              fontFamily: "'Segoe UI', sans-serif",
+              textTransform: "capitalize",
+              margin: 0,
+            }}
+          >
+            {today}
           </span>
         </div>
       </div>
