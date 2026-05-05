@@ -92,3 +92,22 @@ export const GuardarTurnoEditado = async (turno: any) => {
     throw error;
   }
 };
+
+export const EjecutarCierreDia = async () => {
+  try {
+    const response = await fetch(`${API_URL}/cierre_dia`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Error al ejecutar cierre de día: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error en EjecutarCierreDia:", error);
+    throw error;
+  }
+};

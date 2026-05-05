@@ -6,8 +6,9 @@ import { Column } from 'primereact/column'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputText } from 'primereact/inputtext'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { useRolEditar } from '../hooks/useRolEditar'
-import { GuardarTurnoEditado } from '../services/rol_periodo.services'
+import { GuardarTurnoEditado, EjecutarCierreDia } from '../services/rol_periodo.services'
 
 export default function EditarRol() {
     const { turnosAgrupados, refetch } = useRolEditar();
@@ -15,6 +16,7 @@ export default function EditarRol() {
     // Estados locales para la UI
     const [sidebarVisible, setSidebarVisible] = useState(false);
     const [turnoSeleccionado, setTurnoSeleccionado] = useState<any>(null);
+    const [cierreLoading, setCierreLoading] = useState(false);
 
     const actionTemplate = useCallback((rowData: any) => {
         return (
@@ -59,7 +61,34 @@ export default function EditarRol() {
         }
     };
 
-    // Memoizamos el acordeón completo y sus tablas para que NO se vuelvan a renderizar 
+    const handleCierreDia = async () => {
+        try {
+            setCierreLoading(true);
+            const resultado = await EjecutarCierreDia();
+            console.log("Cierre de día ejecutado:", resultado);
+            // Refrescar datos para traer el nuevo lote
+            await refetch();
+        } catch (error) {
+            console.error("Error al ejecutar cierre de día:", error);
+            alert("Error al ejecutar el cierre de día. Intente nuevamente.");
+        } finally {
+            setCierreLoading(false);
+        }
+    };
+
+    const confirmarCierreDia = () => {
+        confirmDialog({
+            message: '¿Está seguro de ejecutar el cierre de día? Esta acción no se pude deshacer.',
+            header: 'Confirmar Cierre de Día',
+            icon: 'pi pi-exclamation-triangle',
+            acceptClassName: 'p-button-danger',
+            acceptLabel: 'Sí, ejecutar cierre',
+            rejectLabel: 'Cancelar',
+            accept: handleCierreDia,
+        });
+    };
+
+    // Memorizamos el acordeón completo y sus tablas para que NO se vuelvan a renderizar 
     // cuando el usuario escribe en los inputs del modal (lo cual cambia el estado turnoSeleccionado)
     const memoizedAccordion = useMemo(() => {
         return (
@@ -94,7 +123,18 @@ export default function EditarRol() {
 
     return (
         <div className="p-4">
-            <h2 className="text-2xl font-bold mb-4 text-center">ROLES POR UNIDAD</h2>
+            <ConfirmDialog />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h2 className="text-2xl font-bold text-left" style={{ margin: 0 }}>ROLES POR UNIDAD</h2>
+                <Button
+                    label="CIERRE DE DÍA"
+                    icon="pi pi-lock"
+                    severity="danger"
+                    onClick={confirmarCierreDia}
+                    loading={cierreLoading}
+                    style={{ fontWeight: 'bold' }}
+                />
+            </div>
             {memoizedAccordion}
 
             <Dialog
