@@ -11,7 +11,7 @@ export const Roles = () => {
   return (
     <>
       <Toast ref={refs.toastBL} position="bottom-left" />
-      <Toast ref={refs.toastTL} position="top-left" />
+      <Toast ref={refs.toastTL} position="top-center" />
       <TabView>
         <TabPanel header="Carga de Roles">
           <RolesCargaFiltros

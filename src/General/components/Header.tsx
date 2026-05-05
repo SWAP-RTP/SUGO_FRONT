@@ -3,9 +3,7 @@ import { Tooltip } from "primereact/tooltip";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 
-export const Header = () => {
-
-  const nombre = ['GERARDO RAMIREZ ALCANTARA']
+export const Header = ({ user, onLogout }: any) => {
   // uso del hook useNavigate para la navegación programática entre rutas
   const navigate = useNavigate();
 
@@ -43,42 +41,71 @@ export const Header = () => {
 
   // Elementos que se mostrarán al final (lado derecho) del Menubar
   const end = (
-    <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-      {/* Icono de usuario */}
-      <span
-        style={{
-          fontSize: "1.25rem",
-          color: "#868181ff",
-          fontWeight: "bold",
-          fontFamily: "'Segoe UI', sans-serif",
-          textTransform: "uppercase",
-        }}
-      >
-        {nombre}
-      </span>
-      <i className="pi pi-user" style={{ fontSize: "1.25rem" }}></i>
+    <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
+      {/* Información del usuario y módulo */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <i
+          className="pi pi-user"
+          style={{ fontSize: "1.3rem", color: "#868181ff" }}
+        ></i>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}
+        >
+          <span
+            style={{
+              fontSize: "0.95rem",
+              color: "#868181ff",
+              fontWeight: "600",
+              fontFamily: "'Segoe UI', sans-serif",
+              textTransform: "uppercase",
+              margin: 0,
+            }}
+          >
+            {user?.name || "Dev"}
+          </span>
+          <span
+            style={{
+              fontSize: "1.1rem",
+              color: "#085525",
+              fontWeight: "500",
+              fontFamily: "'Segoe UI', sans-serif",
+              margin: 0,
+            }}
+          >
+            Módulo: {user?.modulo || "No asignado"}
+          </span>
+        </div>
+      </div>
 
       {/* Botón de cerrar sesión con tooltip */}
-      <button
+      {/* <button
         ref={logoutBtnRef}
+        onClick={onLogout}
         style={{
           background: "none",
           border: "none",
           cursor: "pointer",
-          padding: 0,
-          marginRight: "0.5rem",
+          padding: "0.5rem",
+          borderRadius: "4px",
+          transition: "background-color 0.3s ease",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.backgroundColor = "rgba(76, 175, 80, 0.1)")
+        }
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "none")}
         title="Cerrar sesión"
         aria-label="Cerrar sesión"
-        data-pr-tooltip="Cerrar sesión" // Texto del tooltip
+        className="logout-btn"
+        data-pr-tooltip="Cerrar sesión"
       >
-        {/* Icono de cerrar sesión */}
         <i
           className="pi pi-sign-out"
           style={{ fontSize: "1.2rem", color: "#4caf50" }}
         ></i>
-      </button>
-      {/* Tooltip de PrimeReact asociado al botón de cerrar sesión */}
+      </button> */}
       <Tooltip
         target=".logout-btn"
         position="bottom"

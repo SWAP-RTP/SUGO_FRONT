@@ -16,6 +16,8 @@ import { Catalogo_economicos } from "./catalogo_economicos";
 // UTILS
 import { crearPvEstadoPayload } from "../../General/utils/crearPvEstadoPayload";
 
+
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 // Estado inicial consolidado
@@ -189,6 +191,7 @@ export const FormularioDespacho = () => {
       <Toast ref={toast} style={{ margin: 25 }} />
       <TabView>
         <TabPanel className="tabpanel" header="Despacho">
+
           <div className="catalogos">
             <Catalogo_economicos /> 
           </div>
