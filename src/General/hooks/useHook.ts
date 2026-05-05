@@ -7,6 +7,9 @@ import { useMotivoRecepcion } from "./useMotivo";
 // Hook proveniente de ROL
 import { usePeriodos } from "../../Rol/hooks/usePeriodos";
 
+// hook proveniente de DESPACHO
+import { useEcoDisponibles } from "../../Despacho/hooks/useEconomicos"; 
+
 export const useHook_General = () => {
   const { modulosOptions } = useModulos();
   const { motivosOptions } = useMotivo();
@@ -14,6 +17,7 @@ export const useHook_General = () => {
   const { rutasOptions } = useRutas();
   const { motivosOptionsRecepcion } = useMotivoRecepcion();
   const { periodosOptions, periodoPorDefecto } = usePeriodos();
+  const { ecoDisponibles } = useEcoDisponibles();
   const date = useDate();
 
   return {
@@ -25,5 +29,6 @@ export const useHook_General = () => {
     motivosOptionsRecepcion,
     periodosOptions,
     periodoPorDefecto,
+    ecoDisponibles,
   };
 };
