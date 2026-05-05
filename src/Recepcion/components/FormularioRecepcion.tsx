@@ -217,7 +217,7 @@ export const FormularioRecepcion = () => {
                     id="eco"
                     className="select"
                     value={formularioData.eco}
-                    onChange={(e) => handleEcoChange(e.target.value)} 
+                    onChange={(e) => handleEcoChange(e.target.value)}
                   />
                   <label htmlFor="eco">Economico</label>
                 </span>
