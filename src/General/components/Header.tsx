@@ -94,36 +94,6 @@ export const Header = ({ user, onLogout }: any) => {
           </span>
         </div>
       </div>
-
-      {/* Botón de cerrar sesión con tooltip */}
-      {/* <button
-        ref={logoutBtnRef}
-        onClick={onLogout}
-        style={{
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          padding: "0.5rem",
-          borderRadius: "4px",
-          transition: "background-color 0.3s ease",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.backgroundColor = "rgba(76, 175, 80, 0.1)")
-        }
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "none")}
-        title="Cerrar sesión"
-        aria-label="Cerrar sesión"
-        className="logout-btn"
-        data-pr-tooltip="Cerrar sesión"
-      >
-        <i
-          className="pi pi-sign-out"
-          style={{ fontSize: "1.2rem", color: "#4caf50" }}
-        ></i>
-      </button> */}
       <Tooltip
         target=".logout-btn"
         position="bottom"

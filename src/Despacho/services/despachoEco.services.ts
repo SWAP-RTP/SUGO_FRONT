@@ -13,4 +13,4 @@ export const getEcoDisponibles = async () => {
         console.error("Error al obtener los economicos disponibles:", error);
         throw error;
     }
-};
+};

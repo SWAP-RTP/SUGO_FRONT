@@ -3,7 +3,7 @@
    ========================================= */
 :root {
   --primary-green: #00c853;
-  --dark-blue: #1E293B;
+  --dark-blue: #1e293b;
   --bg-card: rgba(245, 245, 245, 0.466);
   --text-gray: #928f8f;
   --azul-claro: #cae6fc;
@@ -85,7 +85,7 @@
   box-sizing: border-box;
   padding: 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  position:relative;
+  position: relative;
   z-index: 2;
 }
 
@@ -143,8 +143,8 @@
    6. ELEMENTOS VISUALES ESPECÍFICOS
    ========================================= */
 .linea_punteada {
-  border-top: 4px dashed #4caf50
-    /* margin: 2rem; */
+  border-top: 4px dashed #4caf50;
+  /* margin: 2rem; */
 }
 
 .formulario-grid {
@@ -218,7 +218,6 @@
 
 /* error de conexion */
 
-
 .error-conexion {
   display: flex;
   flex-direction: column;
@@ -230,20 +229,22 @@
 .error-conexion h1 {
   font-size: 1.9rem;
   margin-bottom: 0.5rem;
-   font-family: "Montserrat", sans-serif;
-   font-weight: bold;
-   color: var(--text-gray);
-
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
+  color: var(--text-gray);
 }
 
 @keyframes shake-error {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
-  20%, 60% {
+  20%,
+  60% {
     transform: translateX(-5px);
   }
-  40%, 80% {
+  40%,
+  80% {
     transform: translateX(5px);
   }
   50% {
@@ -257,16 +258,56 @@
   color: var(--rojo-oscuro);
   margin-bottom: 0.5rem;
   animation: shake-error 0.5s ease-in-out infinite;
-
 }
 
+/* parque vehicular */
 
-/* modal catalogo */
+.parque_vehicular {
+  border: 0.5px solid #4e4e4e4e;
+  border-radius: 8px;
+  width: 500px;
+  height: 50%;
+}
 
-.menu_modal {
-  background-color: #fcfcfc56;
-  border-radius: 1rem;
-  border: 1px solid #e2e8f0;
-  padding: .5rem;
+.eco {
+  border: 3px solid transparent;
+  border-radius: 12px;
+  width: 75px; 
+  height: 75px; /* Cuadrado perfecto como en la imagen */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: all 0.2s ease-in-out !important;
+}
 
+/* Efecto 3D y borde de selección como en la imagen */
+.eco:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border: 3px solid rgba(255, 255, 255, 0.6);
+}
+
+.title_pv {
+  font-size: 1.5rem;
+  color: #040704;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.borde {
+  width: 50%;
+  height: 18px;
+
+  background: linear-gradient(to bottom, #5c5c5c, #2b2b2b, #111);
+
+  border: 2px solid #6d6d6d;
+
+  margin: 20px auto;
+
+  border-radius: 50px;
+
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.2),
+    0 0 25px rgba(235, 232, 232, 0.7),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 4px rgba(204, 202, 202, 0.6);
 }

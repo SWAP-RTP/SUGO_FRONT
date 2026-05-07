@@ -1,13 +1,20 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getEcoDisponibles } from '../services/despachoEco.services';
-
 
 export const useEcoDisponibles = () => {
     const [ecoDisponibles, setEcoDisponibles] = useState([]);
-    useEffect(() => {
+    
+    // Lo envolvemos en useCallback para poder llamarlo desde otros componentes
+    const cargarEconomicos = useCallback(() => {
         getEcoDisponibles().then((data) => {
             setEcoDisponibles(data);
         });
     }, []);
-    return {ecoDisponibles};
+
+    useEffect(() => {
+        cargarEconomicos();
+    }, [cargarEconomicos]);
+
+    // Ahora exportamos tanto los datos como la función para recargarlos
+    return { ecoDisponibles, cargarEconomicos };
 }
