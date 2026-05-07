@@ -1,50 +1,83 @@
+import { useState } from "react";
 import { TabView, TabPanel } from "primereact/tabview";
 import { QRCodeSVG } from "qrcode.react";
-import { Skeleton } from "primereact/skeleton";
 import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { Dropdown } from "primereact/dropdown";
+import { useHook_General } from "../../General/hooks/useHook";
 
 export const Hora_Presentacion = () => {
+  const { modulosOptions } = useHook_General();
+
+  // Estado local para el módulo seleccionado
+  const [selectedModulo, setSelectedModulo] = useState(null);
+
   return (
     <>
       <TabView>
         <TabPanel className="tabpanel" header="Hora de Presentacion">
           <div className="d-flex justify-content-center">
             {/* card */}
-            <div className="card">
+            <div className="card_presentacion">
               {/* titulo */}
               <div className="titulo">
                 <h1>Hora de Presentación</h1>
                 <hr />
               </div>
 
-              <div className="d-flex flex-row gap-3 mt-4 py-2 p-4 d-flex justify-content-center">
-                <span>
-                  Credencial
-                  <Skeleton width="8rem" height="2rem"></Skeleton>
+              <div className="d-flex align-items-center gap-4 mt-4 justify-content-center" style={{ paddingTop: "1.5rem" }}>
+                 {/* economico */}
+                <span className="p-float-label w-100">
+                  <InputText
+                    className="select"
+                  />
+                  <label htmlFor="economico">Economico</label>
                 </span>
-                <span>
-                  Nombre Completo
-                  <Skeleton width="8rem" height="2rem"></Skeleton>
+                 {/* credencial */}
+                <span className="p-float-label w-100">
+                  <InputText
+                    className="select"
+                  />
+                  <label htmlFor="Credencial">Credencial</label>
                 </span>
-                <span>
-                  Hora y fecha
-                  <Skeleton width="8rem" height="2rem"></Skeleton>
+
+                
+                 {/* Modulo */}
+                <span className="p-float-label w-100">
+                  <Dropdown
+                    inputId="Modulo"
+                    className="select"
+                    options={modulosOptions}
+                    value={selectedModulo}
+                    onChange={(e) => setSelectedModulo(e.value)}
+                    placeholder="Módulo"
+                  />
+                  <label htmlFor="Modulo">Modulo</label>
                 </span>
+           
               </div>
-              {/* segunda fila */}
-              <div className="d-flex flex-row gap-3 mt-4 py-2 p-4 d-flex justify-content-center">
-                <span>
-                  Modulo
-                  <Skeleton width="8rem" height="2rem"></Skeleton>
+
+                 <div className="d-flex align-items-center gap-4 mt-4 justify-content-center" style={{ paddingTop: "1.5rem" }}>
+                     {/* Hora */}
+                <span className="p-float-label input-presentacion">
+                  <InputText
+                    className="select"
+                  />
+                  <label htmlFor="Hora">Hora</label>
                 </span>
-                <span>
-                  Economico
-                  <Skeleton width="8rem" height="2rem"></Skeleton>
+                     {/* Fecha */}
+                <span className="p-float-label input-presentacion">
+                  <InputText
+                    className="select"
+                  />
+                  <label htmlFor="Fecha">Fecha</label>
                 </span>
-              </div>
-              <div className="d-flex justify-content-center gap-3 mt-4 mb-4">
-                <Button icon="pi pi-check" label="Enviar" severity="success" />
-                <Button icon="pi pi-times" label="Limpiar" severity="danger" />
+                 </div>
+   
+      
+              <div className="d-flex justify-content-center gap-3 mt-5 mb-4">
+                <Button icon="pi pi-save" className="p-button-sm small" label="Guardar" severity="success" style={{height: "50px"}} />
+                <Button icon="pi pi-times" className="p-button-sm small" label="Limpiar" severity="danger" style={{height: "50px"}} />
               </div>
             </div>
           </div>

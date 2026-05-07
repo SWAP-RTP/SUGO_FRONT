@@ -13,10 +13,9 @@ import { Datatables } from "../../General/components/Datatables";
 import { obtenerPvEstados } from "../../General/services/pv_estados.services";
 import { Card_Eco } from "../../General/components/Card_Eco";
 import { Pv_catalogo } from "./Pv_catalogo";
-
+import { Catalogo_economicos } from "./catalogo_economicos";
 // UTILS
 import { crearPvEstadoPayload } from "../../General/utils/crearPvEstadoPayload";
-
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -205,13 +204,11 @@ export const FormularioDespacho = () => {
       <Toast ref={toast} style={{ margin: 25 }} />
       <TabView>
         <TabPanel className="tabpanel" header="Despacho">
-          {/* parque vehicular */}
-          <div className=" d-flex justify-content-end align-items-center w-100">
-            <Pv_catalogo />
-          </div>
+          {/* <div className="catalogos">
+            <Catalogo_economicos />
+          </div> */}
 
-          {/* card  formulario */}
-          <div className="despacho-contenedor d-flex flex-wrap justify-content-center align-items-start gap-4">
+          <div className="despacho-contenedor">
             {ecoEncontrado && <Card_Eco data={ecoEncontrado} />}
             <div className="card">
               <div className="titulo">
@@ -267,30 +264,6 @@ export const FormularioDespacho = () => {
                 />
               )}
 
-              {/* fecha y hora debajo de los inputs principales */}
-              <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">
-                <div className="w-100 flex justify-content-center">
-                  <InputText
-                    value={horaActual}
-                    readOnly
-                    placeholder="Hora"
-                    disabled
-                    className="w-100"
-                    style={{ textAlign: "center" }}
-                  />
-                </div>
-                <div className="w-100 flex justify-content-center">
-                  <InputText
-                    value={fechaActual}
-                    readOnly
-                    placeholder="Fecha"
-                    disabled
-                    className="w-100"
-                    style={{ textAlign: "center" }}
-                  />
-                </div>
-              </div>
-
               <div className="d-flex justify-content-center gap-3 mt-4 mb-4">
                 <Button
                   icon="pi pi-check"
@@ -305,6 +278,12 @@ export const FormularioDespacho = () => {
                   onClick={handleLimpiar}
                 />
               </div>
+            </div>
+
+            {/* Catálogo de económicos — lado derecho */}
+            <div className="catalogos_eco">
+              <Pv_catalogo />
+              {/* <Catalogo_economicos /> */}
             </div>
           </div>
         </TabPanel>
