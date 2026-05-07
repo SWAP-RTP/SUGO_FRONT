@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { TabView, TabPanel } from "primereact/tabview";
 import { useEffect } from "react";
 import type { useRolesExcel } from "../hooks/useRolesExcel";
-import  '../css/rol.css'
+import '../css/rol.css'
 
 type UseRolesExcelReturn = ReturnType<typeof useRolesExcel>;
 
@@ -20,14 +20,14 @@ export const RolesCargaFiltros = ({ states, actions, refs, generalData }: RolesC
   // 1. Obtener los datos del usuario logueado desde la sesión
   const sessionUserStr = sessionStorage.getItem("user");
   const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
-  
+
   // 2. Determinar el módulo del usuario (si es "0", es administrador general)
   const userModuloStr = String(sessionUser?.modulo || "0");
   const isModuloAdmin = userModuloStr === "0";
 
   // 3. Filtrar opciones de módulos (Mostrar todos si es Admin, o solo el suyo si no lo es)
-  const modulosFiltrados = isModuloAdmin 
-    ? generalData.modulosOptions 
+  const modulosFiltrados = isModuloAdmin
+    ? generalData.modulosOptions
     : generalData.modulosOptions.filter(m => String(m.value) === userModuloStr);
 
   // 4. Auto-seleccionar el módulo si el usuario tiene uno específico
@@ -46,11 +46,11 @@ export const RolesCargaFiltros = ({ states, actions, refs, generalData }: RolesC
         <div className="d-flex align-items-center ms-3" style={{ gap: '10px' }}>
         </div>
 
-        <Button 
-          label="Descargar Plantilla" 
-          icon="pi pi-download" 
-          className="p-button-help p-button-outlined" 
-          style={{ minWidth: '13rem' }} 
+        <Button
+          label="Descargar Plantilla"
+          icon="pi pi-download"
+          className="p-button-help p-button-outlined"
+          style={{ minWidth: '13rem' }}
           type="button"
           onClick={() => {
             refs.toastTL.current?.show({
@@ -59,7 +59,7 @@ export const RolesCargaFiltros = ({ states, actions, refs, generalData }: RolesC
               detail: 'Por ningún motivo se puede cambiar el diseño, formato o estructura de las celdas de esta plantilla.',
               life: 10000
             });
-            
+
             // Lógica para descargar el archivo desde la carpeta public
             const link = document.createElement('a');
             link.href = '/ROL DE OPERADORES PLANTILLA.xlsx';
