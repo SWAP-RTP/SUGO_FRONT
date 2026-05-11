@@ -173,6 +173,7 @@
 
 /* Tablets y Escritorio (Pantallas mayores a 768px) */
 @media (min-width: 769px) {
+
   .recepcion-contenedor,
   .despacho-contenedor {
     flex-direction: row;
@@ -235,21 +236,26 @@
 }
 
 @keyframes shake-error {
+
   0%,
   100% {
     transform: translateX(0);
   }
+
   20%,
   60% {
     transform: translateX(-5px);
   }
+
   40%,
   80% {
     transform: translateX(5px);
   }
+
   50% {
     transform: scale(1.1);
-    color: #e74c3c; /* Un rojo más intenso al vibrar */
+    color: #e74c3c;
+    /* Un rojo más intenso al vibrar */
   }
 }
 
@@ -272,8 +278,9 @@
 .eco {
   border: 3px solid transparent;
   border-radius: 12px;
-  width: 75px; 
-  height: 75px; /* Cuadrado perfecto como en la imagen */
+  width: 75px;
+  height: 75px;
+  /* Cuadrado perfecto como en la imagen */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: all 0.2s ease-in-out !important;

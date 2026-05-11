@@ -11,7 +11,7 @@ import { usePeticiones } from "../../General/hooks/usePeticiones";
 import { Servicio } from "./Servicio";
 import { Datatables } from "../../General/components/Datatables";
 import { obtenerPvEstados } from "../../General/services/pv_estados.services";
-import { Card_Eco } from "../../General/components/Card_Eco";
+//import { Card_Eco } from "../../General/components/Card_Eco";
 import { Pv_catalogo } from "./Pv_catalogo";
 
 // UTILS
@@ -44,9 +44,27 @@ export const FormularioDespacho = () => {
   const [error, setError] = useState(null);
   const [ecoEncontrado, setecoEncontrado] = useState<any>(null);
   const toast = useRef<Toast>(null);
+  const leftColRef = useRef<HTMLDivElement>(null);
+  const [leftColHeight, setLeftColHeight] = useState<number | string>("auto");
+
+  // EFECTO PARA SINCRONIZAR ALTURA DEL CATÁLOGO CON EL FORMULARIO
+  useEffect(() => {
+    if (!leftColRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        // Obtenemos la altura del contenedor del formulario
+        setLeftColHeight(entry.target.clientHeight);
+      }
+    });
+
+    resizeObserver.observe(leftColRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, []);
 
   //LIMPIEZA DE LA FECHA Y HORA
-  const formatearFecha = (fecha) => {
+  const formatearFecha = (fecha: any) => {
     if (!fecha) return "---";
     return new Date(fecha).toLocaleString("es-MX", {
       day: "2-digit",
@@ -207,107 +225,110 @@ export const FormularioDespacho = () => {
           <div className="container-fluid px-4 py-3">
             <div className="row align-items-start gap-4 gap-xl-0">
               {/* Lado Izquierdo: Formulario y Card Eco */}
-              <div className="col-12 col-xl-5 d-flex flex-column align-items-center gap-4 mb-4 mb-xl-0">
-                {ecoEncontrado && <Card_Eco data={ecoEncontrado} />}
+              <div
+                ref={leftColRef}
+                className="col-12 col-xl-6 d-flex flex-column align-items-center gap-4 mb-4 mb-xl-0"
+              >
+                {/* {ecoEncontrado && <Card_Eco data={ecoEncontrado} />} */}
                 <div className="card w-100 shadow-sm p-3">
                   <div className="titulo">
-                        <h1>Despacho</h1>
-                        <hr />
-                      </div>
+                    <h1>Despacho</h1>
+                    <hr />
+                  </div>
 
-                      <div className="formulario-grid">
-                        {/* modulo */}
-                        <span className="p-float-label">
-                          <Dropdown
-                            inputId="dd-modulo"
-                            value={formularioData.selectModulo}
-                            onChange={(e) =>
-                              handleFormChange("selectModulo", e.value)
-                            }
-                            options={modulosOptions}
-                            className="select w-100"
-                          />
-                          <label htmlFor="dd-modulo">Modulo</label>
-                        </span>
+                  <div className="formulario-grid">
+                    {/* modulo */}
+                    <span className="p-float-label">
+                      <Dropdown
+                        inputId="dd-modulo"
+                        value={formularioData.selectModulo}
+                        onChange={(e) =>
+                          handleFormChange("selectModulo", e.value)
+                        }
+                        options={modulosOptions}
+                        className="select w-100"
+                      />
+                      <label htmlFor="dd-modulo">Modulo</label>
+                    </span>
 
-                        {/* economico */}
-                        <span className="p-float-label w-100">
-                          <InputText
-                            className="select"
-                            value={formularioData.select_economico}
-                            onChange={(e) => handleEcoChange(e.target.value)}
-                          />
-                          <label htmlFor="economico">Economico</label>
-                        </span>
+                    {/* economico */}
+                    <span className="p-float-label w-100">
+                      <InputText
+                        className="select"
+                        value={formularioData.select_economico}
+                        onChange={(e) => handleEcoChange(e.target.value)}
+                      />
+                      <label htmlFor="economico">Economico</label>
+                    </span>
 
-                        {/* motivos */}
-                        <span className="p-float-label">
-                          <Dropdown
-                            className="select w-100"
-                            inputId="dd-motivos"
-                            value={formularioData.motivos_select}
-                            onChange={(e) =>
-                              handleFormChange("motivos_select", e.value)
-                            }
-                            options={motivosOptions}
-                            optionLabel="desc"
-                            optionValue="value"
-                          />
-                          <label htmlFor="dd-motivos">Motivos</label>
-                        </span>
-                      </div>
+                    {/* motivos */}
+                    <span className="p-float-label">
+                      <Dropdown
+                        className="select w-100"
+                        inputId="dd-motivos"
+                        value={formularioData.motivos_select}
+                        onChange={(e) =>
+                          handleFormChange("motivos_select", e.value)
+                        }
+                        options={motivosOptions}
+                        optionLabel="desc"
+                        optionValue="value"
+                      />
+                      <label htmlFor="dd-motivos">Motivos</label>
+                    </span>
+                  </div>
 
-                      {/* componente dinamico de servicio */}
-                      {formularioData.motivos_select?.desc === "SERVICIO" && (
-                        <Servicio
-                          formularioData={formularioData}
-                          handleFormChange={handleFormChange}
-                        />
-                      )}
+                  {/* componente dinamico de servicio */}
+                  {formularioData.motivos_select?.desc === "SERVICIO" && (
+                    <Servicio
+                      formularioData={formularioData}
+                      handleFormChange={handleFormChange}
+                    />
+                  )}
 
-                      {/* fecha y hora debajo de los inputs principales */}
-                      <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">
-                        <div className="w-100 flex justify-content-center">
-                          <InputText
-                            value={horaActual}
-                            readOnly
-                            placeholder="Hora"
-                            disabled
-                            className="w-100"
-                            style={{ textAlign: "center" }}
-                          />
-                        </div>
-                        <div className="w-100 flex justify-content-center">
-                          <InputText
-                            value={fechaActual}
-                            readOnly
-                            placeholder="Fecha"
-                            disabled
-                            className="w-100"
-                            style={{ textAlign: "center" }}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="d-flex justify-content-center gap-3 mt-4 mb-4">
-                        <Button
-                          icon="pi pi-check"
-                          label="Enviar"
-                          severity="success"
-                          onClick={handleEnviar}
-                        />
-                        <Button
-                          icon="pi pi-times"
-                          label="Limpiar"
-                          severity="danger"
-                          onClick={handleLimpiar}
-                        />
-                      </div>
+                  {/* fecha y hora debajo de los inputs principales */}
+                  <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">
+                    <div className="w-100 flex justify-content-center">
+                      <InputText
+                        value={horaActual}
+                        readOnly
+                        placeholder="Hora"
+                        disabled
+                        className="w-100"
+                        style={{ textAlign: "center" }}
+                      />
                     </div>
+                    <div className="w-100 flex justify-content-center">
+                      <InputText
+                        value={fechaActual}
+                        readOnly
+                        placeholder="Fecha"
+                        disabled
+                        className="w-100"
+                        style={{ textAlign: "center" }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="d-flex justify-content-center gap-3 mt-4 mb-4">
+                    <Button
+                      icon="pi pi-check"
+                      label="Enviar"
+                      severity="success"
+                      onClick={handleEnviar}
+                    />
+                    <Button
+                      icon="pi pi-times"
+                      label="Limpiar"
+                      severity="danger"
+                      onClick={handleLimpiar}
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Lado Derecho: Parque Vehicular */}
-              <div className="col-12 col-xl-7">
+              <div className="col-12 col-xl-6" style={{ height: leftColHeight }}>
                 <Pv_catalogo />
               </div>
             </div>
