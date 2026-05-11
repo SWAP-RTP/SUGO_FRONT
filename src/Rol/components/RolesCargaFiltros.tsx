@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { TabView, TabPanel } from "primereact/tabview";
 import { useEffect } from "react";
 import type { useRolesExcel } from "../hooks/useRolesExcel";
-import '../css/rol.css'
+import "../css/rol.css";
 
 type UseRolesExcelReturn = ReturnType<typeof useRolesExcel>;
 
@@ -15,8 +15,12 @@ interface RolesCargaFiltrosProps {
   generalData: UseRolesExcelReturn["generalData"];
 }
 
-
-export const RolesCargaFiltros = ({ states, actions, refs, generalData }: RolesCargaFiltrosProps) => {
+export const RolesCargaFiltros = ({
+  states,
+  actions,
+  refs,
+  generalData,
+}: RolesCargaFiltrosProps) => {
   // 1. Obtener los datos del usuario logueado desde la sesión
   const sessionUserStr = sessionStorage.getItem("user");
   const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
@@ -28,49 +32,61 @@ export const RolesCargaFiltros = ({ states, actions, refs, generalData }: RolesC
   // 3. Filtrar opciones de módulos (Mostrar todos si es Admin, o solo el suyo si no lo es)
   const modulosFiltrados = isModuloAdmin
     ? generalData.modulosOptions
-    : generalData.modulosOptions.filter(m => String(m.value) === userModuloStr);
+    : generalData.modulosOptions.filter(
+        (m) => String(m.value) === userModuloStr,
+      );
 
   // 4. Auto-seleccionar el módulo si el usuario tiene uno específico
   useEffect(() => {
     if (!isModuloAdmin && generalData.modulosOptions.length > 0) {
-      const match = generalData.modulosOptions.find(m => String(m.value) === userModuloStr);
+      const match = generalData.modulosOptions.find(
+        (m) => String(m.value) === userModuloStr,
+      );
       if (match && states.moduloSeleccionado !== match.value) {
         actions.setModuloSeleccionado(match.value);
       }
     }
-  }, [isModuloAdmin, userModuloStr, generalData.modulosOptions, states.moduloSeleccionado, actions]);
+  }, [
+    isModuloAdmin,
+    userModuloStr,
+    generalData.modulosOptions,
+    states.moduloSeleccionado,
+    actions,
+  ]);
 
   return (
     <div className="">
       <div className="menu_modal_rol d-flex justify-content-between align-items-center mb-4">
-        <div className="d-flex align-items-center ms-3" style={{ gap: '10px' }}>
-        </div>
+        <div
+          className="d-flex align-items-center ms-3"
+          style={{ gap: "10px" }}
+        ></div>
 
         <Button
           label="Descargar Plantilla"
           icon="pi pi-download"
-          className="p-button-help p-button-outlined"
-          style={{ minWidth: '13rem' }}
+          className="p-button-help "
+          style={{ minWidth: "13rem" }}
           type="button"
           onClick={() => {
             refs.toastTL.current?.show({
-              severity: 'warn',
-              summary: 'Advertencia',
-              detail: 'Por ningún motivo se puede cambiar el diseño, formato o estructura de las celdas de esta plantilla.',
-              life: 10000
+              severity: "warn",
+              summary: "Advertencia",
+              detail:
+                "Por ningún motivo se puede cambiar el diseño, formato o estructura de las celdas de esta plantilla.",
+              life: 10000,
             });
 
             // Lógica para descargar el archivo desde la carpeta public
-            const link = document.createElement('a');
-            link.href = '/ROL DE OPERADORES PLANTILLA.xlsx';
-            link.download = 'ROL DE OPERADORES PLANTILLA.xlsx';
+            const link = document.createElement("a");
+            link.href = "/ROL DE OPERADORES PLANTILLA.xlsx";
+            link.download = "ROL DE OPERADORES PLANTILLA.xlsx";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
           }}
         />
       </div>
-
 
       <div
         className="d-flex flex-row flex-wrap justify-content-center justify-content-md-center align-items-center"

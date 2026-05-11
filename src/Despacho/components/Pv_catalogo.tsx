@@ -66,208 +66,185 @@ export const Pv_catalogo = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-end w-100">
-        <Button
-          label="Parque Vehicular Disponible"
-          type="button"
-          icon="pi pi-th-large"
-          onClick={(e) => {
-            e.preventDefault();
-            setVisible(true);
-          }}
-          className="p-button-secondary"
-          style={{ minWidth: "15rem" }}
-        />
-      </div>
+      <div className="d-flex w-100 shadow-sm border rounded" style={{ height: "70vh", backgroundColor: "#ffffff" }}>
+        {/* ----- BARRA LATERAL IZQUIERDA ----- */}
+        <div
+          className="border-end d-flex flex-column p-3"
+          style={{ width: "220px", backgroundColor: "#f8f9fa" }}
+        >
+          {/* Buscador de la imagen */}
+          <span className="p-input-icon-left w-100 mb-3">
+            <i className="pi pi-search" />
+            <InputText
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              placeholder="Buscar"
+              className="w-100 p-inputtext-sm"
+              style={{ borderRadius: "8px" }}
+            />
+          </span>
 
-      <Dialog
-        visible={visible}
-        maximizable
-        style={{ width: "85vw", minHeight: "80vh" }}
-        onHide={() => setVisible(false)}
-        contentStyle={{ padding: 0, backgroundColor: "#f4f6f8" }} // Quitamos el padding por defecto para hacer la cuadrícula al 100%
-      >
-        <div className="d-flex w-100" style={{ minHeight: "75vh" }}>
-          {/* ----- BARRA LATERAL IZQUIERDA ----- */}
-          <div
-            className="border-end d-flex flex-column p-4"
-            style={{ width: "280px", backgroundColor: "#ffffff" }}
+          <h6
+            className="text-muted fw-bold mb-3 text-center"
+            style={{ fontSize: "0.75rem", letterSpacing: "1px" }}
           >
-            {/* Buscador de la imagen */}
-            <span className="p-input-icon-left w-100 mb-4">
-              <i className="pi pi-search" />
-              <InputText
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                placeholder="Buscar"
-                className="w-100"
-                style={{ borderRadius: "8px", paddingLeft: "2.5rem" }}
-              />
-            </span>
+            FILTROS POR RUTA
+          </h6>
 
-            <h6
-              className="text-muted fw-bold mb-3"
-              style={{ fontSize: "0.75rem", letterSpacing: "1px" }}
-            >
-              FILTROS POR RUTA
-            </h6>
-
-            {/* Botón "Todos" */}
+          {/* Botón "Todos" */}
+          <div
+            className="d-flex flex-column gap-2 overflow-auto"
+            style={{ flexGrow: 1 }}
+          >
             <div
-              className="d-flex flex-column gap-2 overflow-auto"
-              style={{ maxHeight: "55vh" }}
+              className="d-flex justify-content-between align-items-center p-2 rounded shadow-sm"
+              style={{
+                cursor: "pointer",
+                backgroundColor: rutaSeleccionada === null ? "#8a2be2" : "#fff", // Un color morado para "Todos"
+                color: rutaSeleccionada === null ? "#fff" : "#495057",
+                border: "1px solid #e9ecef",
+              }}
+              onClick={() => setRutaSeleccionada(null)}
             >
-              <div
-                className="d-flex justify-content-between align-items-center p-2 rounded shadow-sm"
-                style={{
-                  cursor: "pointer",
-                  backgroundColor:
-                    rutaSeleccionada === null ? "#8a2be2" : "#fff", // Un color morado para "Todos"
-                  color: rutaSeleccionada === null ? "#fff" : "#495057",
-                  border: "1px solid #e9ecef",
-                }}
-                onClick={() => setRutaSeleccionada(null)}
-              >
-                <div className="d-flex align-items-center gap-2">
-                  <i className="pi pi-filter" />
-                  <span className="fw-bold" style={{ fontSize: "0.9rem" }}>
-                    Todas
-                  </span>
-                </div>
-                <span
-                  className="badge rounded-pill"
-                  style={{
-                    backgroundColor:
-                      rutaSeleccionada === null
-                        ? "rgba(255,255,255,0.3)"
-                        : "#f0f0f0",
-                    color: rutaSeleccionada === null ? "#fff" : "#495057",
-                  }}
-                >
-                  {(ecoDisponibles || []).length}
+              <div className="d-flex align-items-center gap-2">
+                <i className="pi pi-filter" />
+                <span className="fw-bold" style={{ fontSize: "0.9rem" }}>
+                  Todas
                 </span>
               </div>
-
-              {/* Lista dinámica de Rutas */}
-              {Object.keys(conteoRutas)
-                .sort()
-                .map((ruta) => {
-                  const estilo = estilos_ruta[ruta] || estiloPorDefecto;
-                  const isActive = rutaSeleccionada === ruta;
-
-                  return (
-                    <div
-                      key={ruta}
-                      className="d-flex justify-content-between align-items-center p-2 rounded shadow-sm"
-                      style={{
-                        cursor: "pointer",
-                        backgroundColor: isActive ? estilo.bg : "#fff",
-                        color: isActive ? estilo.text : "#495057",
-                        border: "1px solid #e9ecef",
-                      }}
-                      onClick={() => setRutaSeleccionada(ruta)}
-                    >
-                      <div className="d-flex align-items-center gap-2">
-                        <div
-                          style={{
-                            width: "12px",
-                            height: "12px",
-                            borderRadius: "50%",
-                            backgroundColor: estilo.bg,
-                          }}
-                        ></div>
-                        <span
-                          className="fw-bold"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          Ruta {ruta}
-                        </span>
-                      </div>
-                      <span
-                        className="badge rounded-pill"
-                        style={{
-                          backgroundColor: isActive
-                            ? "rgba(255,255,255,0.3)"
-                            : estilo.bg,
-                          color: isActive ? estilo.text : estilo.text,
-                        }}
-                      >
-                        {conteoRutas[ruta]}
-                      </span>
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-
-          {/* ----- PATIO DE UNIDADES (GRILLA PRINCIPAL) ----- */}
-          <div
-            className="flex-grow-1 p-4"
-            style={{ backgroundColor: "#fafbfc" }}
-          >
-            <div className="d-flex flex-column justify-content-center align-items-center mb-4">
-              <div className="borde w-50 mb-3" style={{ height: "4px" }}></div>
-              <h5
-                className="text-muted fw-bold"
-                style={{ letterSpacing: "2px", fontSize: "0.9rem" }}
+              <span
+                className="badge rounded-pill"
+                style={{
+                  backgroundColor:
+                    rutaSeleccionada === null
+                      ? "rgba(255,255,255,0.3)"
+                      : "#f0f0f0",
+                  color: rutaSeleccionada === null ? "#fff" : "#495057",
+                }}
               >
-                PATIO DE UNIDADES
-              </h5>
+                {(ecoDisponibles || []).length}
+              </span>
             </div>
 
-            {/* Grilla sin divisiones, todos juntos */}
-            <div
-              className="d-flex flex-wrap align-content-start gap-3"
-              style={{
-                height: "calc(100% - 80px)",
-                overflowY: "auto",
-                paddingBottom: "2rem",
-              }}
-            >
-              {ecosFiltrados.map((data: any, index: number) => {
-                const rutaString = String(data.nombre_ruta);
-                const estilo = estilos_ruta[rutaString] || estiloPorDefecto;
+            {/* Lista dinámica de Rutas */}
+            {Object.keys(conteoRutas)
+              .sort()
+              .map((ruta) => {
+                const estilo = estilos_ruta[ruta] || estiloPorDefecto;
+                const isActive = rutaSeleccionada === ruta;
 
                 return (
                   <div
-                    key={index}
-                    className="eco d-flex flex-column justify-content-center align-items-center"
+                    key={ruta}
+                    className="d-flex justify-content-between align-items-center p-2 rounded shadow-sm"
                     style={{
                       cursor: "pointer",
-                      backgroundColor: estilo.bg,
-                      color: estilo.text,
+                      backgroundColor: isActive ? estilo.bg : "#fff",
+                      color: isActive ? estilo.text : "#495057",
+                      border: "1px solid #e9ecef",
                     }}
+                    onClick={() => setRutaSeleccionada(ruta)}
                   >
-                    {/* Número económico gigante */}
+                    <div className="d-flex align-items-center gap-2">
+                      <div
+                        style={{
+                          width: "12px",
+                          height: "12px",
+                          borderRadius: "50%",
+                          backgroundColor: estilo.bg,
+                        }}
+                      ></div>
+                      <span className="fw-bold" style={{ fontSize: "0.9rem" }}>
+                        Ruta {ruta}
+                      </span>
+                    </div>
                     <span
-                      className="fw-bold"
+                      className="badge rounded-pill"
                       style={{
-                        fontSize: "1.2rem",
-                        lineHeight: "1",
-                        marginBottom: "4px",
+                        backgroundColor: isActive
+                          ? "rgba(255,255,255,0.3)"
+                          : estilo.bg,
+                        color: isActive ? estilo.text : estilo.text,
                       }}
                     >
-                      {data.economico}
+                      {conteoRutas[ruta]}
                     </span>
-                    {/* Ícono abajo (como en tu foto) en vez del texto largo de la ruta */}
-                    <i
-                      className="pi pi-car mt-1"
-                      style={{ fontSize: "0.8rem", opacity: 0.8 }}
-                    />
                   </div>
                 );
               })}
-
-              {ecosFiltrados.length === 0 && (
-                <div className="w-100 text-center text-muted mt-5">
-                  <i className="pi pi-search fs-2 mb-2"></i>
-                  <p>No hay unidades que coincidan.</p>
-                </div>
-              )}
-            </div>
           </div>
         </div>
-      </Dialog>
+
+        {/* ----- PATIO DE UNIDADES (GRILLA PRINCIPAL) ----- */}
+        <div className="flex-grow-1 p-4" style={{ backgroundColor: "#fafbfc" }}>
+          <div className="d-flex flex-column justify-content-center align-items-center mb-4">
+            <div className="borde w-50 mb-3" style={{ height: "4px" }}></div>
+            <h5
+              className="text-muted fw-bold"
+              style={{ letterSpacing: "2px", fontSize: "0.9rem" }}
+            >
+              PATIO DE UNIDADES
+            </h5>
+          </div>
+
+          {/* Grilla sin divisiones, todos juntos */}
+          <div
+            className="d-flex flex-wrap align-content-start gap-3"
+            style={{
+              height: "calc(100% - 80px)",
+              overflowY: "auto",
+              paddingBottom: "2rem",
+            }}
+          >
+            {ecosFiltrados.map((data: any, index: number) => {
+              const rutaString = String(data.nombre_ruta);
+              const estilo = estilos_ruta[rutaString] || estiloPorDefecto;
+
+              return (
+                <div
+                  key={index}
+                  className="eco d-flex flex-column justify-content-center align-items-center shadow-sm"
+                  style={{
+                    cursor: "pointer",
+                    backgroundColor: estilo.bg,
+                    color: estilo.text,
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: "8px",
+                    transition: "transform 0.1s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                >
+                  {/* Número económico gigante */}
+                  <span
+                    className="fw-bold"
+                    style={{
+                      fontSize: "1.1rem",
+                      lineHeight: "1",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    {data.economico}
+                  </span>
+                  {/* Ícono abajo (como en tu foto) en vez del texto largo de la ruta */}
+                  <i
+                    className="pi pi-car mt-1"
+                    style={{ fontSize: "0.8rem", opacity: 0.8 }}
+                  />
+                </div>
+              );
+            })}
+
+            {ecosFiltrados.length === 0 && (
+              <div className="w-100 text-center text-muted mt-5">
+                <i className="pi pi-search fs-2 mb-2"></i>
+                <p>No hay unidades que coincidan.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </>
   );
 };
