@@ -1,11 +1,67 @@
 .card_presentacion {
-  background-color: #e2e2e2ee;
+  background-color: #f4f6f8;
   width: 100%;
-  max-width: 750px;
+  max-width: 450px;
   text-align: center;
+  border: 1px solid #e1e5eb;
   border-radius: 1rem;
   box-sizing: border-box;
   padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.04);
 }
 
+.catalogo_operadores {
+  width: 100%;
+  padding-left: 2rem;
+}
+
+/* Elegant Table matching the image */
+.card_elegant_table {
+  background-color: #f4f6f8;
+  border-radius: 1rem;
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.04);
+  padding: 1.5rem;
+  border: 1px solid #e1e5eb;
+}
+
+.card_elegant_table .p-datatable .p-datatable-header {
+  background-color: transparent;
+  border: none;
+  padding: 0 0 1rem 0;
+  color: #111827; /* Texto del header más oscuro */
+}
+
+.card_elegant_table .p-datatable .p-datatable-thead > tr > th {
+  background-color: transparent;
+  color: #374151; /* Gris oscuro para alto contraste */
+  font-weight: 700; /* Más negrita */
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.8px;
+  border: none;
+  border-bottom: 2px solid #cbd5e1; /* Borde sutilmente más definido */
+  padding: 1rem 0.5rem;
+}
+
+.card_elegant_table .p-datatable .p-datatable-tbody > tr {
+  border-bottom: 1px solid #eef0f3;
+  transition: background-color 0.2s ease;
+  background-color: transparent;
+}
+
+.card_elegant_table .p-datatable .p-datatable-tbody > tr:hover {
+  background-color: #e9ecef;
+}
+
+.card_elegant_table .p-datatable .p-datatable-tbody > tr > td {
+  border: none;
+  padding: 1.2rem 0.5rem;
+  font-size: 1.05rem; /* Letra un poco más grande */
+  font-weight: 600; /* Letra semi-negrita para que resalten los números */
+  color: #0f172a; /* Color casi negro/azul marino oscuro para máximo contraste */
+  letter-spacing: 0.5px;
+}
+
+/* .table-header-title {
+  margin-bottom: 0.5rem;
+} */
