@@ -1,13 +1,13 @@
 .card_presentacion {
-  background-color: #f8f6f6;
+  background-color: #f4f6f8;
   width: 100%;
   max-width: 450px;
   text-align: center;
-  border: 0.8px solid #ebe3e3;
+  border: 1px solid #e1e5eb;
   border-radius: 1rem;
   box-sizing: border-box;
   padding: 2rem;
-  box-shadow: 10px 10px 10px rgba(15, 15, 15, 0.05);
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.04);
 }
 
 .catalogo_operadores {
@@ -17,45 +17,49 @@
 
 /* Elegant Table matching the image */
 .card_elegant_table {
-  background-color: #ffffff;
-  border-radius: 1.2rem;
-  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.06);
+  background-color: #f4f6f8;
+  border-radius: 1rem;
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.04);
   padding: 1.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border: 1px solid #e1e5eb;
 }
 
 .card_elegant_table .p-datatable .p-datatable-header {
   background-color: transparent;
   border: none;
   padding: 0 0 1rem 0;
+  color: #111827; /* Texto del header más oscuro */
 }
 
 .card_elegant_table .p-datatable .p-datatable-thead > tr > th {
   background-color: transparent;
-  color: #707a82;
-  font-weight: 600;
+  color: #374151; /* Gris oscuro para alto contraste */
+  font-weight: 700; /* Más negrita */
   text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
+  font-size: 0.78rem;
+  letter-spacing: 0.8px;
   border: none;
-  border-bottom: 2px solid #f1f3f5;
+  border-bottom: 2px solid #cbd5e1; /* Borde sutilmente más definido */
   padding: 1rem 0.5rem;
 }
 
 .card_elegant_table .p-datatable .p-datatable-tbody > tr {
-  border-bottom: 1px solid #f8f9fa;
+  border-bottom: 1px solid #eef0f3;
   transition: background-color 0.2s ease;
+  background-color: transparent;
 }
 
 .card_elegant_table .p-datatable .p-datatable-tbody > tr:hover {
-  background-color: #fcfcfc;
+  background-color: #e9ecef;
 }
 
 .card_elegant_table .p-datatable .p-datatable-tbody > tr > td {
   border: none;
-  padding: 1rem 0.5rem;
-  font-size: 0.9rem;
-  color: #495057;
+  padding: 1.2rem 0.5rem;
+  font-size: 1.05rem; /* Letra un poco más grande */
+  font-weight: 600; /* Letra semi-negrita para que resalten los números */
+  color: #0f172a; /* Color casi negro/azul marino oscuro para máximo contraste */
+  letter-spacing: 0.5px;
 }
 
 /* .table-header-title {

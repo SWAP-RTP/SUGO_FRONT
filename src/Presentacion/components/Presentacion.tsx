@@ -66,7 +66,7 @@ export const Hora_Presentacion = () => {
                     </span>
                   </div>
 
-                  <div className="d-flex justify-content-center gap-3 mt-5 ">
+                  <div className="d-flex justify-content-center gap-3 mt-5">
                     <Button
                       icon="pi pi-save"
                       className="p-button-sm small"
@@ -81,6 +81,27 @@ export const Hora_Presentacion = () => {
                       severity="danger"
                       style={{ height: "50px" }}
                     />
+                  </div>
+
+                  {/* Mensaje Informativo para rellenar el espacio y guiar al usuario */}
+                  <div
+                    className="mt-5 pt-4"
+                    style={{ borderTop: "1px dashed #ced4da" }}
+                  >
+                    <div
+                      className="d-flex align-items-center text-muted"
+                      style={{ fontSize: "0.85rem", lineHeight: "1.4" }}
+                    >
+                      <i
+                        className="pi pi-info-circle text-primary me-3"
+                        style={{ fontSize: "1.5rem" }}
+                      ></i>
+                      <p className="m-0 text-start">
+                        <strong>Nota Importante:</strong> La <em>Hora</em> y{" "}
+                        <em>Fecha</em> no se pueden modificar, son datos
+                        automáticos del sistema.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -104,26 +125,26 @@ export const Hora_Presentacion = () => {
                   >
                     <Column
                       field="primer_t"
-                      header="Credencial"
-                      className="text-center"
+                      header="CREDENCIAL T1"
+                      className="text-center fw-bold"
                       headerClassName="text-center"
                     ></Column>
                     <Column
                       field="segundo_t"
-                      header="Credencial"
-                      className="text-center"
+                      header="CREDENCIAL T2"
+                      className="text-center fw-bold"
                       headerClassName="text-center"
                     ></Column>
                     <Column
                       field="tercer_t"
-                      header="Credencial"
-                      className="text-center"
+                      header="CREDENCIAL T3"
+                      className="text-center fw-bold"
                       headerClassName="text-center"
                     ></Column>
                     <Column
                       field="nombre_ruta"
                       header="RUTA"
-                      className="text-center fw-semibold text-secondary"
+                      className="text-center fw-bolder text-primary"
                       headerClassName="text-center"
                     ></Column>
                   </DataTable>
