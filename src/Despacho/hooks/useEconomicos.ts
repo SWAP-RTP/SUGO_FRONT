@@ -3,7 +3,7 @@ import { getEcoDisponibles } from '../services/despachoEco.services';
 
 export const useEcoDisponibles = () => {
     const [ecoDisponibles, setEcoDisponibles] = useState([]);
-    
+
     // Lo envolvemos en useCallback para poder llamarlo desde otros componentes
     const cargarEconomicos = useCallback(() => {
         getEcoDisponibles().then((data) => {
@@ -12,7 +12,15 @@ export const useEcoDisponibles = () => {
     }, []);
 
     useEffect(() => {
+        // Carga inicial
         cargarEconomicos();
+
+        // Configurar polling cada 5 segundos
+        const interval = setInterval(() => {
+            cargarEconomicos();
+        }, 3000);
+
+        return () => clearInterval(interval);
     }, [cargarEconomicos]);
 
     // Ahora exportamos tanto los datos como la función para recargarlos
