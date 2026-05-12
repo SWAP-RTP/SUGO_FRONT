@@ -1,18 +1,38 @@
-import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Messages } from "primereact/messages";
+import { Presentacion_tabla } from "./Presentacion_tabla";
 import { useHook_General } from "../../General/hooks/useHook";
+import { postHoraPresentacion } from "../services/presentacion.services";
+
+import { fechaactual, horaactual } from "../utils/Date";
 
 export const Hora_Presentacion = () => {
   const { modulosOptions, ecoDisponibles } = useHook_General();
 
-  // Estado local para el módulo seleccionado
-  const [selectedModulo, setSelectedModulo] = useState(null);
+  // usamos esto para el react form
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      credencial: "",
+      modulo: null,
+    },
+  });
+
+  const onSubmit = async (data: any) => {
+    data.hora = horaactual();
+    data.fecha = fechaactual();
+    await postHoraPresentacion(data);
+    console.log("Datos del formulario:", data);
+  };
 
   return (
     <>
@@ -26,28 +46,59 @@ export const Hora_Presentacion = () => {
                   {/* titulo */}
                   <div className="titulo">
                     <h1>Hora de Presentación</h1>
+                    <p>{fechaactual()}</p>
+                    <p>{horaactual()}</p>
                     <hr />
                   </div>
 
                   <div className="d-flex align-items-center gap-4 justify-content-center">
                     {/* credencial */}
-                    <span className="p-float-label w-100">
-                      <InputText className="select" />
-                      <label htmlFor="Credencial">Credencial</label>
-                    </span>
+                    <Controller
+                      name="credencial"
+                      control={control}
+                      rules={{ required: "La credencial es obligatoria" }}
+                      render={({ field, fieldState }) => (
+                        <span className="p-float-label w-100">
+                          <InputText
+                            id={field.name}
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                          />
+                          <label htmlFor={field.name}>Credencial</label>
+                          {fieldState.error && (
+                            <small className="p-error">
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </span>
+                      )}
+                    />
 
                     {/* Modulo */}
-                    <span className="p-float-label w-100">
-                      <Dropdown
-                        inputId="Modulo"
-                        className="select"
-                        options={modulosOptions}
-                        value={selectedModulo}
-                        onChange={(e) => setSelectedModulo(e.value)}
-                        placeholder="Módulo"
-                      />
-                      <label htmlFor="Modulo">Modulo</label>
-                    </span>
+                    <Controller
+                      name="modulo"
+                      control={control}
+                      rules={{ required: "Debe seleccionar un módulo" }}
+                      render={({ field, fieldState }) => (
+                        <span className="p-float-label w-100">
+                          <Dropdown
+                            inputId={field.name}
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.value)}
+                            options={modulosOptions}
+                            className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                            placeholder="Módulo"
+                          />
+                          <label htmlFor={field.name}>Modulo</label>
+                          {fieldState.error && (
+                            <small className="p-error">
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </span>
+                      )}
+                    />
                   </div>
 
                   <div
@@ -56,12 +107,22 @@ export const Hora_Presentacion = () => {
                   >
                     {/* Hora */}
                     <span className="p-float-label input-presentacion">
-                      <InputText className="select" />
+                      <InputText
+                        name="hora"
+                        className="select"
+                        value={horaactual()}
+                        disabled
+                      />
                       <label htmlFor="Hora">Hora</label>
                     </span>
                     {/* Fecha */}
                     <span className="p-float-label input-presentacion">
-                      <InputText className="select" />
+                      <InputText
+                        name="fecha"
+                        className="select"
+                        value={fechaactual()}
+                        disabled
+                      />
                       <label htmlFor="Fecha">Fecha</label>
                     </span>
                   </div>
@@ -73,6 +134,7 @@ export const Hora_Presentacion = () => {
                       label="Guardar"
                       severity="success"
                       style={{ height: "50px" }}
+                      onClick={handleSubmit(onSubmit)}
                     />
                     <Button
                       icon="pi pi-times"
@@ -80,6 +142,7 @@ export const Hora_Presentacion = () => {
                       label="Limpiar"
                       severity="danger"
                       style={{ height: "50px" }}
+                      onClick={() => reset()}
                     />
                   </div>
 
@@ -154,6 +217,8 @@ export const Hora_Presentacion = () => {
           </div>
 
           <hr className="linea_punteada" />
+
+          <Presentacion_tabla />
         </TabPanel>
       </TabView>
     </>
