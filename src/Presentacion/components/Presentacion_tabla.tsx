@@ -13,7 +13,7 @@ export const Presentacion_tabla = () => {
       >
         <Column field="id" header="ID"></Column>
         <Column field="credencial" header="Credencial"></Column>
-        <Column field="ruta" header="Ruta"></Column>
+        {/* <Column field="ruta" header="Ruta"></Column> */}
         <Column field="fecha" header="Fecha"></Column>
         <Column field="hora" header="Hora"></Column>
         <Column field="modulo" header="Modulo"></Column>

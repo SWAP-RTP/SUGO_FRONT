@@ -1,4 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
+import { useState } from "react";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -12,7 +13,30 @@ import { postHoraPresentacion } from "../services/presentacion.services";
 import { fechaactual, horaactual } from "../utils/Date";
 
 export const Hora_Presentacion = () => {
+  // traemos los datos de los modulos y economicos
   const { modulosOptions, ecoDisponibles } = useHook_General();
+
+  // usamo esto para validar la credencial
+  const [credencialValida, setCredencialValida] = useState<boolean | null>(
+    null,
+  );
+
+  const buscarCredencial = (valor: string) => {
+    if (!valor) {
+      setCredencialValida(null); // Si está vacío, no mostramos nada
+      return;
+    }
+
+    // Buscamos en los tres campos: primer_t, segundo_t, tercer_t
+    const encontrado = ecoDisponibles.some(
+      (turno: any) =>
+        turno.primer_t == valor ||
+        turno.segundo_t == valor ||
+        turno.tercer_t == valor,
+    );
+    // guardamos el resultado
+    setCredencialValida(encontrado);
+  };
 
   // usamos esto para el react form
   const {
@@ -27,6 +51,7 @@ export const Hora_Presentacion = () => {
     },
   });
 
+  // usamo esto para enviar los datos al backend
   const onSubmit = async (data: any) => {
     data.hora = horaactual();
     data.fecha = fechaactual();
@@ -46,26 +71,47 @@ export const Hora_Presentacion = () => {
                   {/* titulo */}
                   <div className="titulo">
                     <h1>Hora de Presentación</h1>
-                    <p>{fechaactual()}</p>
-                    <p>{horaactual()}</p>
                     <hr />
                   </div>
 
                   <div className="d-flex align-items-center gap-4 justify-content-center">
                     {/* credencial */}
+                    {/* lo guardamos en el estado local de react form */}
                     <Controller
                       name="credencial"
+                      // control es la funcion que maneja el estado de los inputs
                       control={control}
+                      // rules son las validaciones que se le hacen al input
                       rules={{ required: "La credencial es obligatoria" }}
+                      // render es la funcion que renderiza el input
                       render={({ field, fieldState }) => (
+                        // p-float-label es para que el label se mueva cuando el input tiene valor
                         <span className="p-float-label w-100">
                           <InputText
-                            id={field.name}
+                            // value es el valor del input
                             value={field.value}
-                            onChange={(e) => field.onChange(e.target.value)}
+                            // onChange es la funcion que se ejecuta cuando el input cambia
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              buscarCredencial(e.target.value);
+                            }}
                             className={`select ${fieldState.error ? "p-invalid" : ""}`}
                           />
                           <label htmlFor={field.name}>Credencial</label>
+                          {/* si credencialValida es false mostramos un mensaje de error */}
+                          {credencialValida === false && (
+                            <small style={{ color: "red" }}>
+                              No hay coincidencias
+                            </small>
+                          )}
+
+                          {/* si credencialValida es true mostramos un mensaje de exito */}
+                          {credencialValida === true && (
+                            <small style={{ color: "green" }}>
+                              Credencial encontrada
+                            </small>
+                          )}
+
                           {fieldState.error && (
                             <small className="p-error">
                               {fieldState.error.message}
@@ -142,7 +188,10 @@ export const Hora_Presentacion = () => {
                       label="Limpiar"
                       severity="danger"
                       style={{ height: "50px" }}
-                      onClick={() => reset()}
+                      onClick={() => {
+                        reset();
+                        setCredencialValida(null);
+                      }}
                     />
                   </div>
 
