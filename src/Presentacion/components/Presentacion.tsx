@@ -1,5 +1,3 @@
-import { useForm, Controller } from "react-hook-form";
-import { useState } from "react";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -8,56 +6,26 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Presentacion_tabla } from "./Presentacion_tabla";
 import { useHook_General } from "../../General/hooks/useHook";
-import { postHoraPresentacion } from "../services/presentacion.services";
-
-import { fechaactual, horaactual } from "../utils/Date";
+import { DataSave } from "../utils/FormData";
+import { Controller } from "react-hook-form";
+import { fechaactual, RelojInput } from "../../General/utils/Date";
 
 export const Hora_Presentacion = () => {
+  const { hora } = RelojInput();
   // traemos los datos de los modulos y economicos
   const { modulosOptions, ecoDisponibles } = useHook_General();
 
-  // usamo esto para validar la credencial
-  const [credencialValida, setCredencialValida] = useState<boolean | null>(
-    null,
-  );
-
-  const buscarCredencial = (valor: string) => {
-    if (!valor) {
-      setCredencialValida(null); // Si está vacío, no mostramos nada
-      return;
-    }
-
-    // Buscamos en los tres campos: primer_t, segundo_t, tercer_t
-    const encontrado = ecoDisponibles.some(
-      (turno: any) =>
-        turno.primer_t == valor ||
-        turno.segundo_t == valor ||
-        turno.tercer_t == valor,
-    );
-    // guardamos el resultado
-    setCredencialValida(encontrado);
-  };
-
-  // usamos esto para el react form
+  // 2. Ejecutamos tu Custom Hook (le pasamos ecoDisponibles)
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      credencial: "",
-      modulo: null,
-    },
-  });
-
-  // usamo esto para enviar los datos al backend
-  const onSubmit = async (data: any) => {
-    data.hora = horaactual();
-    data.fecha = fechaactual();
-    await postHoraPresentacion(data);
-    console.log("Datos del formulario:", data);
-  };
+    buscarCredencial,
+    credencialValida,
+    setCredencialValida,
+    onSubmit,
+  } = DataSave(ecoDisponibles);
 
   return (
     <>
@@ -95,7 +63,7 @@ export const Hora_Presentacion = () => {
                               field.onChange(e.target.value);
                               buscarCredencial(e.target.value);
                             }}
-                            className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                            className={`select  ${fieldState.error ? "p-invalid" : ""}`}
                           />
                           <label htmlFor={field.name}>Credencial</label>
                           {/* si credencialValida es false mostramos un mensaje de error */}
@@ -148,7 +116,7 @@ export const Hora_Presentacion = () => {
                   </div>
 
                   <div
-                    className="d-flex align-items-center gap-4 justify-content-center"
+                    className="d-flex align-items-center gap-4 mt-2 justify-content-center"
                     style={{ paddingTop: "1.5rem" }}
                   >
                     {/* Hora */}
@@ -156,7 +124,7 @@ export const Hora_Presentacion = () => {
                       <InputText
                         name="hora"
                         className="select"
-                        value={horaactual()}
+                        value={hora}
                         disabled
                       />
                       <label htmlFor="Hora">Hora</label>

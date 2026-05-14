@@ -14,3 +14,23 @@ export const getEcoDisponibles = async () => {
     throw error;
   }
 };
+
+// POST
+export const postPvEstados = async (data: any) => {
+  try {
+    const response = await fetch(`${API_URL}/pv_estados`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("🚨 ERROR EXACTO DEL BACKEND:", errorData);
+      throw new Error("Error devuelto por la API");
+    }
+    return response.json();
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
