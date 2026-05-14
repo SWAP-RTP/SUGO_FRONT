@@ -1,4 +1,3 @@
-import { useForm, Controller } from "react-hook-form";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -7,32 +6,26 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Presentacion_tabla } from "./Presentacion_tabla";
 import { useHook_General } from "../../General/hooks/useHook";
-import { postHoraPresentacion } from "../services/presentacion.services";
-
-import { fechaactual, horaactual } from "../utils/Date";
+import { DataSave } from "../utils/FormData";
+import { Controller } from "react-hook-form";
+import { fechaactual, RelojInput } from "../../General/utils/Date";
 
 export const Hora_Presentacion = () => {
+  const { hora } = RelojInput();
+  // traemos los datos de los modulos y economicos
   const { modulosOptions, ecoDisponibles } = useHook_General();
 
-  // usamos esto para el react form
+  // 2. Ejecutamos tu Custom Hook (le pasamos ecoDisponibles)
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      credencial: "",
-      modulo: null,
-    },
-  });
-
-  const onSubmit = async (data: any) => {
-    data.hora = horaactual();
-    data.fecha = fechaactual();
-    await postHoraPresentacion(data);
-    console.log("Datos del formulario:", data);
-  };
+    buscarCredencial,
+    credencialValida,
+    setCredencialValida,
+    onSubmit,
+  } = DataSave(ecoDisponibles);
 
   return (
     <>
@@ -46,26 +39,47 @@ export const Hora_Presentacion = () => {
                   {/* titulo */}
                   <div className="titulo">
                     <h1>Hora de Presentación</h1>
-                    <p>{fechaactual()}</p>
-                    <p>{horaactual()}</p>
                     <hr />
                   </div>
 
                   <div className="d-flex align-items-center gap-4 justify-content-center">
                     {/* credencial */}
+                    {/* lo guardamos en el estado local de react form */}
                     <Controller
                       name="credencial"
+                      // control es la funcion que maneja el estado de los inputs
                       control={control}
+                      // rules son las validaciones que se le hacen al input
                       rules={{ required: "La credencial es obligatoria" }}
+                      // render es la funcion que renderiza el input
                       render={({ field, fieldState }) => (
+                        // p-float-label es para que el label se mueva cuando el input tiene valor
                         <span className="p-float-label w-100">
                           <InputText
-                            id={field.name}
+                            // value es el valor del input
                             value={field.value}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                            // onChange es la funcion que se ejecuta cuando el input cambia
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              buscarCredencial(e.target.value);
+                            }}
+                            className={`select  ${fieldState.error ? "p-invalid" : ""}`}
                           />
                           <label htmlFor={field.name}>Credencial</label>
+                          {/* si credencialValida es false mostramos un mensaje de error */}
+                          {credencialValida === false && (
+                            <small style={{ color: "red" }}>
+                              No hay coincidencias
+                            </small>
+                          )}
+
+                          {/* si credencialValida es true mostramos un mensaje de exito */}
+                          {credencialValida === true && (
+                            <small style={{ color: "green" }}>
+                              Credencial encontrada
+                            </small>
+                          )}
+
                           {fieldState.error && (
                             <small className="p-error">
                               {fieldState.error.message}
@@ -102,7 +116,7 @@ export const Hora_Presentacion = () => {
                   </div>
 
                   <div
-                    className="d-flex align-items-center gap-4 justify-content-center"
+                    className="d-flex align-items-center gap-4 mt-2 justify-content-center"
                     style={{ paddingTop: "1.5rem" }}
                   >
                     {/* Hora */}
@@ -110,7 +124,7 @@ export const Hora_Presentacion = () => {
                       <InputText
                         name="hora"
                         className="select"
-                        value={horaactual()}
+                        value={hora}
                         disabled
                       />
                       <label htmlFor="Hora">Hora</label>
@@ -142,7 +156,10 @@ export const Hora_Presentacion = () => {
                       label="Limpiar"
                       severity="danger"
                       style={{ height: "50px" }}
-                      onClick={() => reset()}
+                      onClick={() => {
+                        reset();
+                        setCredencialValida(null);
+                      }}
                     />
                   </div>
 

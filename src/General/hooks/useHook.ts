@@ -1,6 +1,6 @@
 import { useModulos } from "./useModulos";
 import { useMotivo } from "./useMotivo";
-import { useDate } from "./useDate";
+
 import { useModalidades } from "./useModalidades";
 import { useRutas } from "./useRutas";
 import { useMotivoRecepcion } from "./useMotivo";
@@ -22,14 +22,12 @@ export const useHook_General = () => {
   const { periodosOptions, periodoPorDefecto } = usePeriodos();
   const { ecoDisponibles } = useEcoDisponibles();
   const { presentacion } = usePresentacion();
-  const date = useDate();
 
   return {
     modulosOptions,
     motivosOptions,
     modalidadesOptions,
     rutasOptions,
-    date,
     motivosOptionsRecepcion,
     periodosOptions,
     periodoPorDefecto,

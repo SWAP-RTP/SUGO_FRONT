@@ -10,7 +10,7 @@ import { useHook_General } from "../../General/hooks/useHook";
 import { TerminoJornada } from "./TerminoJornada";
 import { ServicioMb } from "./ServicioMb";
 import { Datatables } from "../../General/components/Datatables";
-import { usePeticiones } from "../../General/hooks/usePeticiones";
+// import { usePeticiones } from "../../General/hooks/usePeticiones";
 import { obtenerPvEstados_Recepcion } from "../../General/services/pv_estados.services";
 import { Card_Eco } from "../../General/components/Card_Eco";
 //UTILS
@@ -24,7 +24,7 @@ import { Resguardo } from "./Resguardo";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-//Estado inicial del formulario 
+//Estado inicial del formulario
 const FormularioInicial = {
   eco: "",
   selectModulo: null,
@@ -35,7 +35,7 @@ const FormularioInicial = {
   modalidadSelect: null,
   rutaSelect: null,
   cc: null,
-  selectedTermino: null
+  selectedTermino: null,
 };
 
 const COMPONENTES_MOTIVOS_RECEPCION: Record<string, React.ElementType> = {
@@ -52,7 +52,7 @@ const COMPONENTES_MOTIVOS_RECEPCION: Record<string, React.ElementType> = {
 
 export const FormularioRecepcion = () => {
   //HOOKS USADOS EN EL COMPONENTE
-  const { guardarModulo } = usePeticiones();
+  // const { guardarModulo } = usePeticiones();
   const { modulosOptions, motivosOptionsRecepcion, date } = useHook_General();
   const [formularioData, setformularioData] = useState(FormularioInicial);
   const [pvEstados, setPvEstados] = useState([]);
@@ -60,7 +60,6 @@ export const FormularioRecepcion = () => {
   const [error, setError] = useState(null);
   const [ecoEncontrado, setecoEncontrado] = useState<any>(null);
   const toast = useRef<Toast>(null);
-
 
   //LIMPIEZA DE LA FECHA Y HORA
   const formatearFecha = (fecha) => {
@@ -70,26 +69,31 @@ export const FormularioRecepcion = () => {
       month: "2-digit",
       year: "2-digit",
       hour: "2-digit",
-      minute: "2-digit"
+      minute: "2-digit",
     });
-  }
+  };
 
   // DECLARAMOS LAS COLUMNAS DE DATATABLE
   const columnas = [
     { title: "ECO", data: "eco", responsivePriority: 1 },
     { title: "MODULO", data: "modulo", responsivePriority: 2 },
     { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
-    { title: "MOMENTO", data: "momento", responsivePriority: 4, render: (data) => formatearFecha(data) },
+    {
+      title: "MOMENTO",
+      data: "momento",
+      responsivePriority: 4,
+      render: (data) => formatearFecha(data),
+    },
     { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
     { title: "RUTA", data: "ruta", responsivePriority: 7 },
     { title: "MODALIDAD", data: "ruta_modalidad", responsivePriority: 8 },
     { title: "OPERADOR", data: "op_cred", responsivePriority: 9 },
     { title: "TURNO", data: "op_turno", responsivePriority: 10 },
-    { title: "EXTINTOR", data: "extintor", responsivePriority: 11 }
+    { title: "EXTINTOR", data: "extintor", responsivePriority: 11 },
   ];
 
-  //FETCH EN UNA FUNCION REUTILIZABLE 
+  //FETCH EN UNA FUNCION REUTILIZABLE
   const fetchPvEstados = useCallback(async () => {
     try {
       setLoading(true);
@@ -103,10 +107,9 @@ export const FormularioRecepcion = () => {
     } finally {
       setLoading(false);
     }
-
   }, []);
 
-  //CARGAMOS LOS DATOS DESDE LA API 
+  //CARGAMOS LOS DATOS DESDE LA API
   useEffect(() => {
     fetchPvEstados();
   }, [fetchPvEstados]);
@@ -118,7 +121,6 @@ export const FormularioRecepcion = () => {
       [field]: value,
     }));
   }, []);
-
 
   // Formatear fecha y hora
   const horaActual = useMemo(
@@ -140,7 +142,7 @@ export const FormularioRecepcion = () => {
       toast.current?.show({
         severity: "warn",
         summary: "Atencion",
-        detail: "Seleccione un modulo"
+        detail: "Seleccione un modulo",
       });
       return;
     }
@@ -150,7 +152,7 @@ export const FormularioRecepcion = () => {
       toast.current?.show({
         severity: "success",
         summary: "Exito",
-        detail: "Datos guardados correctamente"
+        detail: "Datos guardados correctamente",
       });
       setformularioData(FormularioInicial);
       fetchPvEstados();
@@ -158,7 +160,7 @@ export const FormularioRecepcion = () => {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "Hubo un error al guardar los datos"
+        detail: "Hubo un error al guardar los datos",
       });
     }
   }, [formularioData, fetchPvEstados]);
@@ -169,23 +171,30 @@ export const FormularioRecepcion = () => {
   }, []);
 
   //HANDLER ELIMINAR
-  const handleEliminar = useCallback(async (rowData: any) => {
-    try {
-      const response = await fetch(`${API_URL}/pv_estados/${rowData.id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        toast.current?.show({
-          severity: "success",
-          summary: "Eliminado",
-          detail: "Registro eliminado correctamente"
+  const handleEliminar = useCallback(
+    async (rowData: any) => {
+      try {
+        const response = await fetch(`${API_URL}/pv_estados/${rowData.id}`, {
+          method: "DELETE",
         });
-        await fetchPvEstados();
+        if (response.ok) {
+          toast.current?.show({
+            severity: "success",
+            summary: "Eliminado",
+            detail: "Registro eliminado correctamente",
+          });
+          await fetchPvEstados();
+        }
+      } catch (err) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Hubo un error al eliminar el registro",
+        });
       }
-    } catch (err) {
-      toast.current?.show({ severity: "error", summary: "Error", detail: "Hubo un error al eliminar el registro" });
-    }
-  }, [fetchPvEstados]);
+    },
+    [fetchPvEstados],
+  );
 
   //HANDLER PARA BUSCAR EL ECONOMICO CUANDO SE INGRESA EL NUMERO
   const handleEcoChange = useCallback((value: string) => {
@@ -248,7 +257,9 @@ export const FormularioRecepcion = () => {
                     className="select w-100"
                     inputId="dd-motivos-recepcion"
                     value={formularioData.motivos_recepcion_select}
-                    onChange={(e) => handleFormChange("motivos_recepcion_select", e.value)}
+                    onChange={(e) =>
+                      handleFormChange("motivos_recepcion_select", e.value)
+                    }
                     options={motivosOptionsRecepcion}
                     optionLabel="desc"
                   />
@@ -270,7 +281,7 @@ export const FormularioRecepcion = () => {
                     placeholder="Hora"
                     disabled
                     className="w-100"
-                    style={{ textAlign: 'center' }}
+                    style={{ textAlign: "center" }}
                   />
                 </div>
                 <div className="w-100 flex justify-content-center">
@@ -280,14 +291,24 @@ export const FormularioRecepcion = () => {
                     placeholder="Fecha"
                     disabled
                     className="w-100"
-                    style={{ textAlign: 'center' }}
+                    style={{ textAlign: "center" }}
                   />
                 </div>
               </div>
 
               <div className="d-flex justify-content-center gap-3 mt-4 mb-4">
-                <Button icon="pi pi-check" label="Enviar" severity="success" onClick={handleEnviar} />
-                <Button icon="pi pi-times" label="Limpiar" severity="danger" onClick={handleLimpiar} />
+                <Button
+                  icon="pi pi-check"
+                  label="Enviar"
+                  severity="success"
+                  onClick={handleEnviar}
+                />
+                <Button
+                  icon="pi pi-times"
+                  label="Limpiar"
+                  severity="danger"
+                  onClick={handleLimpiar}
+                />
               </div>
             </div>
           </div>
