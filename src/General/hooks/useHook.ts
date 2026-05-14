@@ -22,6 +22,7 @@ export const useHook_General = () => {
   const { periodosOptions, periodoPorDefecto } = usePeriodos();
   const { ecoDisponibles } = useEcoDisponibles();
   const { presentacion } = usePresentacion();
+  const date = new Date();
 
   return {
     modulosOptions,
@@ -33,5 +34,6 @@ export const useHook_General = () => {
     periodoPorDefecto,
     ecoDisponibles,
     presentacion,
+    date,
   };
 };

@@ -18,7 +18,7 @@ import { Servicio } from "./motivos/Servicio";
 import { Verificacion } from "./motivos/Verificacion";
 import { TallerExterno } from "./motivos/TallerExterno";
 import { Garantia } from "./motivos/Garantia";
-import { ServicioMB } from "./motivos/servicioMB";
+import { ServicioMB } from "./motivos/ServicioMB";
 import { Reemplacamiento } from "./motivos/Reemplacamiento";
 import { TransferenciaI } from "./motivos/TransferenciaI";
 import { SefiNuevo } from "./motivos/SefiNuevo";
@@ -171,7 +171,7 @@ export const FormularioDespacho = () => {
                             className="select w-100"
                             onChange={(e) => {
                               field.onChange(e.value); // Le avisa a React Hook Form
-                              setMotivo(e.value);      // Actualiza tu estado para renderizar el sub-componente
+                              setMotivo(e.value); // Actualiza tu estado para renderizar el sub-componente
                             }}
                           />
                           <label htmlFor="dd-motivos">Motivos</label>

@@ -14,7 +14,7 @@ import { Datatables } from "../../General/components/Datatables";
 import { obtenerPvEstados_Recepcion } from "../../General/services/pv_estados.services";
 import { Card_Eco } from "../../General/components/Card_Eco";
 //UTILS
-import { crearPvEstadoPayloadRec } from "../../General/utils/crearPvEstadoPayload";
+// import { crearPvEstadoPayloadRec } from "../../General/utils/crearPvEstadoPayload";
 import { FaltaCombustibles } from "./FaltaCombustibles";
 import { FaltaRelevo } from "./FaltaRelevo";
 import { MantenimientoCorrectivo } from "./MantenimientoCorrectivo";
@@ -46,9 +46,8 @@ const COMPONENTES_MOTIVOS_RECEPCION: Record<string, React.ElementType> = {
   "MANTENIMIENTO CORRECTIVO": MantenimientoCorrectivo,
   "MANTENIMIENTO PREVENTIVO (GSP)": MantenimientoPreventivo,
   "REGRESO POR AVALUO": RegresoAvaluo,
-  "RESGUARDO (J)": Resguardo
-}
-
+  "RESGUARDO (J)": Resguardo,
+};
 
 export const FormularioRecepcion = () => {
   //HOOKS USADOS EN EL COMPONENTE
@@ -197,20 +196,26 @@ export const FormularioRecepcion = () => {
   );
 
   //HANDLER PARA BUSCAR EL ECONOMICO CUANDO SE INGRESA EL NUMERO
-  const handleEcoChange = useCallback((value: string) => {
-    handleFormChange("eco", value);
-    if (!value) {
-      setecoEncontrado(null);
-      return;
-    }
-    //BUSCA EN PVESTADOS EL ECO QUE COINCIDA
-    const encontrado = pvEstados.find((item: any) =>
-      String(item.eco) === String(value));
-    setecoEncontrado(encontrado || null);
-  }, [pvEstados]);
+  const handleEcoChange = useCallback(
+    (value: string) => {
+      handleFormChange("eco", value);
+      if (!value) {
+        setecoEncontrado(null);
+        return;
+      }
+      //BUSCA EN PVESTADOS EL ECO QUE COINCIDA
+      const encontrado = pvEstados.find(
+        (item: any) => String(item.eco) === String(value),
+      );
+      setecoEncontrado(encontrado || null);
+    },
+    [pvEstados],
+  );
 
-  const MotivoRender = COMPONENTES_MOTIVOS_RECEPCION[formularioData.motivos_recepcion_select?.desc || ""];
-
+  const MotivoRender =
+    COMPONENTES_MOTIVOS_RECEPCION[
+      formularioData.motivos_recepcion_select?.desc || ""
+    ];
 
   return (
     <>
@@ -267,10 +272,12 @@ export const FormularioRecepcion = () => {
                 </span>
               </div>
 
-              {MotivoRender && <MotivoRender
-                values={formularioData}
-                onChange={handleFormChange}
-              />}
+              {MotivoRender && (
+                <MotivoRender
+                  values={formularioData}
+                  onChange={handleFormChange}
+                />
+              )}
 
               {/* fecha y hora debajo de los inputs principales */}
               <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">
