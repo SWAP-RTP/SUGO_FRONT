@@ -167,15 +167,13 @@ export const FormularioDespacho = () => {
                         <span className="p-float-label">
                           <Dropdown
                             id={field.name}
-                            value={field.value}
+                            value={field.value}         // objeto completo → PrimeReact lo muestra ✅
                             options={motivosOptions}
                             optionLabel="desc"
                             className="select w-100"
                             onChange={(e) => {
-                              // DEBUG: verificar que el nuevo código corre y qué contiene e.value
-                              // console.log("🔍 motivo seleccionado:", e.value, "→ id:", e.value?.id);
-                              field.onChange(e.value.id);  // → motivo_id = número entero ✅
-                              setMotivo(e.value);           // → para renderizar el sub-componente
+                              field.onChange(e.value);  // guarda el objeto completo en el form
+                              setMotivo(e.value);       // para renderizar el sub-componente
                             }}
                           />
                           <label htmlFor="dd-motivos">Motivos</label>
