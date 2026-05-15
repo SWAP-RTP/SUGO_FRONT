@@ -1,8 +1,9 @@
 import { Dropdown } from "primereact/dropdown";
 import { FileUpload } from "primereact/fileupload";
 import { Button } from "primereact/button";
-import { TabView, TabPanel } from "primereact/tabview";
+// import { TabView, TabPanel } from "primereact/tabview";
 import { useEffect } from "react";
+import { useAuth } from "../../General/hooks/useAuth";
 import type { useRolesExcel } from "../hooks/useRolesExcel";
 import "../css/rol.css";
 
@@ -22,19 +23,18 @@ export const RolesCargaFiltros = ({
   generalData,
 }: RolesCargaFiltrosProps) => {
   // 1. Obtener los datos del usuario logueado desde la sesión
-  const sessionUserStr = sessionStorage.getItem("user");
-  const sessionUser = sessionUserStr ? JSON.parse(sessionUserStr) : null;
+  const { usuario } = useAuth();
 
   // 2. Determinar el módulo del usuario (si es "0", es administrador general)
-  const userModuloStr = String(sessionUser?.modulo || "0");
+  const userModuloStr = String(usuario?.data?.modulo || "0");
   const isModuloAdmin = userModuloStr === "0";
 
   // 3. Filtrar opciones de módulos (Mostrar todos si es Admin, o solo el suyo si no lo es)
   const modulosFiltrados = isModuloAdmin
     ? generalData.modulosOptions
     : generalData.modulosOptions.filter(
-        (m) => String(m.value) === userModuloStr,
-      );
+      (m) => String(m.value) === userModuloStr,
+    );
 
   // 4. Auto-seleccionar el módulo si el usuario tiene uno específico
   useEffect(() => {

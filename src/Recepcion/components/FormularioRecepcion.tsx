@@ -7,20 +7,19 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
-import { TerminoJornada } from "./TerminoJornada";
-import { ServicioMb } from "./ServicioMb";
+import { useAuth } from "../../General/hooks/useAuth";
 import { Datatables } from "../../General/components/Datatables";
-// import { usePeticiones } from "../../General/hooks/usePeticiones";
 import { obtenerPvEstados_Recepcion } from "../../General/services/pv_estados.services";
 import { Card_Eco } from "../../General/components/Card_Eco";
 //UTILS
-// import { crearPvEstadoPayloadRec } from "../../General/utils/crearPvEstadoPayload";
 import { FaltaCombustibles } from "./FaltaCombustibles";
 import { FaltaRelevo } from "./FaltaRelevo";
 import { MantenimientoCorrectivo } from "./MantenimientoCorrectivo";
 import { MantenimientoPreventivo } from "./MantenimientoPreventivo";
 import { RegresoAvaluo } from "./RegresoAvaluo";
 import { Resguardo } from "./Resguardo";
+import { TerminoJornada } from "./TerminoJornada";
+import { ServicioMb } from "./ServicioMb";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -51,7 +50,7 @@ const COMPONENTES_MOTIVOS_RECEPCION: Record<string, React.ElementType> = {
 
 export const FormularioRecepcion = () => {
   //HOOKS USADOS EN EL COMPONENTE
-  // const { guardarModulo } = usePeticiones();
+  const { usuario } = useAuth();
   const { modulosOptions, motivosOptionsRecepcion, date } = useHook_General();
   const [formularioData, setformularioData] = useState(FormularioInicial);
   const [pvEstados, setPvEstados] = useState([]);
@@ -59,6 +58,21 @@ export const FormularioRecepcion = () => {
   const [error, setError] = useState(null);
   const [ecoEncontrado, setecoEncontrado] = useState<any>(null);
   const toast = useRef<Toast>(null);
+
+  //LOGICA PARA OBTENER LOS DATOS DEL USUARIO LOGUEADO
+  useEffect(() => {
+    if (usuario?.data?.modulo && modulosOptions.length > 0) {
+      const moduloEncontrado = modulosOptions.find(
+        (m: any) => String(m.modulo) === String(usuario.data.modulo)
+      );
+      if (moduloEncontrado) {
+        setformularioData(prev => ({
+          ...prev,
+          selectModulo: moduloEncontrado,
+        }));
+      }
+    }
+  }, [usuario, modulosOptions]);
 
   //LIMPIEZA DE LA FECHA Y HORA
   const formatearFecha = (fecha) => {
@@ -214,7 +228,7 @@ export const FormularioRecepcion = () => {
 
   const MotivoRender =
     COMPONENTES_MOTIVOS_RECEPCION[
-      formularioData.motivos_recepcion_select?.desc || ""
+    formularioData.motivos_recepcion_select?.desc || ""
     ];
 
   return (
@@ -225,7 +239,7 @@ export const FormularioRecepcion = () => {
       <TabView>
         <TabPanel className="tabpanel" header="Recepcion">
           <div className="despacho-contenedor d-flex flex-wrap justify-content-center align-items-start gap-4">
-            {ecoEncontrado && <Card_Eco data={ecoEncontrado} />}
+            {/* {ecoEncontrado && <Card_Eco data={ecoEncontrado} />} */}
             <div className="card-recepcion">
               <div className="titulo">
                 <h1>Recepcion</h1>
@@ -237,10 +251,13 @@ export const FormularioRecepcion = () => {
                 <span className="p-float-label">
                   <Dropdown
                     inputId="dd-modulo"
-                    value={formularioData.selectModulo}
-                    onChange={(e) => handleFormChange("selectModulo", e.value)}
                     options={modulosOptions}
+                    value={formularioData.selectModulo?.id || formularioData.selectModulo}
+                    onChange={(e) => handleFormChange("selectModulo", e.value)}
+                    optionLabel="descripcion"
+                    dataKey="id"
                     className="select w-100"
+                    disabled
                   />
                   <label htmlFor="dd-modulo">Modulo</label>
                 </span>
