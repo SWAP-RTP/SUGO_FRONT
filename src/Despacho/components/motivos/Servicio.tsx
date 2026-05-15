@@ -1,9 +1,14 @@
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
+import { Controller } from "react-hook-form";
 // hooks personalizados
 import { useHook_General } from "../../../General/hooks/useHook";
 
-export const Servicio = () => {
+interface ServicioProps {
+  control: any; // viene del formulario padre (FormularioDespacho)
+}
+
+export const Servicio = ({ control }: ServicioProps) => {
   const { modalidadesOptions, rutasOptions } = useHook_General();
 
   const ecoDe = [
@@ -15,10 +20,17 @@ export const Servicio = () => {
     <>
       <div className="formulario-grid sub-form">
         {/* credencial */}
-        <span className="p-float-label w-100">
-          <InputText className="select" />
-          <label htmlFor="username">Credencial</label>
-        </span>
+        <Controller
+          control={control}
+          name="credencial"
+          rules={{ required: "La credencial es obligatoria" }}
+          render={({ field }) => (
+            <span className="p-float-label w-100">
+              <InputText className="select" {...field} />
+              <label htmlFor="Credencial">Credencial</label>
+            </span>
+          )}
+        />
 
         {/* turno */}
         <span className="p-float-label">
