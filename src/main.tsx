@@ -8,12 +8,12 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "./General/css/App.css";
 import "./Presentacion/css/presentacion.css";
-// import { AuthProvider } from "./Auth/context/AuthContext";
+import { AuthProvider } from "./Auth/context/AuthContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    {/* <AuthProvider> */}
+    <AuthProvider>
       <App />
-    {/* </AuthProvider> */}
+    </AuthProvider>
   </StrictMode>
 );

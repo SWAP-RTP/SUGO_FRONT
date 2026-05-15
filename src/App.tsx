@@ -7,41 +7,35 @@ import { Despacho } from "./Despacho";
 import { Presentacion } from "./Presentacion";
 import { Rol } from "./Rol";
 import { useAuth } from "./General/hooks/useAuth";
+import { ProtectedRoute } from "./Auth/components/ProtectedRoute";
 
 export const App = () => {
-  const { user, getUserFromTokenUrl, getUserFromSession, handleLogout } =
-    useAuth();
-
-  useEffect(() => {
-    // Al cargar la app, revisamos si viene un token en la URL
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-
-    console.log(" App cargada. Token desde URL:", token); // Debug
-
-    if (token) {
-      console.log("✓ Token detectado en URL, decodificando...");
-      // Le pasamos el token directamente a la función
-      getUserFromTokenUrl(token);
-      // Limpiar la URL para que no quede el token expuesto
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else {
-      console.log("⚠️ No hay token en URL, buscando en sessionStorage...");
-      // Si no viene en la URL, buscamos si ya había sesión guardada
-      getUserFromSession();
-    }
-  }, []);
+  const { usuario, logout } = useAuth();
 
   return (
     <BrowserRouter>
-      {/* Le pasamos el user y la función de logout al Header */}
-      <Header user={user} onLogout={handleLogout} />
+      <Header user={usuario} onLogout={logout} />
       <Routes>
-        <Route path="/" element={<Sugo_main />} />
-        <Route path="/despacho" element={<Despacho />} />
-        <Route path="/recepcion" element={<Recepcion />} />
-        <Route path="/presentacion" element={<Presentacion />} />
-        <Route path="/rol" element={<Rol />} />
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Sugo_main />
+          </ProtectedRoute>} />
+        <Route path="/despacho" element={
+          <ProtectedRoute>
+            <Despacho />
+          </ProtectedRoute>} />
+        <Route path="/recepcion" element={
+          <ProtectedRoute>
+            <Recepcion />
+          </ProtectedRoute>} />
+        <Route path="/presentacion" element={
+          <ProtectedRoute>
+            <Presentacion />
+          </ProtectedRoute>} />
+        <Route path="/rol" element={
+          <ProtectedRoute>
+            <Rol />
+          </ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );

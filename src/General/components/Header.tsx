@@ -1,9 +1,8 @@
 import { Menubar } from "primereact/menubar";
 import { Tooltip } from "primereact/tooltip";
 import { useNavigate } from "react-router-dom";
-import { useRef } from "react";
 
-export const Header = ({ user, onLogout }: any) => {
+export const Header = ({ user }: any) => {
   // uso del hook useNavigate para la navegación programática entre rutas
   const navigate = useNavigate();
 
@@ -36,15 +35,14 @@ export const Header = ({ user, onLogout }: any) => {
     },
   ];
 
-  // Referencia para el botón de cerrar sesión (logout)
-  const logoutBtnRef = useRef(null);
-
   const today = new Date().toLocaleDateString("es-MX", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   });
+
+  // console.log(user);
 
   // Elementos que se mostrarán al final (lado derecho) del Menubar
   const end = (
@@ -68,7 +66,7 @@ export const Header = ({ user, onLogout }: any) => {
               margin: 0,
             }}
           >
-            {user?.name || "Dev"}
+            {user?.data.name || "Dev"}
           </span>
           <span
             style={{
@@ -79,7 +77,7 @@ export const Header = ({ user, onLogout }: any) => {
               margin: 0,
             }}
           >
-            Módulo: {user?.modulo || "No asignado"}
+            Módulo: {user?.data.modulo || "No asignado"}
           </span>
           <span
             style={{

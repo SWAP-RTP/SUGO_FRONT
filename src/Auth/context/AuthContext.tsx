@@ -1,45 +1,72 @@
-// import React, { createContext, useState, useEffect, ReactNode } from 'react';
-// import type { Permisos } from '../types/auth.types';
+import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import type { Usuario } from '../types/auth.types';
 
-// import { obtenerPermisosSimulados } from '../services/auth.services';
+interface AuthContextType {
+    usuario: Usuario | null;
+    token: string | null;
+    estaAutenticado: boolean;
+    cargando: boolean;
+    logout: () => void;
+}
 
-// // 1. Definimos qué información va a "flotar" por toda nuestra aplicación
-// interface AuthContextType {
-//     permisos: Permisos[]; // El array de permisos
-//     cargando: boolean;    // Para saber si aún estamos "trayendo" los datos
-// }
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// // 2. Creamos el contexto vacío inicialmente
-// export const AuthContext = createContext<AuthContextType>({
-//     permisos: [],
-//     cargando: true
-// });
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+    const [usuario, setUsuario] = useState<Usuario | null>(null);
+    const [token, setToken] = useState<string | null>(null);
+    const [cargando, setCargando] = useState<boolean>(true);
 
-// // 3. Creamos el componente "Proveedor" que va a envolver nuestra App
-// export const AuthProvider = ({ children }: { children: ReactNode }) => {
-//     const [permisos, setPermisos] = useState<Permisos[]>([]);
-//     const [cargando, setCargando] = useState<boolean>(true);
+    useEffect(() => {
+        const inicializarAuth = () => {
+            //SE BUSCA EL TOKEN DESDE LA URL 
+            const params = new URLSearchParams(window.location.search);
+            const tokenUrl = params.get('token');
 
-//     // Cuando este proveedor nazca, simulamos que vamos por los permisos
-//     useEffect(() => {
-//         const cargarPermisos = async () => {
-//             try {
-//                 const data = await obtenerPermisosSimulados();
-//                 setPermisos(data);
-//             } catch (error) {
-//                 console.error("Error al cargar permisos simulados", error);
-//             } finally {
-//                 setCargando(false);
-//             }
-//         };
+            // EN CASO DE QUE NO SE ENCUENTRE EN LA URL SE BUSCA DESDE EL STORAGE
+            const tokenFinal = tokenUrl || localStorage.getItem('token_sugo');
 
-//         cargarPermisos();
-//     }, []);
+            if (tokenFinal) {
+                try {
+                    const decoded: Usuario = jwtDecode(tokenFinal);
+                    const isExpired = (decoded as any).exp * 1000 < Date.now();
+                    if (isExpired) throw new Error("Token expirado");
 
-//     // 4. Todo lo que esté dentro de "value" podrá ser accedido desde cualquier pantalla
-//     return (
-//         <AuthContext.Provider value={{ permisos, cargando }}>
-//             {children}
-//         </AuthContext.Provider>
-//     );
-// };
+                    setToken(tokenFinal);
+                    setUsuario(decoded);
+                    localStorage.setItem('token_sugo', tokenFinal);
+
+                    // LIMPIAMOS EL TOKEN DE LA URL PARA QUE NO SE VEA EN EL FRONT
+                    if (tokenUrl) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                } catch (error) {
+                    console.error("Token inválido:", error);
+                    logout();
+                }
+            }
+            setCargando(false);
+        };
+
+        inicializarAuth();
+    }, []);
+
+    const logout = () => {
+        localStorage.removeItem('token_sugo');
+        setToken(null);
+        setUsuario(null);
+    };
+
+    return (
+        <AuthContext.Provider value={{
+            usuario,
+            token,
+            estaAutenticado: !!token,
+            cargando,
+            logout
+        }}>
+            {/* LA APP NO SE RENDERIZA HASTA QUE SEPA SI HAY UN USUSARIO O NO*/}
+            {!cargando && children}
+        </AuthContext.Provider>
+    );
+};
