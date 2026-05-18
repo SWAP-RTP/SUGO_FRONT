@@ -115,75 +115,115 @@ export const FormularioDespacho = () => {
 
                   <div className="formulario-grid">
                     {/* modulo */}
-
-                    <Controller
-                      name="modulo"
-                      // control es la funcion que maneja el estado de los inputs
-                      control={control}
-                      // rules son las validaciones que se le hacen al input
-                      rules={{ required: "Debe seleccionar un modulo" }}
-                      render={({ field, fieldState }) => (
-                        <span className="p-float-label">
-                          <Dropdown
-                            value={field.value}
-                            name="modulo"
-                            inputId="modulo"
-                            options={modulosOptions}
-                            className="select w-100"
-                            onChange={(e) => {
-                              field.onChange(e.value);
-                              setModulo(e.value);
-                            }}
-                          />
-                          <label htmlFor="dd-modulo">Modulo</label>
+                    <div>
+                      <Controller
+                        name="modulo"
+                        control={control}
+                        rules={{ required: "Debe seleccionar un modulo" }}
+                        render={({ field }) => (
+                          <span className="p-float-label w-100">
+                            <Dropdown
+                              value={field.value}
+                              name="modulo"
+                              inputId="modulo"
+                              options={modulosOptions}
+                              className="select w-100"
+                              onChange={(e) => {
+                                field.onChange(e.value);
+                                setModulo(e.value);
+                              }}
+                            />
+                            <label htmlFor="dd-modulo">Modulo</label>
+                          </span>
+                        )}
+                      />
+                      {errors.modulo && (
+                        <span
+                          style={{
+                            color: "red",
+                            fontSize: "0.875rem",
+                            marginTop: "0.25rem",
+                            display: "block",
+                          }}
+                        >
+                          {errors.modulo.message}
                         </span>
                       )}
-                    />
+                    </div>
 
                     {/* economico */}
-                    <Controller
-                      name="eco"
-                      control={control}
-                      rules={{ required: "El económico es obligatorio" }}
-                      render={({ field, fieldState }) => (
-                        <span className="p-float-label w-100">
-                          <InputText
-                            id={field.name}
-                            value={field.value}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            className={`select ${fieldState.error ? "p-invalid" : ""}`}
-                          />
-                          <label htmlFor="economico">Economico</label>
+                    <div>
+                      <Controller
+                        name="eco"
+                        control={control}
+                        rules={{ required: "El económico es obligatorio" }}
+                        render={({ field, fieldState }) => (
+                          <span className="p-float-label w-100">
+                            <InputText
+                              value={field.value}
+                              onChange={(e) => field.onChange(e.target.value)}
+                              className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                            />
+                            <label htmlFor="economico">Economico</label>
+                          </span>
+                        )}
+                      />
+                      {errors.eco && (
+                        <span
+                          style={{
+                            color: "red",
+                            fontSize: "0.875rem",
+                            marginTop: "0.25rem",
+                            display: "block",
+                          }}
+                        >
+                          {errors.eco.message}
                         </span>
                       )}
-                    />
+                    </div>
 
                     {/* motivos */}
-                    <Controller
-                      name="motivo_id"
-                      control={control}
-                      rules={{ required: "Debe seleccionar un motivo" }}
-                      render={({ field }) => (
-                        <span className="p-float-label">
-                          <Dropdown
-                            id={field.name}
-                            value={field.value}         // objeto completo → PrimeReact lo muestra ✅
-                            options={motivosOptions}
-                            optionLabel="desc"
-                            className="select w-100"
-                            onChange={(e) => {
-                              field.onChange(e.value);  // guarda el objeto completo en el form
-                              setMotivo(e.value);       // para renderizar el sub-componente
-                            }}
-                          />
-                          <label htmlFor="dd-motivos">Motivos</label>
+                    <div>
+                      <Controller
+                        name="motivo_id"
+                        control={control}
+                        rules={{ required: "Debe seleccionar un motivo" }}
+                        render={({ field }) => (
+                          <span className="p-float-label w-100">
+                            <Dropdown
+                              id={field.name}
+                              value={field.value}
+                              options={motivosOptions}
+                              optionLabel="desc"
+                              className="select w-100"
+                              onChange={(e) => {
+                                field.onChange(e.value);
+                                setMotivo(e.value);
+                              }}
+                            />
+                            <label htmlFor="dd-motivos">Motivos</label>
+                          </span>
+                        )}
+                      />
+                      {errors.motivo_id && (
+                        <span
+                          style={{
+                            color: "red",
+                            fontSize: "0.875rem",
+                            marginTop: "0.25rem",
+                            display: "block",
+                          }}
+                        >
+                          {errors.motivo_id.message}
                         </span>
                       )}
-                    />
+                    </div>
                   </div>
 
                   {/* Componente Dinámico — recibe control del formulario padre */}
-                  {MotivoRender && <MotivoRender control={control} />}
+                  {MotivoRender && (
+                    <MotivoRender control={control} errors={errors} />
+                  )}
 
                   {/* fecha y hora debajo de los inputs principales */}
                   <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">
