@@ -8,7 +8,8 @@ import { Controller } from "react-hook-form";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
 
-// import { Datatables } from "../../General/components/Datatables";
+import { Datatables } from "../../General/components/Datatables";
+// import { obtenerPvEstados } from "../../General/services/pv_estados.services";
 import { Pv_catalogo } from "./Pv_catalogo";
 import { fechaactual, RelojInput } from "../../General/utils/Date";
 
@@ -53,15 +54,16 @@ export const FormularioDespacho = () => {
   }, []);
 
   // const columnas = [
+  //   { title: "ID", data: "id", responsivePriority: 0 },
   //   { title: "ECO", data: "eco", responsivePriority: 1 },
   //   { title: "MODULO", data: "modulo", responsivePriority: 2 },
   //   { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
-  //   {
-  //     title: "MOMENTO",
-  //     data: "momento",
-  //     responsivePriority: 4,
-  //     render: (data) => formatearFecha(data),
-  //   },
+  //   // {
+  //   //   title: "MOMENTO",
+  //   //   data: "momento",
+  //   //   responsivePriority: 4,
+  //   //   render: (data) => formatearFecha(data),
+  //   // },
   //   { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
   //   { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
   //   { title: "RUTA", data: "ruta", responsivePriority: 7 },
@@ -70,6 +72,20 @@ export const FormularioDespacho = () => {
   //   { title: "TURNO", data: "op_turno", responsivePriority: 10 },
   //   { title: "EXTINTOR", data: "extintor", responsivePriority: 11 },
   // ];
+
+  // // Agregar después de los otros useEffect
+  // useEffect(() => {
+  //   const cargarDatos = async () => {
+  //     try {
+  //       const datos = await obtenerPvEstados();
+  //       setPvEstados(datos);
+  //     } catch (error) {
+  //       console.error("Error al cargar datos:", error);
+  //     }
+  //   };
+
+  //   cargarDatos();
+  // }, []);
 
   const COMPONENTES_MOTIVOS_DESPACHO: Record<string, React.ElementType> = {
     SERVICIO: Servicio,
