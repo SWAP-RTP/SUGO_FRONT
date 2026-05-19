@@ -19,10 +19,30 @@ export const DataSave = (ecoDisponibles: any[]) => {
   });
 
   const onSubmit = async (data: any) => {
-    data.hora = horaactual();
-    data.fecha = fechaactual();
-    await postHoraPresentacion(data);
-    console.log("Datos del formulario:", data);
+    // Validar que la credencial sea válida
+    if (!credencialValida) {
+      alert("Por favor, selecciona una credencial válida");
+      return;
+    }
+
+    // Validar que el módulo esté seleccionado
+    if (!data.modulo) {
+      alert("Por favor, selecciona un módulo");
+      return;
+    }
+
+    try {
+      data.hora = horaactual();
+      data.fecha = fechaactual();
+      const response = await postHoraPresentacion(data);
+      console.log("Presentación guardada exitosamente:", response);
+      alert("Presentación guardada correctamente");
+      reset();
+      setCredencialValida(null);
+    } catch (error: any) {
+      console.error("Error al guardar presentación:", error);
+      alert("Error al guardar la presentación: " + error.message);
+    }
   };
 
   const buscarCredencial = (valor: string) => {

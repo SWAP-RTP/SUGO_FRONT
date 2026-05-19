@@ -25,7 +25,7 @@ export const postPvEstados = async (data: any) => {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("🚨 ERROR EXACTO DEL BACKEND:", errorData);
+      console.error(" ERROR EXACTO DEL BACKEND:", errorData);
       throw new Error("Error devuelto por la API");
     }
     return response.json();

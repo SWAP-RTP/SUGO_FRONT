@@ -1,39 +1,190 @@
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
+// hooks personalizados
+import { useHook_General } from "../../../General/hooks/useHook";
+import { useState } from "react";
+import { Controller } from "react-hook-form";
 
-export const Reemplacamiento = () => {
+interface ServicioProps {
+  control: any; // viene del formulario padre (FormularioDespacho)
+  errors?: any; // para mostrar los errores de validación
+}
+
+export const Reemplacamiento = ({ control, errors }: ServicioProps) => {
+  const { modalidadesOptions, rutasOptions } = useHook_General();
+  const [ecoDValor, setEcoDValor] = useState(null);
+  const [modalidadValor, setModalidadValor] = useState(null);
+  const [rutaValor, setRutaValor] = useState(null);
+
+  const ecoDe = [
+    { label: "Planta", value: "1" },
+    { label: "Postura", value: "2" },
+  ];
+
   return (
     <>
       <div className="formulario-grid sub-form">
         {/* credencial */}
-        <span className="p-float-label w-100">
-          <InputText className="select" />
-          <label htmlFor="username">Credencial</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="op_cred"
+            rules={{ required: "La credencial es obligatoria" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="Credencial">Credencial</label>
+              </span>
+            )}
+          />
+          {errors?.op_cred && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.op_cred.message}
+            </span>
+          )}
+        </div>
 
         {/* turno */}
-        <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="turno">Turno</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="op_turno"
+            rules={{ required: "El turno es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="turno">Turno</label>
+              </span>
+            )}
+          />
+          {errors?.op_turno && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.op_turno.message}
+            </span>
+          )}
+        </div>
 
         {/* Eco De */}
-        <span className="p-float-label">
-          <Dropdown inputId="dd-ecoDe" className="select" />
-          <label htmlFor="dd-ecoDe">Eco de</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="eco_tipo"
+            rules={{ required: "El eco de es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <Dropdown
+                  inputId="dd-ecoDe"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  options={ecoDe}
+                  onChange={(e) => {
+                    field.onChange(e.value);
+                    setEcoDValor(e.value);
+                  }}
+                  value={field.value}
+                />
+                <label htmlFor="dd-ecoDe">Eco de</label>
+              </span>
+            )}
+          />
+          {errors?.eco_tipo && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.eco_tipo.message}
+            </span>
+          )}
+        </div>
 
         {/* No.Extintor */}
-        <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="username">No.Extintor</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="no_extintor"
+            rules={{ required: "El número de extintor es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="no_extintor">No.Extintor</label>
+              </span>
+            )}
+          />
+          {errors?.no_extintor && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.no_extintor.message}
+            </span>
+          )}
+        </div>
 
         {/* Modalidad  */}
-        <span className="p-float-label">
-          <Dropdown inputId="dd-modalidad" className="select" />
-          <label htmlFor="dd-modalidad">Modalidad</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="modalidad"
+            rules={{ required: "La modalidad es obligatoria" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <Dropdown
+                  inputId="dd-modalidad"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  options={modalidadesOptions}
+                  onChange={(e) => {
+                    field.onChange(e.value);
+                    setModalidadValor(e.value);
+                  }}
+                  value={field.value}
+                />
+                <label htmlFor="dd-modalidad">Modalidad</label>
+              </span>
+            )}
+          />
+          {errors?.modalidad && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.modalidad.message}
+            </span>
+          )}
+        </div>
 
         {/* Ruta  */}
         <span className="p-float-label">
@@ -45,12 +196,6 @@ export const Reemplacamiento = () => {
         <span className="p-float-label">
           <Dropdown id="cc" className="select" />
           <label htmlFor="cc">CC</label>
-        </span>
-
-        {/* Entrada Operador */}
-        <span className="p-float-label input-servicio">
-          <InputText className="select" />
-          <label htmlFor="entrada">Entrada Operador</label>
         </span>
       </div>
     </>

@@ -8,10 +8,10 @@ import { Controller } from "react-hook-form";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
 
-// import { Datatables } from "../../General/components/Datatables";
+import { Datatables } from "../../General/components/Datatables";
+// import { obtenerPvEstados } from "../../General/services/pv_estados.services";
 import { Pv_catalogo } from "./Pv_catalogo";
 import { fechaactual, RelojInput } from "../../General/utils/Date";
-import { PostPvEstados } from "../utils/postPvEstados";
 
 // Componentes de sub-formulario
 import { Servicio } from "./motivos/Servicio";
@@ -23,6 +23,9 @@ import { Reemplacamiento } from "./motivos/Reemplacamiento";
 import { TransferenciaI } from "./motivos/TransferenciaI";
 import { SefiNuevo } from "./motivos/SefiNuevo";
 
+// react-hook-form
+import { PostPvEstados } from "../utils/postPvEstados";
+
 export const FormularioDespacho = () => {
   // hooks para obtener opciones de modulos y motivos
   const { modulosOptions, motivosOptions } = useHook_General();
@@ -33,6 +36,7 @@ export const FormularioDespacho = () => {
   const [motivo, setMotivo] = useState<any>(null);
   const [modulo, setModulo] = useState<any>(null);
   const { hora } = RelojInput();
+
   // EFECTO PARA SINCRONIZAR ALTURA DEL CATÁLOGO CON EL FORMULARIO
   useEffect(() => {
     if (!leftColRef.current) return;
@@ -50,15 +54,16 @@ export const FormularioDespacho = () => {
   }, []);
 
   // const columnas = [
+  //   { title: "ID", data: "id", responsivePriority: 0 },
   //   { title: "ECO", data: "eco", responsivePriority: 1 },
   //   { title: "MODULO", data: "modulo", responsivePriority: 2 },
   //   { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
-  //   {
-  //     title: "MOMENTO",
-  //     data: "momento",
-  //     responsivePriority: 4,
-  //     render: (data) => formatearFecha(data),
-  //   },
+  //   // {
+  //   //   title: "MOMENTO",
+  //   //   data: "momento",
+  //   //   responsivePriority: 4,
+  //   //   render: (data) => formatearFecha(data),
+  //   // },
   //   { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
   //   { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
   //   { title: "RUTA", data: "ruta", responsivePriority: 7 },
@@ -68,13 +73,19 @@ export const FormularioDespacho = () => {
   //   { title: "EXTINTOR", data: "extintor", responsivePriority: 11 },
   // ];
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-    onSubmit,
-  } = PostPvEstados();
+  // // Agregar después de los otros useEffect
+  // useEffect(() => {
+  //   const cargarDatos = async () => {
+  //     try {
+  //       const datos = await obtenerPvEstados();
+  //       setPvEstados(datos);
+  //     } catch (error) {
+  //       console.error("Error al cargar datos:", error);
+  //     }
+  //   };
+
+  //   cargarDatos();
+  // }, []);
 
   const COMPONENTES_MOTIVOS_DESPACHO: Record<string, React.ElementType> = {
     SERVICIO: Servicio,
@@ -92,6 +103,14 @@ export const FormularioDespacho = () => {
     ? COMPONENTES_MOTIVOS_DESPACHO[motivo.desc]
     : null;
 
+  // react-hook-form
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    onSubmit,
+  } = PostPvEstados();
   return (
     <>
       <TabView>
@@ -112,76 +131,115 @@ export const FormularioDespacho = () => {
 
                   <div className="formulario-grid">
                     {/* modulo */}
-
-                    <Controller
-                      name="modulo"
-                      // control es la funcion que maneja el estado de los inputs
-                      control={control}
-                      // rules son las validaciones que se le hacen al input
-                      rules={{ required: "Debe seleccionar un modulo" }}
-                      render={({ field, fieldState }) => (
-                        <span className="p-float-label">
-                          <Dropdown
-                            value={field.value}
-                            name="modulo"
-                            inputId="modulo"
-                            options={modulosOptions}
-                            className="select w-100"
-                            onChange={(e) => {
-                              field.onChange(e.value);
-                              setModulo(e.value);
-                            }}
-                          />
-                          <label htmlFor="dd-modulo">Modulo</label>
+                    <div>
+                      <Controller
+                        name="modulo"
+                        control={control}
+                        rules={{ required: "Debe seleccionar un modulo" }}
+                        render={({ field }) => (
+                          <span className="p-float-label w-100">
+                            <Dropdown
+                              value={field.value}
+                              name="modulo"
+                              inputId="modulo"
+                              options={modulosOptions}
+                              className="select w-100"
+                              onChange={(e) => {
+                                field.onChange(e.value);
+                                setModulo(e.value);
+                              }}
+                            />
+                            <label htmlFor="dd-modulo">Modulo</label>
+                          </span>
+                        )}
+                      />
+                      {errors.modulo && (
+                        <span
+                          style={{
+                            color: "red",
+                            fontSize: "0.875rem",
+                            marginTop: "0.25rem",
+                            display: "block",
+                          }}
+                        >
+                          {errors.modulo.message}
                         </span>
                       )}
-                    />
+                    </div>
 
                     {/* economico */}
-                    <Controller
-                      name="eco"
-                      control={control}
-                      rules={{ required: "El económico es obligatorio" }}
-                      render={({ field, fieldState }) => (
-                        <span className="p-float-label w-100">
-                          <InputText
-                            id={field.name}
-                            value={field.value}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            className={`select ${fieldState.error ? "p-invalid" : ""}`}
-                          />
-                          <label htmlFor="economico">Economico</label>
+                    <div>
+                      <Controller
+                        name="eco"
+                        control={control}
+                        rules={{ required: "El económico es obligatorio" }}
+                        render={({ field, fieldState }) => (
+                          <span className="p-float-label w-100">
+                            <InputText
+                              value={field.value}
+                              onChange={(e) => field.onChange(e.target.value)}
+                              className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                            />
+                            <label htmlFor="economico">Economico</label>
+                          </span>
+                        )}
+                      />
+                      {errors.eco && (
+                        <span
+                          style={{
+                            color: "red",
+                            fontSize: "0.875rem",
+                            marginTop: "0.25rem",
+                            display: "block",
+                          }}
+                        >
+                          {errors.eco.message}
                         </span>
                       )}
-                    />
+                    </div>
 
                     {/* motivos */}
-                    <Controller
-                      name="motivo_id"
-                      control={control}
-                      rules={{ required: "Debe seleccionar un motivo" }}
-                      render={({ field }) => (
-                        <span className="p-float-label">
-                          <Dropdown
-                            id={field.name}
-                            value={field.value}
-                            options={motivosOptions}
-                            optionLabel="desc"
-                            optionValue="value"
-                            className="select w-100"
-                            onChange={(e) => {
-                              field.onChange(e.value); // Le avisa a React Hook Form
-                              setMotivo(e.value); // Actualiza tu estado para renderizar el sub-componente
-                            }}
-                          />
-                          <label htmlFor="dd-motivos">Motivos</label>
+                    <div>
+                      <Controller
+                        name="motivo_id"
+                        control={control}
+                        rules={{ required: "Debe seleccionar un motivo" }}
+                        render={({ field }) => (
+                          <span className="p-float-label w-100">
+                            <Dropdown
+                              id={field.name}
+                              value={field.value}
+                              options={motivosOptions}
+                              optionLabel="desc"
+                              className="select w-100"
+                              onChange={(e) => {
+                                field.onChange(e.value);
+                                setMotivo(e.value);
+                              }}
+                            />
+                            <label htmlFor="dd-motivos">Motivos</label>
+                          </span>
+                        )}
+                      />
+                      {errors.motivo_id && (
+                        <span
+                          style={{
+                            color: "red",
+                            fontSize: "0.875rem",
+                            marginTop: "0.25rem",
+                            display: "block",
+                          }}
+                        >
+                          {errors.motivo_id.message}
                         </span>
                       )}
-                    />
+                    </div>
                   </div>
 
-                  {/* Componente Dinámico */}
-                  {MotivoRender && <MotivoRender />}
+                  {/* Componente Dinámico — recibe control del formulario padre */}
+                  {MotivoRender && (
+                    <MotivoRender control={control} errors={errors} />
+                  )}
 
                   {/* fecha y hora debajo de los inputs principales */}
                   <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">

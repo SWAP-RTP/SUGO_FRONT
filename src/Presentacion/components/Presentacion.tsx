@@ -204,6 +204,12 @@ export const Hora_Presentacion = () => {
                     }
                   >
                     <Column
+                      field="economico"
+                      header="ECONÓMICO"
+                      className="text-center fw-bold"
+                      headerClassName="text-center"
+                    ></Column>
+                    <Column
                       field="primer_t"
                       header="CREDENCIAL T1"
                       className="text-center fw-bold"
