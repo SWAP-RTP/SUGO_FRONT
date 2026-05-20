@@ -1,8 +1,10 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 // obtenernos la api para usarlar en el front
 
 export const getPresentacionServices = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/hora");
+    const response = await fetch(`${API_URL}/hora`);
     if (!response) throw new Error("Error al obtener los datos");
     return response.json();
   } catch (error) {
@@ -40,7 +42,7 @@ export const postHoraPresentacion = async (data: any) => {
 
     console.log("Datos enviados al backend:", datosTransformados);
 
-    const response = await fetch("http://localhost:3000/api/horaPost", {
+    const response = await fetch(`${API_URL}/horaPost`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datosTransformados),
