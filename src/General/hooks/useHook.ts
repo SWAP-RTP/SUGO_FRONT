@@ -20,8 +20,8 @@ export const useHook_General = () => {
   const { rutasOptions } = useRutas();
   const { motivosOptionsRecepcion } = useMotivoRecepcion();
   const { periodosOptions, periodoPorDefecto } = usePeriodos();
-  const { ecoDisponibles } = useEcoDisponibles();
-  const { presentacion } = usePresentacion();
+  const { ecoDisponibles, cargarEconomicos } = useEcoDisponibles();
+  const { presentacion, refetch: refetchPresentacion } = usePresentacion();
   const date = new Date();
 
   return {
@@ -33,7 +33,9 @@ export const useHook_General = () => {
     periodosOptions,
     periodoPorDefecto,
     ecoDisponibles,
+    cargarEconomicos,
     presentacion,
+    refetchPresentacion,
     date,
   };
 };
