@@ -9,6 +9,8 @@ import { useHook_General } from "../../General/hooks/useHook";
 import { DataSave } from "../utils/FormData";
 import { Controller } from "react-hook-form";
 import { fechaactual, RelojInput } from "../../General/utils/Date";
+import  { useRef} from 'react';
+import { Toast } from 'primereact/toast';
 
 export const Hora_Presentacion = () => {
   const { hora } = RelojInput();
@@ -27,8 +29,21 @@ export const Hora_Presentacion = () => {
     onSubmit,
   } = DataSave(ecoDisponibles);
 
+
+  const toast = useRef<Toast>(null);
+
+  const manejartoast = (mensaje: string) => {
+    toast.current?.show({ severity: "success", summary: "Exito", detail: mensaje, });
+  }
+
+  const mostrarError = (mensaje: string) => {
+    toast.current?.show({ severity: "error", summary: "Error", detail: mensaje, });
+  }
+
   return (
     <>
+
+      <Toast ref={toast} className="toast-desplazado"  />
       <TabView>
         <TabPanel className="tabpanel" header="Hora de Presentacion">
           <div className="container">
@@ -148,7 +163,7 @@ export const Hora_Presentacion = () => {
                       label="Guardar"
                       severity="success"
                       style={{ height: "50px" }}
-                      onClick={handleSubmit(onSubmit)}
+                      onClick={handleSubmit((data) => onSubmit(data, manejartoast, mostrarError))}
                     />
                     <Button
                       icon="pi pi-times"

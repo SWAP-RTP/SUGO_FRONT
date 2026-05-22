@@ -6,7 +6,7 @@ import { pvEstadosServices } from "../services/postPvEstados.services";
 export const PostPvEstados = () => {
   const { control, handleSubmit, reset, formState } = useForm<pv_estados>();
 
-  const onSubmit: SubmitHandler<pv_estados> = async (data) => {
+  const onSubmit = async (data: any, mostrarExito: (mensaje: string) => void, mostrarError: (mensaje: string) => void) => {
     try {
       const payload = {
         ...data,
@@ -21,19 +21,23 @@ export const PostPvEstados = () => {
             : data.ruta_modalidad,
       };
 
+      
+      
       console.log(" Payload:", payload);
-
+      
       const result = await pvEstadosServices(payload as unknown as pv_estados);
+
+      mostrarExito("Despacho realizado correctamente");
+      reset();
       console.log(" Guardado:", result);
 
       // ✅ Refrescar tabla después de guardar
-      const datosActualizados = await obtenerPvEstados();
+      // const datosActualizados = await obtenerPvEstados();
       // Aquí necesitarías pasar setPvEstados como prop o usar un callback
 
       return result;
     } catch (error) {
-      console.error("Error al enviar los datos: ", error);
-      throw error;
+      mostrarError("Error al enviar los datos");
     }
   };
 

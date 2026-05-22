@@ -18,16 +18,17 @@ export const DataSave = (ecoDisponibles: any[]) => {
     },
   });
 
-  const onSubmit = async (data: any) => {
+  // funcion para guardar los datos
+  const onSubmit = async (data: any, mostrarExito: (mensaje: string) => void, mostrarError: (mensaje: string) => void) => {
     // Validar que la credencial sea válida
     if (!credencialValida) {
-      alert("Por favor, selecciona una credencial válida");
+      mostrarError("Por favor, selecciona una credencial válida");
       return;
     }
 
     // Validar que el módulo esté seleccionado
     if (!data.modulo) {
-      alert("Por favor, selecciona un módulo");
+      mostrarError("Por favor, selecciona un módulo");
       return;
     }
 
@@ -36,15 +37,16 @@ export const DataSave = (ecoDisponibles: any[]) => {
       data.fecha = fechaactual();
       const response = await postHoraPresentacion(data);
       console.log("Presentación guardada exitosamente:", response);
-      alert("Presentación guardada correctamente");
+      mostrarExito("Presentación guardada correctamente");
       reset();
       setCredencialValida(null);
     } catch (error: any) {
       console.error("Error al guardar presentación:", error);
-      alert("Error al guardar la presentación: " + error.message);
-    }
+      mostrarError("Error al guardar la presentación");
+      }
   };
 
+  // funcion para buscar la credencial
   const buscarCredencial = (valor: string) => {
     if (!valor) {
       setCredencialValida(null); // Si está vacío, no mostramos nada

@@ -5,6 +5,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { useState, useRef, useEffect } from "react";
 import { Controller } from "react-hook-form";
+import { Toast } from 'primereact/toast';
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
 
@@ -111,8 +112,21 @@ export const FormularioDespacho = () => {
     formState: { errors },
     onSubmit,
   } = PostPvEstados();
+
+
+    const toast = useRef<Toast>(null);
+
+  const manejartoast = (mensaje: string) => {
+    toast.current?.show({ severity: "success", summary: "Éxito", detail: mensaje, });
+  }
+
+  const mostrarError = (mensaje: string) => {
+    toast.current?.show({ severity: "error", summary: "Error", detail: mensaje, });
+  }
   return (
     <>
+
+    <Toast ref={toast} className="toast-desplazado"  />
       <TabView>
         <TabPanel className="tabpanel" header="Despacho">
           <div className="container-fluid px-4 py-3">
@@ -270,7 +284,7 @@ export const FormularioDespacho = () => {
                       icon="pi pi-check"
                       label="Enviar"
                       severity="success"
-                      onClick={handleSubmit(onSubmit)}
+                      onClick={handleSubmit((data) => onSubmit(data, manejartoast, mostrarError))}
                     />
                     <Button
                       icon="pi pi-times"

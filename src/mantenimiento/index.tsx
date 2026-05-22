@@ -1,5 +1,9 @@
-import { Correctivo } from "./correctivo/Correctivo";
+import { Correctivo } from "./components/Correctivo";
 
-export const index = () => {
-  return <div>index</div>;
+export const Mantenimiento = () => {
+  return (
+    <div>
+      <Correctivo />
+    </div>
+  );
 };
