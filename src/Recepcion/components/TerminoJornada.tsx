@@ -2,6 +2,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
+import { useRutasCC } from "../../General/hooks/useRutas";
 
 interface TerminoJornadaProps {
   values: {
@@ -22,6 +23,11 @@ const tiposTermino = [
 
 export const TerminoJornada = ({ values, onChange }: TerminoJornadaProps) => {
   const { modalidadesOptions, rutasOptions } = useHook_General();
+  //LOGICA DE CC
+  const selectedValue = values.rutaSelect?.value ?? values.rutaSelect;
+  const selectedRutaObj = rutasOptions.find((r: any) => r.value === selectedValue);
+  const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
+  const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
   return (
     <>
       < div className="formulario-grid sub-form" >
@@ -70,6 +76,7 @@ export const TerminoJornada = ({ values, onChange }: TerminoJornadaProps) => {
             inputId="dd-ruta"
             className="select"
             options={rutasOptions}
+            filter
             optionLabel="label"
             value={values.rutaSelect}
             onChange={(e) => onChange("rutaSelect", e.value)}
@@ -82,6 +89,8 @@ export const TerminoJornada = ({ values, onChange }: TerminoJornadaProps) => {
           <Dropdown
             inputId="dd-cc"
             className="select"
+            options={rutasOptionsCC}
+            optionLabel="label"
             value={values.cc}
             onChange={(e) => onChange("cc", e.value)}
           />
