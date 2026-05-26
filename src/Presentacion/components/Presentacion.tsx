@@ -17,7 +17,7 @@ export const Hora_Presentacion = () => {
   // traemos los datos de los modulos y economicos
   const { modulosOptions, ecoDisponibles, cargarEconomicos, refetchPresentacion } = useHook_General();
 
-  // 2. Ejecutamos tu Custom Hook (le pasamos ecoDisponibles)
+  // 2. Ejecutamos tu Custom Hook (le pasamos ecoDisponibles y modulosOptions)
   const {
     control,
     handleSubmit,
@@ -29,7 +29,7 @@ export const Hora_Presentacion = () => {
     credencialEncontrada,
     credencialesRegistradas,
     onSubmit,
-  } = DataSave(ecoDisponibles, () => {
+  } = DataSave(ecoDisponibles, modulosOptions, () => {
     if (cargarEconomicos) cargarEconomicos();
     if (refetchPresentacion) refetchPresentacion();
   });
@@ -192,6 +192,7 @@ export const Hora_Presentacion = () => {
                             options={modulosOptions}
                             className={`select ${fieldState.error ? "p-invalid" : ""}`}
                             placeholder="Módulo"
+                            disabled
                           />
                           <label htmlFor={field.name}>Modulo</label>
                           {fieldState.error && (

@@ -1,7 +1,9 @@
+const API_URL = import.meta.env.VITE_API_URL;
 // services/authService.js
 export const login = async (credenciales) => {
+  
   try {
-    const response = await fetch("http://localhost:8086/auth/auth.php", {
+    const response = await fetch(`${API_URL}/auth/auth.php`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

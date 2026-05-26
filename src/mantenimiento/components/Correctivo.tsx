@@ -1,6 +1,7 @@
 import {despacho} from "../../Despacho/utils/toast"
 import  { useRef } from 'react';
 import { Toast } from 'primereact/toast';
+import { Ticket_mantenimiento } from './Ticket_mantenimiento';
 
 
 export const Correctivo = () => {
@@ -17,6 +18,7 @@ const manejartoast = () => {
     return (
         <>  
 
+        <Ticket_mantenimiento />
        
             <Toast ref={toast} className="toast-desplazado"  />
        

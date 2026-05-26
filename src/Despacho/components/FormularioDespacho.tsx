@@ -116,7 +116,7 @@ export const FormularioDespacho = () => {
     reset,
     formState: { errors },
     onSubmit,
-  } = PostPvEstados();
+  } = PostPvEstados(modulosOptions);
 
 
     const toast = useRef<Toast>(null);
@@ -170,6 +170,7 @@ export const FormularioDespacho = () => {
                                 field.onChange(e.value);
                                 setModulo(e.value);
                               }}
+                              disabled
                             />
                             <label htmlFor="dd-modulo">Modulo</label>
                           </span>

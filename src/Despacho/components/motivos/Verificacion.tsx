@@ -2,7 +2,6 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Controller } from "react-hook-form";
 // hooks personalizados
-import { useHook_General } from "../../../General/hooks/useHook";
 import { useState } from "react";
 
 interface ServicioProps {
@@ -11,7 +10,6 @@ interface ServicioProps {
 }
 
 export const Verificacion = ({ control, errors }: ServicioProps) => {
-  const { modalidadesOptions, rutasOptions } = useHook_General();
   const [ecoDValor, setEcoDValor] = useState(null);
   const [modalidadValor, setModalidadValor] = useState(null);
   const [rutaValor, setRutaValor] = useState(null);

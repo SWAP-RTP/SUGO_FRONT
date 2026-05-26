@@ -3,8 +3,15 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { horaactual, fechaactual } from "../../General/utils/Date";
 import { postHoraPresentacion } from "../services/presentacion.services";
+import { useAuth } from "../../General/hooks/useAuth";
 
-export const DataSave = (ecoDisponibles: any[], recargarTabla?: () => void) => {
+export const DataSave = (
+  ecoDisponibles: any[],
+  modulosOptions: any[],
+  recargarTabla?: () => void
+) => {
+  const { usuario } = useAuth();
+
   // usamo esto para validar la credencial
   const [credencialValida, setCredencialValida] = useState<boolean | null>(null);
   // guardamos el número de credencial validado (para tacharlo en la tabla mientras se escribe)
@@ -46,12 +53,43 @@ export const DataSave = (ecoDisponibles: any[], recargarTabla?: () => void) => {
   }, [ecoDisponibles]);
 
   // usamos esto para el react form
-  const { control, handleSubmit, reset, formState } = useForm({
+  const { control, handleSubmit, reset, formState, setValue } = useForm({
     defaultValues: {
       credencial: "",
       modulo: null,
     },
   });
+
+  // Efecto para auto-seleccionar el módulo del token del usuario
+  useEffect(() => {
+    if (usuario?.data?.modulo && modulosOptions && modulosOptions.length > 0) {
+      const moduloEncontrado = modulosOptions.find(
+        (m: any) => String(m.modulo) === String(usuario.data.modulo)
+      );
+      if (moduloEncontrado) {
+        setValue("modulo", moduloEncontrado.value);
+      }
+    }
+  }, [usuario, modulosOptions, setValue]);
+
+  // Función de reset personalizada para mantener el módulo
+  const resetForm = () => {
+    let defaultModulo = null;
+    if (usuario?.data?.modulo && modulosOptions && modulosOptions.length > 0) {
+      const moduloEncontrado = modulosOptions.find(
+        (m: any) => String(m.modulo) === String(usuario.data.modulo)
+      );
+      if (moduloEncontrado) {
+        defaultModulo = moduloEncontrado.value;
+      }
+    }
+    reset({
+      credencial: "",
+      modulo: defaultModulo,
+    });
+    setCredencialValida(null);
+    setCredencialEncontrada(null);
+  };
 
   // funcion para guardar los datos
   const onSubmit = async (data: any, mostrarExito: (mensaje: string) => void, mostrarError: (mensaje: string) => void) => {
@@ -92,9 +130,7 @@ export const DataSave = (ecoDisponibles: any[], recargarTabla?: () => void) => {
         recargarTabla();
       }
 
-      reset();
-      setCredencialValida(null);
-      setCredencialEncontrada(null);
+      resetForm();
     } catch (error: any) {
       console.error("Error al guardar presentación:", error);
       mostrarError("Error al guardar la presentación");
