@@ -318,3 +318,7 @@
     inset 0 2px 4px rgba(255, 255, 255, 0.2),
     inset 0 -2px 4px rgba(204, 202, 202, 0.6);
 }
+
+.toast-desplazado {
+  top: 140px !important;
+}

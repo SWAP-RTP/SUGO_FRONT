@@ -15,8 +15,10 @@ export default function EditarRol() {
     return (
         <div className='p-4'>
             <ConfirmDialog />
-            <div className="menu_modal_rol d-flex justify-content-between align-items-center mb-4">
-                <h2 className='text-2xl font-bold'>ROLES POR RUTA</h2>
+            <div className='d-flex justify-content-center align-items-center'>
+                <h4 className='text-sm font-bold'>ROLES POR RUTA</h4>
+            </div>
+            <div className="menu_modal_rol d-flex justify-content-end align-items-end mb-4">
                 <CierreDiaButton
                     onSuccess={refetch}
                     loading={cierreLoading}

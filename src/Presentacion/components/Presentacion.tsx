@@ -9,13 +9,15 @@ import { useHook_General } from "../../General/hooks/useHook";
 import { DataSave } from "../utils/FormData";
 import { Controller } from "react-hook-form";
 import { fechaactual, RelojInput } from "../../General/utils/Date";
+import  { useRef} from 'react';
+import { Toast } from 'primereact/toast';
 
 export const Hora_Presentacion = () => {
   const { hora } = RelojInput();
   // traemos los datos de los modulos y economicos
-  const { modulosOptions, ecoDisponibles } = useHook_General();
+  const { modulosOptions, ecoDisponibles, cargarEconomicos, refetchPresentacion } = useHook_General();
 
-  // 2. Ejecutamos tu Custom Hook (le pasamos ecoDisponibles)
+  // 2. Ejecutamos tu Custom Hook (le pasamos ecoDisponibles y modulosOptions)
   const {
     control,
     handleSubmit,
@@ -24,11 +26,98 @@ export const Hora_Presentacion = () => {
     buscarCredencial,
     credencialValida,
     setCredencialValida,
+    credencialEncontrada,
+    credencialesRegistradas,
     onSubmit,
-  } = DataSave(ecoDisponibles);
+  } = DataSave(ecoDisponibles, modulosOptions, () => {
+    if (cargarEconomicos) cargarEconomicos();
+    if (refetchPresentacion) refetchPresentacion();
+  });
+
+
+  const toast = useRef<Toast>(null);
+
+  const manejartoast = (mensaje: string) => {
+    toast.current?.show({ severity: "success", summary: "Exito", detail: mensaje, });
+  }
+
+  const mostrarError = (mensaje: string) => {
+    toast.current?.show({ severity: "error", summary: "Error", detail: mensaje, });
+  }
+
+  // Template para tachar la celda según su estado:
+  // - rojo/tachado: credencial actualmente escrita en el input (pendiente de guardar)
+  // - gris/tachado: credencial ya guardada en esta sesión (registrada)
+  const credencialBodyTemplate = (rowData: any, field: string) => {
+    const valor = rowData[field];
+    
+    // Ignorar ceros o valores vacíos para que no se tachen por accidente
+    if (!valor || valor === 0 || valor === "0") {
+      return <span>{valor}</span>;
+    }
+
+    const valorStr = String(valor).trim();
+    const strActual = credencialEncontrada ? String(credencialEncontrada).trim() : null;
+    
+    const esActual = strActual && valorStr === strActual;
+    const esRegistrada = credencialesRegistradas.has(valorStr);
+
+    if (esActual) {
+      // Amarillo-naranja: credencial escrita en el input, aún no guardada
+      return (
+        <span
+          style={{
+            textDecoration: "line-through",
+            color: "#f59e0b",
+            fontWeight: "bold",
+            transition: "all 0.2s ease",
+          }}
+        >
+          {valor}
+        </span>
+      );
+    }
+
+    if (esRegistrada) {
+      // Gris tachado con badge: ya fue registrada exitosamente
+      return (
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+          <span
+            style={{
+              textDecoration: "line-through",
+              color: "#9ca3af",
+              fontWeight: "bold",
+              opacity: 0.7,
+              transition: "all 0.2s ease",
+            }}
+          >
+            {valor}
+          </span>
+          <span
+            style={{
+              fontSize: "0.6rem",
+              background: "#22c55e",
+              color: "white",
+              borderRadius: "99px",
+              padding: "1px 5px",
+              fontWeight: "700",
+              letterSpacing: "0.05em",
+            }}
+          >
+            ✓
+          </span>
+        </span>
+      );
+    }
+
+    // Normal: credencial disponible
+    return <span>{valor}</span>;
+  };
 
   return (
     <>
+
+      <Toast ref={toast} className="toast-desplazado"  />
       <TabView>
         <TabPanel className="tabpanel" header="Hora de Presentacion">
           <div className="container">
@@ -103,6 +192,7 @@ export const Hora_Presentacion = () => {
                             options={modulosOptions}
                             className={`select ${fieldState.error ? "p-invalid" : ""}`}
                             placeholder="Módulo"
+                            disabled
                           />
                           <label htmlFor={field.name}>Modulo</label>
                           {fieldState.error && (
@@ -148,7 +238,7 @@ export const Hora_Presentacion = () => {
                       label="Guardar"
                       severity="success"
                       style={{ height: "50px" }}
-                      onClick={handleSubmit(onSubmit)}
+                      onClick={handleSubmit((data) => onSubmit(data, manejartoast, mostrarError))}
                     />
                     <Button
                       icon="pi pi-times"
@@ -214,18 +304,21 @@ export const Hora_Presentacion = () => {
                       header="CREDENCIAL T1"
                       className="text-center fw-bold"
                       headerClassName="text-center"
+                      body={(rowData) => credencialBodyTemplate(rowData, "primer_t")}
                     ></Column>
                     <Column
                       field="segundo_t"
                       header="CREDENCIAL T2"
                       className="text-center fw-bold"
                       headerClassName="text-center"
+                      body={(rowData) => credencialBodyTemplate(rowData, "segundo_t")}
                     ></Column>
                     <Column
                       field="tercer_t"
                       header="CREDENCIAL T3"
                       className="text-center fw-bold"
                       headerClassName="text-center"
+                      body={(rowData) => credencialBodyTemplate(rowData, "tercer_t")}
                     ></Column>
                     <Column
                       field="nombre_ruta"

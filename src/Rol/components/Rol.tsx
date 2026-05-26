@@ -23,10 +23,10 @@ export const Roles = () => {
           />
           <RolesAccordionVista states={states} actions={actions} />
         </TabPanel>
-        <TabPanel header="Editar de Roles">
+        <TabPanel header="Edicion de Rol">
           <EditarRol />
         </TabPanel>
-        {/* <TabPanel header="Consulta de Roles"></TabPanel> */}
+        <TabPanel header="Consulta de Roles"></TabPanel>
       </TabView>
     </>
   );

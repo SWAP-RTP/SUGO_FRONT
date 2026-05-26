@@ -5,11 +5,12 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { useState, useRef, useEffect } from "react";
 import { Controller } from "react-hook-form";
+import { Toast } from 'primereact/toast';
+import { obtenerPvEstados } from "../../General/services/pv_estados.services";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
 
 import { Datatables } from "../../General/components/Datatables";
-// import { obtenerPvEstados } from "../../General/services/pv_estados.services";
 import { Pv_catalogo } from "./Pv_catalogo";
 import { fechaactual, RelojInput } from "../../General/utils/Date";
 
@@ -30,7 +31,7 @@ export const FormularioDespacho = () => {
   // hooks para obtener opciones de modulos y motivos
   const { modulosOptions, motivosOptions } = useHook_General();
 
-  // const [pvEstados, setPvEstados] = useState([]);
+  const [pvEstados, setPvEstados] = useState([]);
   const leftColRef = useRef<HTMLDivElement>(null);
   const [leftColHeight, setLeftColHeight] = useState<number | string>("auto");
   const [motivo, setMotivo] = useState<any>(null);
@@ -53,39 +54,44 @@ export const FormularioDespacho = () => {
     return () => resizeObserver.disconnect();
   }, []);
 
-  // const columnas = [
-  //   { title: "ID", data: "id", responsivePriority: 0 },
-  //   { title: "ECO", data: "eco", responsivePriority: 1 },
-  //   { title: "MODULO", data: "modulo", responsivePriority: 2 },
-  //   { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
-  //   // {
-  //   //   title: "MOMENTO",
-  //   //   data: "momento",
-  //   //   responsivePriority: 4,
-  //   //   render: (data) => formatearFecha(data),
-  //   // },
-  //   { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
-  //   { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
-  //   { title: "RUTA", data: "ruta", responsivePriority: 7 },
-  //   { title: "MODALIDAD", data: "ruta_modalidad", responsivePriority: 8 },
-  //   { title: "OPERADOR", data: "op_cred", responsivePriority: 9 },
-  //   { title: "TURNO", data: "op_turno", responsivePriority: 10 },
-  //   { title: "EXTINTOR", data: "extintor", responsivePriority: 11 },
-  // ];
+  const columnas = [
+    { title: "ID", data: "id", responsivePriority: 0 },
+    { title: "ECO", data: "eco", responsivePriority: 1 },
+    { title: "MODULO", data: "modulo", responsivePriority: 2 },
+    { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
+    // {
+    //   title: "MOMENTO",
+    //   data: "momento",
+    //   responsivePriority: 4,
+    //   render: (data) => formatearFecha(data),
+    // },
+    { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
+    { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
+    { title: "RUTA", data: "ruta", responsivePriority: 7 },
+    { title: "MODALIDAD", data: "ruta_modalidad", responsivePriority: 8 },
+    { title: "OPERADOR", data: "op_cred", responsivePriority: 9 },
+    { title: "TURNO", data: "op_turno", responsivePriority: 10 },
+    { title: "EXTINTOR", data: "extintor", responsivePriority: 11 },
+  ];
 
-  // // Agregar después de los otros useEffect
-  // useEffect(() => {
-  //   const cargarDatos = async () => {
-  //     try {
-  //       const datos = await obtenerPvEstados();
-  //       setPvEstados(datos);
-  //     } catch (error) {
-  //       console.error("Error al cargar datos:", error);
-  //     }
-  //   };
+  const cargarDatos = async () => {
+    try {
+      const datos = await obtenerPvEstados();
+      setPvEstados(datos);
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+    }
+  };
 
-  //   cargarDatos();
-  // }, []);
+  // Agregar después de los otros useEffect
+  useEffect(() => {
+    cargarDatos();
+    const interval = setInterval(() => {
+      cargarDatos();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const COMPONENTES_MOTIVOS_DESPACHO: Record<string, React.ElementType> = {
     SERVICIO: Servicio,
@@ -110,9 +116,22 @@ export const FormularioDespacho = () => {
     reset,
     formState: { errors },
     onSubmit,
-  } = PostPvEstados();
+  } = PostPvEstados(modulosOptions);
+
+
+    const toast = useRef<Toast>(null);
+
+  const manejartoast = (mensaje: string) => {
+    toast.current?.show({ severity: "success", summary: "Éxito", detail: mensaje, });
+  }
+
+  const mostrarError = (mensaje: string) => {
+    toast.current?.show({ severity: "error", summary: "Error", detail: mensaje, });
+  }
   return (
     <>
+
+    <Toast ref={toast} className="toast-desplazado"  />
       <TabView>
         <TabPanel className="tabpanel" header="Despacho">
           <div className="container-fluid px-4 py-3">
@@ -135,6 +154,7 @@ export const FormularioDespacho = () => {
                       <Controller
                         name="modulo"
                         control={control}
+                        
                         rules={{ required: "Debe seleccionar un modulo" }}
                         render={({ field }) => (
                           <span className="p-float-label w-100">
@@ -143,11 +163,14 @@ export const FormularioDespacho = () => {
                               name="modulo"
                               inputId="modulo"
                               options={modulosOptions}
+                              optionLabel="label"
+                              placeholder="Seleccione Módulo"
                               className="select w-100"
                               onChange={(e) => {
                                 field.onChange(e.value);
                                 setModulo(e.value);
                               }}
+                              disabled
                             />
                             <label htmlFor="dd-modulo">Modulo</label>
                           </span>
@@ -210,7 +233,8 @@ export const FormularioDespacho = () => {
                               id={field.name}
                               value={field.value}
                               options={motivosOptions}
-                              optionLabel="desc"
+                              optionLabel="label"
+                              placeholder="Seleccione Motivo"
                               className="select w-100"
                               onChange={(e) => {
                                 field.onChange(e.value);
@@ -270,7 +294,12 @@ export const FormularioDespacho = () => {
                       icon="pi pi-check"
                       label="Enviar"
                       severity="success"
-                      onClick={handleSubmit(onSubmit)}
+                      onClick={handleSubmit(async (data) => {
+                        const result = await onSubmit(data, manejartoast, mostrarError);
+                        if (result) {
+                          cargarDatos();
+                        }
+                      })}
                     />
                     <Button
                       icon="pi pi-times"
@@ -298,7 +327,7 @@ export const FormularioDespacho = () => {
       <div style={{ padding: "40px", fontFamily: "sans-serif" }}>
         <h2 className="text-center mb-5">REGISTRO DE DESPACHOS REALIZADOS</h2>
         <hr />
-        {/* <Datatables data={pvEstados} columns={columnas} /> */}
+        <Datatables data={pvEstados} columns={columnas} />
       </div>
     </>
   );

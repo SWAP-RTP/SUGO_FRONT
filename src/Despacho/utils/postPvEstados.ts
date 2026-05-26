@@ -1,15 +1,71 @@
 import type { pv_estados } from "../interface/pv_estados";
 import { useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
+import { useEffect } from "react";
 import { pvEstadosServices } from "../services/postPvEstados.services";
+import { useAuth } from "../../General/hooks/useAuth";
 
-export const PostPvEstados = () => {
-  const { control, handleSubmit, reset, formState } = useForm<pv_estados>();
+export const PostPvEstados = (modulosOptions: any[]) => {
+  const { usuario } = useAuth();
 
-  const onSubmit: SubmitHandler<pv_estados> = async (data) => {
+  const { control, handleSubmit, reset, formState, setValue } = useForm<pv_estados>({
+    shouldUnregister: true,
+    defaultValues: {
+      modulo: null as any,
+      eco: "",
+      motivo_id: null as any,
+      op_cred: null as any,
+      op_turno: null as any,
+      eco_tipo: null as any,
+      extintor: "",
+      ruta_modalidad: null as any,
+      ruta_id: null as any,
+      ruta_cc: null as any,
+    }
+  });
+
+  // Efecto para auto-seleccionar el módulo del token del usuario
+  useEffect(() => {
+    if (usuario?.data?.modulo && modulosOptions && modulosOptions.length > 0) {
+      const moduloEncontrado = modulosOptions.find(
+        (m: any) => String(m.modulo) === String(usuario.data.modulo)
+      );
+      if (moduloEncontrado) {
+        setValue("modulo", moduloEncontrado.value);
+      }
+    }
+  }, [usuario, modulosOptions, setValue]);
+
+  // Función de reset personalizada para mantener el módulo
+  const resetForm = () => {
+    let defaultModulo = null;
+    if (usuario?.data?.modulo && modulosOptions && modulosOptions.length > 0) {
+      const moduloEncontrado = modulosOptions.find(
+        (m: any) => String(m.modulo) === String(usuario.data.modulo)
+      );
+      if (moduloEncontrado) {
+        defaultModulo = moduloEncontrado.value;
+      }
+    }
+    reset({
+      modulo: defaultModulo as any,
+      eco: "",
+      motivo_id: null as any,
+      op_cred: null as any,
+      op_turno: null as any,
+      eco_tipo: null as any,
+      extintor: "",
+      ruta_modalidad: null as any,
+      ruta_id: null as any,
+      ruta_cc: null as any,
+    });
+  };
+
+  const onSubmit = async (data: any, mostrarExito: (mensaje: string) => void, mostrarError: (mensaje: string) => void) => {
     try {
       const payload = {
         ...data,
+        tipo: 1, // 1 representa Despacho
         motivo_id:
           typeof data.motivo_id === "object"
             ? data.motivo_id.id
@@ -22,25 +78,23 @@ export const PostPvEstados = () => {
       };
 
       console.log(" Payload:", payload);
-
+      
       const result = await pvEstadosServices(payload as unknown as pv_estados);
-      console.log(" Guardado:", result);
 
-      // ✅ Refrescar tabla después de guardar
-      const datosActualizados = await obtenerPvEstados();
-      // Aquí necesitarías pasar setPvEstados como prop o usar un callback
+      mostrarExito("Despacho realizado correctamente");
+      resetForm();
+      console.log(" Guardado:", result);
 
       return result;
     } catch (error) {
-      console.error("Error al enviar los datos: ", error);
-      throw error;
+      mostrarError("Error al enviar los datos");
     }
   };
 
   return {
     control,
     handleSubmit,
-    reset,
+    reset: resetForm,
     formState,
     onSubmit,
   };

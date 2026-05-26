@@ -250,19 +250,19 @@ export const useRolesExcel = () => {
       const tieneEstructuraRol = detallePorHoja.some((hojaActual) => hojaActual.filas.length > 0);
 
       if (!tieneEstructuraRol) {
-        alert("El archivo Excel no tiene la estructura esperada de roles (No, Economico, Sistema y turnos).");
+        toastBL.current?.show({severity: "error", summary: "Error", detail: "El archivo Excel no tiene la estructura esperada de roles.", });
         limpiarLecturaExcel();
         return;
       }
 
       if (!rangoDetectado) {
-        alert("No se detecto un periodo valido en el archivo Excel.");
+        toastBL.current?.show({severity: "error", summary: "Error", detail: "No se detecto un periodo valido en el archivo Excel.", });
         limpiarLecturaExcel();
         return;
       }
 
       if (!rangoPeriodoSeleccionado) {
-        alert("Selecciona un periodo valido antes de cargar el Excel.");
+        toastBL.current?.show({severity: "error", summary: "Error", detail: "Selecciona un periodo valido antes de cargar el Excel.", });
         limpiarLecturaExcel();
         return;
       }
@@ -272,12 +272,7 @@ export const useRolesExcel = () => {
         mismaFecha(rangoDetectado.fin, rangoPeriodoSeleccionado.fin);
 
       if (!coincidePeriodo) {
-        toastBL.current?.show({
-          severity: "error",
-          summary: "Error",
-          detail: "El periodo del archivo no coincide con el periodo seleccionado",
-          life: 4000,
-        });
+        toastBL.current?.show({severity: "error", summary: "Error", detail: "El periodo del archivo no coincide con el periodo seleccionado", life: 4000,});
         limpiarLecturaExcel();
         return;
       }

@@ -8,6 +8,7 @@ import { Presentacion } from "./Presentacion";
 import { Rol } from "./Rol";
 import { useAuth } from "./General/hooks/useAuth";
 import { ProtectedRoute } from "./Auth/components/ProtectedRoute";
+import { Mantenimiento } from "./mantenimiento";
 
 export const App = () => {
   const { usuario, logout } = useAuth();
@@ -35,6 +36,10 @@ export const App = () => {
         <Route path="/rol" element={
           <ProtectedRoute>
             <Rol />
+          </ProtectedRoute>} />
+        <Route path="/mantenimiento" element={
+          <ProtectedRoute>
+            <Mantenimiento />
           </ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
