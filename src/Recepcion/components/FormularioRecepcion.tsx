@@ -1,16 +1,16 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 //COMPONENTES PRIME REACT
 import { TabView, TabPanel } from "primereact/tabview";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
+import { Controller } from "react-hook-form";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
-import { useAuth } from "../../General/hooks/useAuth";
 import { Datatables } from "../../General/components/Datatables";
 import { obtenerPvEstados_Recepcion } from "../../General/services/pv_estados.services";
-import { Card_Eco } from "../../General/components/Card_Eco";
+import { fechaactual, RelojInput } from "../../General/utils/Date";
 //UTILS
 import { FaltaCombustibles } from "./FaltaCombustibles";
 import { FaltaRelevo } from "./FaltaRelevo";
@@ -21,82 +21,33 @@ import { Resguardo } from "./Resguardo";
 import { TerminoJornada } from "./TerminoJornada";
 import { ServicioMb } from "./ServicioMb";
 
+//REACT-HOOK-FORM
+import { PostPvEstadosRecepcion } from "../utils/postPvEstadosRecepcion";
+
+
 const API_URL = import.meta.env.VITE_API_URL;
-
-//Estado inicial del formulario
-const FormularioInicial = {
-  eco: "",
-  selectModulo: null,
-  motivos_recepcion_select: null,
-  credencial: "",
-  turno: "",
-  noExtintor: "",
-  modalidadSelect: null,
-  rutaSelect: null,
-  cc: null,
-  selectedTermino: null,
-};
-
-const COMPONENTES_MOTIVOS_RECEPCION: Record<string, React.ElementType> = {
-  "TERMINO DE JORNADA": TerminoJornada,
-  "SERVICIO MB": ServicioMb,
-  "FALTA DE COMBUSTIBLES": FaltaCombustibles,
-  "FALTA DE RELEVO (PATIO)": FaltaRelevo,
-  "MANTENIMIENTO CORRECTIVO": MantenimientoCorrectivo,
-  "MANTENIMIENTO PREVENTIVO (GSP)": MantenimientoPreventivo,
-  "REGRESO POR AVALUO": RegresoAvaluo,
-  "RESGUARDO (J)": Resguardo,
-};
 
 export const FormularioRecepcion = () => {
   //HOOKS USADOS EN EL COMPONENTE
-  const { usuario } = useAuth();
-  const { modulosOptions, motivosOptionsRecepcion, date } = useHook_General();
-  const [formularioData, setformularioData] = useState(FormularioInicial);
+  const { modulosOptions, motivosOptionsRecepcion } = useHook_General();
+
   const [pvEstados, setPvEstados] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [ecoEncontrado, setecoEncontrado] = useState<any>(null);
+  const [motivo, setMotivo] = useState<any>(null);
+  const [setModulo] = useState<any>(null);
   const toast = useRef<Toast>(null);
-
-  //LOGICA PARA OBTENER LOS DATOS DEL USUARIO LOGUEADO
-  useEffect(() => {
-    if (usuario?.data?.modulo && modulosOptions.length > 0) {
-      const moduloEncontrado = modulosOptions.find(
-        (m: any) => String(m.modulo) === String(usuario.data.modulo)
-      );
-      if (moduloEncontrado) {
-        setformularioData(prev => ({
-          ...prev,
-          selectModulo: moduloEncontrado,
-        }));
-      }
-    }
-  }, [usuario, modulosOptions]);
-
-  //LIMPIEZA DE LA FECHA Y HORA
-  const formatearFecha = (fecha) => {
-    if (!fecha) return "---";
-    return new Date(fecha).toLocaleString("es-MX", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  const { hora } = RelojInput();
 
   // DECLARAMOS LAS COLUMNAS DE DATATABLE
   const columnas = [
     { title: "ECO", data: "eco", responsivePriority: 1 },
     { title: "MODULO", data: "modulo", responsivePriority: 2 },
     { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
-    {
-      title: "MOMENTO",
-      data: "momento",
-      responsivePriority: 4,
-      render: (data) => formatearFecha(data),
-    },
+    //{
+    //title: "MOMENTO",
+    //data: "momento",
+    //responsivePriority: 4,
+    //render: (data) => formatearFecha(data),
+    //},
     { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
     { title: "RUTA", data: "ruta", responsivePriority: 7 },
@@ -107,81 +58,58 @@ export const FormularioRecepcion = () => {
   ];
 
   //FETCH EN UNA FUNCION REUTILIZABLE
-  const fetchPvEstados = useCallback(async () => {
+  const cargarDatos = async () => {
     try {
-      setLoading(true);
-      const data = await obtenerPvEstados_Recepcion();
-      setPvEstados(data);
-      setError(null);
-    } catch (err) {
-      console.error("Error al cargar pv_estados:", err);
-      setError("Error al cargar los datos");
-      setPvEstados([]);
-    } finally {
-      setLoading(false);
+      const datos = await obtenerPvEstados_Recepcion();
+      setPvEstados(datos);
+    } catch (error) {
+      console.error("Error al cargar los datos:", error);
     }
-  }, []);
+  };
 
-  //CARGAMOS LOS DATOS DESDE LA API
+  // EFFECT PARA CARGAR DATOS AL MONTAR Y CADA 5 SEGUNDOS
   useEffect(() => {
-    fetchPvEstados();
-  }, [fetchPvEstados]);
+    cargarDatos();
+    const interval = setInterval(() => {
+      cargarDatos();
+    }, 5000);
 
-  //HANDLER GENERICO PARA ACTUALIZAR EL FORMULARIO
-  const handleFormChange = useCallback((field: string, value: any) => {
-    setformularioData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    return () => clearInterval(interval);
   }, []);
 
-  // Formatear fecha y hora
-  const horaActual = useMemo(
-    () =>
-      date.toLocaleTimeString("es-MX", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }),
-    [date],
-  );
+  const COMPONENTES_MOTIVOS_RECEPCION: Record<string, React.ElementType> = {
+    "TERMINO DE JORNADA": TerminoJornada,
+    "SERVICIO MB": ServicioMb,
+    "FALTA DE COMBUSTIBLES": FaltaCombustibles,
+    "FALTA DE RELEVO (PATIO)": FaltaRelevo,
+    "MANTENIMIENTO CORRECTIVO": MantenimientoCorrectivo,
+    "MANTENIMIENTO PREVENTIVO (GSP)": MantenimientoPreventivo,
+    "REGRESO POR AVALUO": RegresoAvaluo,
+    "RESGUARDO (J)": Resguardo,
+  };
 
-  // formatear fecha actual
-  const fechaActual = useMemo(() => date.toLocaleDateString("es-MX"), [date]);
+  const MotivoRender = motivo?.desc
+    ? COMPONENTES_MOTIVOS_RECEPCION[motivo.desc]
+    : null;
 
-  //FUNCION PARA GUARDAR EL MODULO SELECCIONADO
-  const handleEnviar = useCallback(async () => {
-    if (!formularioData.selectModulo) {
-      toast.current?.show({
-        severity: "warn",
-        summary: "Atencion",
-        detail: "Seleccione un modulo",
-      });
-      return;
-    }
-    try {
-      const payload = crearPvEstadoPayloadRec(formularioData);
-      await guardarModulo(payload);
-      toast.current?.show({
-        severity: "success",
-        summary: "Exito",
-        detail: "Datos guardados correctamente",
-      });
-      setformularioData(FormularioInicial);
-      fetchPvEstados();
-    } catch (err) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Hubo un error al guardar los datos",
-      });
-    }
-  }, [formularioData, fetchPvEstados]);
+  //REACT-HOOK-FORM
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    onSubmit,
+    setValue
+  } = PostPvEstadosRecepcion(modulosOptions);
 
-  //HANDLER PARA LIMPIAR EL FORMULARIO
-  const handleLimpiar = useCallback(() => {
-    setformularioData(FormularioInicial);
-  }, []);
+
+  const manejartoast = (mensaje: string) => {
+    toast.current?.show({ severity: "success", summary: "Éxito", detail: mensaje, });
+  };
+
+  const mostrarError = (mensaje: string) => {
+    toast.current?.show({ severity: "error", summary: "Error", detail: mensaje, });
+  };
 
   //HANDLER ELIMINAR
   const handleEliminar = useCallback(
@@ -196,7 +124,7 @@ export const FormularioRecepcion = () => {
             summary: "Eliminado",
             detail: "Registro eliminado correctamente",
           });
-          await fetchPvEstados();
+          await cargarDatos();
         }
       } catch (err) {
         toast.current?.show({
@@ -206,36 +134,12 @@ export const FormularioRecepcion = () => {
         });
       }
     },
-    [fetchPvEstados],
+    [cargarDatos],
   );
-
-  //HANDLER PARA BUSCAR EL ECONOMICO CUANDO SE INGRESA EL NUMERO
-  const handleEcoChange = useCallback(
-    (value: string) => {
-      handleFormChange("eco", value);
-      if (!value) {
-        setecoEncontrado(null);
-        return;
-      }
-      //BUSCA EN PVESTADOS EL ECO QUE COINCIDA
-      const encontrado = pvEstados.find(
-        (item: any) => String(item.eco) === String(value),
-      );
-      setecoEncontrado(encontrado || null);
-    },
-    [pvEstados],
-  );
-
-  const MotivoRender =
-    COMPONENTES_MOTIVOS_RECEPCION[
-    formularioData.motivos_recepcion_select?.desc || ""
-    ];
 
   return (
     <>
-      <Toast ref={toast} />
-      {loading && <p className="text-center">Cargando datos...</p>}
-      {error && <p className="text-center text-danger">{error}</p>}
+      <Toast ref={toast} className="toast-desplazado" />
       <TabView>
         <TabPanel className="tabpanel" header="Recepcion">
           <div className="despacho-contenedor d-flex flex-wrap justify-content-center align-items-start gap-4">
@@ -248,60 +152,129 @@ export const FormularioRecepcion = () => {
 
               <div className="formulario-grid">
                 {/* modulo */}
-                <span className="p-float-label">
-                  <Dropdown
-                    inputId="dd-modulo"
-                    options={modulosOptions}
-                    value={formularioData.selectModulo?.id || formularioData.selectModulo}
-                    onChange={(e) => handleFormChange("selectModulo", e.value)}
-                    optionLabel="descripcion"
-                    dataKey="id"
-                    className="select w-100"
-                    disabled
+                <div>
+                  <Controller
+                    name="modulo"
+                    control={control}
+                    rules={{ required: "Debe seleccionar un modulo" }}
+                    render={({ field }) => (
+                      <span className="p-float-label w-100">
+                        <Dropdown
+                          value={field.value}
+                          name="modulo"
+                          inputId="modulo"
+                          options={modulosOptions}
+                          optionLabel="label"
+                          placeholder="Seleccione Módulo"
+                          className="select w-100"
+                          onChange={(e) => {
+                            field.onChange(e.value);
+                            setModulo(e.value);
+                          }}
+                          disabled
+                        />
+                        <label htmlFor="dd-modulo">Modulo</label>
+                      </span>
+                    )}
                   />
-                  <label htmlFor="dd-modulo">Modulo</label>
-                </span>
+                  {errors.modulo && (
+                    <span
+                      style={{
+                        color: "red",
+                        fontSize: "0.875rem",
+                        marginTop: "0.25rem",
+                        display: "block",
+                      }}
+                    >
+                      {errors.modulo.message}
+                    </span>
+                  )}
+                </div>
 
                 {/* economico */}
-                <span className="p-float-label w-100">
-                  <InputText
-                    id="eco"
-                    className="select"
-                    value={formularioData.eco}
-                    onChange={(e) => handleEcoChange(e.target.value)}
+                <div>
+                  <Controller
+                    name="eco"
+                    control={control}
+                    rules={{ required: "El económico es obligatorio" }}
+                    render={({ field, fieldState }) => (
+                      <span className="p-float-label w-100">
+                        <InputText
+                          value={field.value}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                        />
+                        <label htmlFor="economico">Economico</label>
+                      </span>
+                    )}
                   />
-                  <label htmlFor="eco">Economico</label>
-                </span>
+                  {errors.eco && (
+                    <span
+                      style={{
+                        color: "red",
+                        fontSize: "0.875rem",
+                        marginTop: "0.25rem",
+                        display: "block",
+                      }}
+                    >
+                      {errors.eco.message}
+                    </span>
+                  )}
+                </div>
 
                 {/* motivos */}
-                <span className="p-float-label">
-                  <Dropdown
-                    className="select w-100"
-                    inputId="dd-motivos-recepcion"
-                    value={formularioData.motivos_recepcion_select}
-                    onChange={(e) =>
-                      handleFormChange("motivos_recepcion_select", e.value)
-                    }
-                    options={motivosOptionsRecepcion}
-                    optionLabel="desc"
+                <div>
+                  <Controller
+                    name="motivo_id"
+                    control={control}
+                    rules={{ required: "Debe seleccionar un motivo" }}
+                    render={({ field }) => (
+                      <span className="p-float-label w-100">
+                        <Dropdown
+                          id={field.name}
+                          value={field.value}
+                          options={motivosOptionsRecepcion}
+                          optionLabel="label"
+                          placeholder="Seleccione Motivo"
+                          className="select w-100"
+                          onChange={(e) => {
+                            field.onChange(e.value);
+                            setMotivo(e.value);
+                          }}
+                        />
+                        <label htmlFor="dd-motivos">Motivos</label>
+                      </span>
+                    )}
                   />
-                  <label htmlFor="dd-motivos-recepcion">Motivos</label>
-                </span>
+                  {errors.motivo_id && (
+                    <span
+                      style={{
+                        color: "red",
+                        fontSize: "0.875rem",
+                        marginTop: "0.25rem",
+                        display: "block",
+                      }}
+                    >
+                      {errors.motivo_id.message}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {MotivoRender && (
                 <MotivoRender
-                  values={formularioData}
-                  onChange={handleFormChange}
+                  control={control}
+                  errors={errors}
+                  setValue={setValue}
                 />
               )}
 
               {/* fecha y hora debajo de los inputs principales */}
               <div className="d-flex flex-column flex-md-row gap-3 mt-4 py-2 px-4 justify-content-center align-items-center">
                 <div className="w-100 flex justify-content-center">
+                  <label htmlFor="hora">Hora</label>
                   <InputText
-                    value={horaActual}
-                    readOnly
+                    value={hora}
                     placeholder="Hora"
                     disabled
                     className="w-100"
@@ -309,9 +282,9 @@ export const FormularioRecepcion = () => {
                   />
                 </div>
                 <div className="w-100 flex justify-content-center">
+                  <label htmlFor="fecha">Fecha</label>
                   <InputText
-                    value={fechaActual}
-                    readOnly
+                    value={fechaactual()}
                     placeholder="Fecha"
                     disabled
                     className="w-100"
@@ -325,13 +298,18 @@ export const FormularioRecepcion = () => {
                   icon="pi pi-check"
                   label="Enviar"
                   severity="success"
-                  onClick={handleEnviar}
+                  onClick={handleSubmit(async (data) => {
+                    const result = await onSubmit(data, manejartoast, mostrarError);
+                    if (result) {
+                      cargarDatos();
+                    }
+                  })}
                 />
                 <Button
                   icon="pi pi-times"
                   label="Limpiar"
                   severity="danger"
-                  onClick={handleLimpiar}
+                  onClick={reset}
                 />
               </div>
             </div>
@@ -353,3 +331,4 @@ export const FormularioRecepcion = () => {
     </>
   );
 };
+

@@ -3,18 +3,27 @@ import { Dropdown } from "primereact/dropdown";
 import { Controller } from "react-hook-form";
 // hooks personalizados
 import { useHook_General } from "../../../General/hooks/useHook";
+import { useRutasCC } from "../../../General/hooks/useRutas";
 import { useState } from "react";
 
 interface ServicioProps {
   control: any; // viene del formulario padre (FormularioDespacho)
   errors?: any; // para mostrar los errores de validación
+  setValue: any; // para establecer el valor de otros campos
 }
 
-export const Servicio = ({ control, errors }: ServicioProps) => {
+export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
   const { modalidadesOptions, rutasOptions } = useHook_General();
+  const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
   const [ecoDValor, setEcoDValor] = useState(null);
   const [modalidadValor, setModalidadValor] = useState(null);
-  const [rutaValor, setRutaValor] = useState(null);
+  //const [rutaValor, setRutaValor] = useState(null);
+
+  // LOGICA DE CC - Se actualiza cuando cambia la ruta
+  const selectedRutaObj = rutasOptions.find((r: any) => r.value === rutaSeleccionada || r.ruta_cve_sist === rutaSeleccionada);
+  const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
+  const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
+
 
   const ecoDe = [
     { label: "Planta", value: "1" },
@@ -192,18 +201,25 @@ export const Servicio = ({ control, errors }: ServicioProps) => {
           control={control}
           name="ruta_id"
           rules={{ required: "La ruta es obligatoria" }}
-          render={({ field }) => (
-            <span className="p-float-label">
+          render={({ field, fieldState }) => (
+            <span className="p-float-label w-100">
               <Dropdown
                 inputId="dd-ruta"
-                className="select"
+                className={`select ${fieldState.error ? "p-invalid" : ""}`}
                 options={rutasOptions}
                 filter
                 value={field.value}
                 onChange={(e) => {
                   field.onChange(e.value);
-                  setRutaValor(e.value);
+                  setRutaSeleccionada(e.value); // Actualiza CC
+                  const rutaObj = rutasOptions.find((r: any) => r.value === e.value || r.ruta_cve_sist === e.value);
+                  if (rutaObj && setValue) {
+                    const nombre = rutaObj.ruta_nombre || "";
+                    const trayecto = rutaObj.ruta_trayecto || "";
+                    setValue("ruta", `${nombre} ${trayecto}`.trim());
+                  }
                 }}
+                optionLabel="label"
               />
               <label htmlFor="dd-ruta">Ruta</label>
             </span>
@@ -211,10 +227,25 @@ export const Servicio = ({ control, errors }: ServicioProps) => {
         />
 
         {/* CC */}
-        <span className="p-float-label">
-          <Dropdown id="cc" className="select" />
-          <label htmlFor="cc">CC</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="cc"
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <Dropdown
+                  inputId="dd-cc"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  options={rutasOptionsCC}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  optionLabel="label"
+                />
+                <label htmlFor="dd-cc">CC</label>
+              </span>
+            )}
+          />
+        </div>
 
         {/* Entrada Operador */}
         <span className="p-float-label input-servicio">

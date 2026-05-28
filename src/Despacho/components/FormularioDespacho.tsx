@@ -3,7 +3,7 @@ import { TabView, TabPanel } from "primereact/tabview";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Controller } from "react-hook-form";
 import { Toast } from 'primereact/toast';
 import { obtenerPvEstados } from "../../General/services/pv_estados.services";
@@ -27,6 +27,8 @@ import { SefiNuevo } from "./motivos/SefiNuevo";
 // react-hook-form
 import { PostPvEstados } from "../utils/postPvEstados";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const FormularioDespacho = () => {
   // hooks para obtener opciones de modulos y motivos
   const { modulosOptions, motivosOptions } = useHook_General();
@@ -35,7 +37,7 @@ export const FormularioDespacho = () => {
   const leftColRef = useRef<HTMLDivElement>(null);
   const [leftColHeight, setLeftColHeight] = useState<number | string>("auto");
   const [motivo, setMotivo] = useState<any>(null);
-  const [modulo, setModulo] = useState<any>(null);
+  const [setModulo] = useState<any>(null);
   const { hora } = RelojInput();
 
   // EFECTO PARA SINCRONIZAR ALTURA DEL CATÁLOGO CON EL FORMULARIO
@@ -104,7 +106,7 @@ export const FormularioDespacho = () => {
     "SEFI (Nuevo)": SefiNuevo,
   };
 
-  // Ya que tu Dropdown devuelve el objeto completo en 'value', necesitamos acceder a motivo.desc
+
   const MotivoRender = motivo?.desc
     ? COMPONENTES_MOTIVOS_DESPACHO[motivo.desc]
     : null;
@@ -116,10 +118,11 @@ export const FormularioDespacho = () => {
     reset,
     formState: { errors },
     onSubmit,
+    setValue
   } = PostPvEstados(modulosOptions);
 
 
-    const toast = useRef<Toast>(null);
+  const toast = useRef<Toast>(null);
 
   const manejartoast = (mensaje: string) => {
     toast.current?.show({ severity: "success", summary: "Éxito", detail: mensaje, });
@@ -128,10 +131,37 @@ export const FormularioDespacho = () => {
   const mostrarError = (mensaje: string) => {
     toast.current?.show({ severity: "error", summary: "Error", detail: mensaje, });
   }
+
+  //HANDLER ELIMINAR
+  const handleEliminar = useCallback(
+    async (rowData: any) => {
+      try {
+        const response = await fetch(`${API_URL}/pv_estados/${rowData.id}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          toast.current?.show({
+            severity: "success",
+            summary: "Eliminado",
+            detail: "Registro eliminado correctamente",
+          });
+          await cargarDatos();
+        }
+      } catch (err) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Hubo un error al eliminar el registro",
+        });
+      }
+    },
+    [cargarDatos],
+  );
+
   return (
     <>
 
-    <Toast ref={toast} className="toast-desplazado"  />
+      <Toast ref={toast} className="toast-desplazado" />
       <TabView>
         <TabPanel className="tabpanel" header="Despacho">
           <div className="container-fluid px-4 py-3">
@@ -154,7 +184,7 @@ export const FormularioDespacho = () => {
                       <Controller
                         name="modulo"
                         control={control}
-                        
+
                         rules={{ required: "Debe seleccionar un modulo" }}
                         render={({ field }) => (
                           <span className="p-float-label w-100">
@@ -262,7 +292,7 @@ export const FormularioDespacho = () => {
 
                   {/* Componente Dinámico — recibe control del formulario padre */}
                   {MotivoRender && (
-                    <MotivoRender control={control} errors={errors} />
+                    <MotivoRender control={control} errors={errors} setValue={setValue} />
                   )}
 
                   {/* fecha y hora debajo de los inputs principales */}
@@ -327,7 +357,10 @@ export const FormularioDespacho = () => {
       <div style={{ padding: "40px", fontFamily: "sans-serif" }}>
         <h2 className="text-center mb-5">REGISTRO DE DESPACHOS REALIZADOS</h2>
         <hr />
-        <Datatables data={pvEstados} columns={columnas} />
+        <Datatables
+          data={pvEstados}
+          columns={columnas}
+          onEliminar={handleEliminar} />
       </div>
     </>
   );
