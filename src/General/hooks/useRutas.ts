@@ -25,7 +25,7 @@ export const useRutas = () => {
   return { rutasOptions, rutas };
 };
 // Agregamos null | undefined para evitar errores si aún no se selecciona ruta
-export const useRutasCC = (rutaNombre: number | string | null | undefined) => {
+export const useRutasCC = (rutaNombre: number | null | undefined) => {
   const [rutascc, setRutascc] = useState([]);
   useEffect(() => {
     // Si no hay ruta seleccionada, limpiamos el array y evitamos la petición al back

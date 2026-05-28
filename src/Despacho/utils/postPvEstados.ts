@@ -1,6 +1,6 @@
 import type { pv_estados } from "../interface/pv_estados";
 import { useForm } from "react-hook-form";
-import type { SubmitHandler } from "react-hook-form";
+//import type { SubmitHandler } from "react-hook-form";
 import { useEffect } from "react";
 import { pvEstadosServices } from "../services/postPvEstados.services";
 import { useAuth } from "../../General/hooks/useAuth";
@@ -51,8 +51,8 @@ export const PostPvEstados = (modulosOptions: any[]) => {
       modulo: defaultModulo as any,
       eco: "",
       motivo_id: null as any,
-      op_cred: null as any,
-      op_turno: null as any,
+      op_cred: "",
+      op_turno: "",
       eco_tipo: null as any,
       extintor: "",
       ruta_modalidad: null as any,
@@ -75,15 +75,18 @@ export const PostPvEstados = (modulosOptions: any[]) => {
           typeof data.ruta_modalidad === "object"
             ? data.ruta_modalidad.id
             : data.ruta_modalidad,
+
+        ruta_id: data.ruta_id,
+        ruta: data.ruta
       };
 
-      console.log(" Payload:", payload);
-      
+      //console.log(" Payload:", payload);
+
       const result = await pvEstadosServices(payload as unknown as pv_estados);
 
       mostrarExito("Despacho realizado correctamente");
       resetForm();
-      console.log(" Guardado:", result);
+      //console.log(" Guardado:", result);
 
       return result;
     } catch (error) {
@@ -97,5 +100,6 @@ export const PostPvEstados = (modulosOptions: any[]) => {
     reset: resetForm,
     formState,
     onSubmit,
+    setValue
   };
 };

@@ -1,115 +1,220 @@
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
+import { Controller } from "react-hook-form";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
 import { useRutasCC } from "../../General/hooks/useRutas";
+import { useState } from "react";
 
 interface TerminoJornadaProps {
-  values: {
-    credencial: string;
-    turno: string;
-    noExtintor: string;
-    modalidadSelect: any;
-    rutaSelect: any;
-    cc: any;
-    selectedTermino: any;
-  };
-  onChange: (field: string, value: any) => void;
+  control: any;
+  errors?: any;
+  setValue?: any;
 }
+
 const tiposTermino = [
   { name: "Normal", code: "N" },
   { name: "Discontinuo", code: "D" }
 ];
 
-export const TerminoJornada = ({ values, onChange }: TerminoJornadaProps) => {
+export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProps) => {
   const { modalidadesOptions, rutasOptions } = useHook_General();
-  //LOGICA DE CC
-  const selectedValue = values.rutaSelect?.value ?? values.rutaSelect;
-  const selectedRutaObj = rutasOptions.find((r: any) => r.value === selectedValue);
+  const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
+
+  // LOGICA DE CC - Se actualiza cuando cambia la ruta
+  const selectedRutaObj = rutasOptions.find((r: any) => r.value === rutaSeleccionada || r.ruta_cve_sist === rutaSeleccionada);
   const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
   const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
+
   return (
     <>
-      < div className="formulario-grid sub-form" >
-        {/* credencial */}
-        < span className="p-float-label w-100" >
-          <InputText id="credencial"
-            className="select"
-            value={values.credencial}
-            onChange={(e) => onChange("credencial", e.target.value)} />
-          <label htmlFor="credencial">Credencial</label>
-        </span >
+      <div className="formulario-grid sub-form">
 
-        {/* turno */}
-        < span className="p-float-label" >
-          <InputText id="turno"
-            className="select"
-            value={values.turno}
-            onChange={(e) => onChange("turno", e.target.value)} />
-          <label htmlFor="turno">Turno</label>
-        </span >
+        {/* Credencial */}
+        <div>
+          <Controller
+            control={control}
+            name="op_cred"
+            rules={{ required: "La credencial es obligatoria" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  id="credencial"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="credencial">Credencial</label>
+              </span>
+            )}
+          />
+          {errors?.op_cred && (
+            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+              {errors.op_cred.message}
+            </span>
+          )}
+        </div>
+
+        {/* Turno */}
+        <div>
+          <Controller
+            control={control}
+            name="op_turno"
+            rules={{ required: "El turno es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  id="turno"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="turno">Turno</label>
+              </span>
+            )}
+          />
+          {errors?.op_turno && (
+            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+              {errors.op_turno.message}
+            </span>
+          )}
+        </div>
 
         {/* No.Extintor */}
-        < span className="p-float-label" >
-          <InputText id="no-extintor"
-            className="select"
-            value={values.noExtintor}
-            onChange={(e) => onChange("noExtintor", e.target.value)} />
-          <label htmlFor="no-extintor">No.Extintor</label>
-        </span >
-
-        {/* Modalidad  */}
-        < span className="p-float-label" >
-          <Dropdown
-            inputId="dd-modalidad"
-            className="select"
-            options={modalidadesOptions}
-            value={values.modalidadSelect}
-            onChange={(e) => onChange("modalidadSelect", e.value)}
+        <div>
+          <Controller
+            control={control}
+            name="extintor"
+            rules={{ required: "El número de extintor es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  id="no-extintor"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="no-extintor">No.Extintor</label>
+              </span>
+            )}
           />
-          <label htmlFor="dd-modalidad">Modalidad</label>
-        </span >
+          {errors?.extintor && (
+            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+              {errors.extintor.message}
+            </span>
+          )}
+        </div>
 
-        {/* Ruta  */}
-        < span className="p-float-label" >
-          <Dropdown
-            inputId="dd-ruta"
-            className="select"
-            options={rutasOptions}
-            filter
-            optionLabel="label"
-            value={values.rutaSelect}
-            onChange={(e) => onChange("rutaSelect", e.value)}
+        {/* Modalidad */}
+        <div>
+          <Controller
+            control={control}
+            name="ruta_modalidad"
+            rules={{ required: "La modalidad es obligatoria" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <Dropdown
+                  inputId="dd-modalidad"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  options={modalidadesOptions}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  optionLabel="label"
+                />
+                <label htmlFor="dd-modalidad">Modalidad</label>
+              </span>
+            )}
           />
-          <label htmlFor="dd-ruta">Ruta</label>
-        </span >
+          {errors?.ruta_modalidad && (
+            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+              {errors.ruta_modalidad.message}
+            </span>
+          )}
+        </div>
+
+        {/* Ruta */}
+        <div>
+          <Controller
+            control={control}
+            name="ruta_id"
+            rules={{ required: "La ruta es obligatoria" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <Dropdown
+                  inputId="dd-ruta"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  options={rutasOptions}
+                  filter
+                  value={field.value}
+                  onChange={(e) => {
+                    field.onChange(e.value);
+                    setRutaSeleccionada(e.value); // Actualiza CC
+                    const rutaObj = rutasOptions.find((r: any) => r.value === e.value || r.ruta_cve_sist === e.value);
+                    if (rutaObj && setValue) {
+                      const nombre = rutaObj.ruta_nombre || "";
+                      const trayecto = rutaObj.ruta_trayecto || "";
+                      setValue("ruta", `${nombre} ${trayecto}`.trim());
+                    }
+                  }}
+                  optionLabel="label"
+                />
+                <label htmlFor="dd-ruta">Ruta</label>
+              </span>
+            )}
+          />
+          {errors?.ruta_id && (
+            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+              {errors.ruta_id.message}
+            </span>
+          )}
+        </div>
 
         {/* CC */}
-        < span className="p-float-label" >
-          <Dropdown
-            inputId="dd-cc"
-            className="select"
-            options={rutasOptionsCC}
-            optionLabel="label"
-            value={values.cc}
-            onChange={(e) => onChange("cc", e.value)}
+        <div>
+          <Controller
+            control={control}
+            name="cc"
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <Dropdown
+                  inputId="dd-cc"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  options={rutasOptionsCC}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  optionLabel="label"
+                />
+                <label htmlFor="dd-cc">CC</label>
+              </span>
+            )}
           />
-          <label htmlFor="dd-cc">CC</label>
-        </span >
+        </div>
 
-        {/* Tipo de Termino  */}
-        < span className="p-float-label" >
-          <Dropdown
-            inputId="dd-tipo-termino"
-            className="select"
-            options={tiposTermino}
-            optionLabel="name"
-            value={values.selectedTermino}
-            onChange={(e) => onChange("selectedTermino", e.value)}
+        {/* Tipo de Término */}
+        <div>
+          <Controller
+            control={control}
+            name="tipo_termino"
+            rules={{ required: "El tipo de término es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <Dropdown
+                  inputId="dd-tipo-termino"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  options={tiposTermino}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  optionLabel="name"
+                />
+                <label htmlFor="dd-tipo-termino">Tipo de Término</label>
+              </span>
+            )}
           />
-          <label htmlFor="dd-tipo-termino">Tipo de Termino</label>
-        </span >
-      </div >
+          {errors?.tipo_termino && (
+            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+              {errors.tipo_termino.message}
+            </span>
+          )}
+        </div>
+
+      </div>
     </>
   );
 };
