@@ -65,7 +65,7 @@ export const useRutasCC = (rutaNombre: number | null | undefined) => {
         unicas.push({
           ...r,
           label: labelStr,
-          value: r.ruta_cve_sist,
+          value: r.destino_nombre || '',
         });
       }
     });

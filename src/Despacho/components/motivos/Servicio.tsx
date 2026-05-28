@@ -97,7 +97,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="eco_tipo"
+            name="eco_estatus"
             rules={{ required: "El eco de es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -230,7 +230,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="cc"
+            name="ruta_cc"
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
                 <Dropdown

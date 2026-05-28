@@ -78,7 +78,7 @@ export const Datatables = ({ data, columns, onEliminar }: DatatablesProps) => {
       columnDefs: [
         { targets: 0, responsivePriority: 2 },
         { targets: -1, responsivePriority: 1, width: "50px" },
-        { targets: "_all", responsivePriority: 10 },
+        { targets: "_all", defaultContent: "", responsivePriority: 10 },
       ],
       width: "100%",
       language: {

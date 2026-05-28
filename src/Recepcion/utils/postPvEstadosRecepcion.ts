@@ -78,7 +78,8 @@ export const PostPvEstadosRecepcion = (modulosOptions: any[]) => {
                         : data.ruta_modalidad,
 
                 ruta_id: data.ruta_id,
-                ruta: data.ruta
+                ruta: data.ruta,
+                ruta_cc: data.cc || data.ruta_cc
             };
 
             //console.log(" Payload:", payload);
