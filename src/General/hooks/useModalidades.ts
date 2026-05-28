@@ -22,7 +22,7 @@ export const useModalidades = () => {
       modalidades.map((m: any) => ({
         ...m,
         label: `${m.servicio_descrip}`,
-        value: m.ruta_cve_servicio,
+        value: m.servicio_descrip,
       })),
     [modalidades],
   );

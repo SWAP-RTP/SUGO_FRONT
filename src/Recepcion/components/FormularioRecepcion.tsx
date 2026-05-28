@@ -41,16 +41,30 @@ export const FormularioRecepcion = () => {
   const columnas = [
     { title: "ECO", data: "eco", responsivePriority: 1 },
     { title: "MODULO", data: "modulo", responsivePriority: 2 },
-    { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 },
+       { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 , render: (data) => {
+      if(data === 1){
+        return "Planta";
+      }else if(data === 2){
+        return "Postura";
+      }
+    }},
     //{
     //title: "MOMENTO",
     //data: "momento",
     //responsivePriority: 4,
     //render: (data) => formatearFecha(data),
     //},
-    { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 },
+     { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 ,
+    render: (data) => {
+      if(data === 1){
+        return "Despacho";
+      }else{
+        return "Recepcion";
+      }
+    }},
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
     { title: "RUTA", data: "ruta", responsivePriority: 7 },
+    { title: "CC", data: "ruta_cc", responsivePriority: 7 },
     { title: "MODALIDAD", data: "ruta_modalidad", responsivePriority: 8 },
     { title: "OPERADOR", data: "op_cred", responsivePriority: 9 },
     { title: "TURNO", data: "op_turno", responsivePriority: 10 },
