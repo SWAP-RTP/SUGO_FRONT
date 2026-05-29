@@ -131,10 +131,10 @@ export const Hora_Presentacion = () => {
                     <hr />
                   </div>
 
+  {/* primera fila : economico y credencial */}
                   <div className="d-flex align-items-center gap-4 justify-content-center">
-                    {/* credencial */}
-                    {/* lo guardamos en el estado local de react form */}
-                    <Controller
+
+     <Controller
                       name="credencial"
                       // control es la funcion que maneja el estado de los inputs
                       control={control}
@@ -158,7 +158,7 @@ export const Hora_Presentacion = () => {
                           {/* si credencialValida es false mostramos un mensaje de error */}
                           {credencialValida === false && (
                             <small style={{ color: "red" }}>
-                              No hay coincidencias
+                              Credencial invalida
                             </small>
                           )}
 
@@ -177,6 +177,38 @@ export const Hora_Presentacion = () => {
                         </span>
                       )}
                     />
+
+
+                    {/* Economico */}
+
+                    <Controller
+                      name="economico"
+                      control={control}
+                      rules={{ required: "El Economico es obligatorio" }}
+                      render={({ field, fieldState }) => (
+                        <span className="p-float-label w-100">
+                          <InputText
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                            }}
+                            className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                            disabled
+                          />
+                          <label htmlFor={field.name}>Economico</label>
+                        </span>
+                      )}
+                    />
+                    
+               
+                  </div>
+
+
+  {/* segunda fila : modulos  y ruta*/}
+                  <div
+                    className="d-flex align-items-center gap-4 mt-2 justify-content-center"
+                    style={{ paddingTop: "1.5rem" }}
+                  >
 
                     {/* Modulo */}
                     <Controller
@@ -203,8 +235,38 @@ export const Hora_Presentacion = () => {
                         </span>
                       )}
                     />
+
+
+                    {/* Ruta */}
+                    <Controller
+                      name="ruta"
+                      control={control}
+                      rules={{ required: "Debe seleccionar una ruta" }}
+                      render={({ field, fieldState }) => (
+                        <span className="p-float-label w-100">
+                          <InputText  
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                            placeholder="Ruta"
+                            disabled
+                          />
+                          <label htmlFor={field.name}>Ruta</label>
+                          {fieldState.error && (
+                            <small className="p-error">
+                              {fieldState.error.message}
+                            </small>
+                          )}
+                        </span>
+                      )}
+                    />
+
+
+
                   </div>
 
+
+  {/* tercera fila : fecha y hora */}
                   <div
                     className="d-flex align-items-center gap-4 mt-2 justify-content-center"
                     style={{ paddingTop: "1.5rem" }}
@@ -276,6 +338,8 @@ export const Hora_Presentacion = () => {
                 </div>
               </div>
 
+
+{/*catalogo de operadores  */}
               <div className="catalogo_operadores w-50 ps-xl-5">
                 <div className="card_elegant_table">
                   <DataTable
@@ -334,6 +398,7 @@ export const Hora_Presentacion = () => {
 
           <hr className="linea_punteada" />
 
+{/* tabla de presentacion  */}
           <Presentacion_tabla />
         </TabPanel>
       </TabView>

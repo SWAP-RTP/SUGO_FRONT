@@ -1,6 +1,6 @@
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { Controller } from "react-hook-form";
+import { Controller, useWatch } from "react-hook-form";
 // hooks personalizados
 import { useHook_General } from "../../../General/hooks/useHook";
 import { useRutasCC } from "../../../General/hooks/useRutas";
@@ -14,13 +14,18 @@ interface ServicioProps {
 
 export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
   const { modalidadesOptions, rutasOptions } = useHook_General();
-  const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
+
+  // Observamos el valor de ruta_id del formulario padre
+  const watchedRutaId = useWatch({
+    control,
+    name: "ruta_id",
+  });
+
   const [ecoDValor, setEcoDValor] = useState(null);
   const [modalidadValor, setModalidadValor] = useState(null);
-  //const [rutaValor, setRutaValor] = useState(null);
 
   // LOGICA DE CC - Se actualiza cuando cambia la ruta
-  const selectedRutaObj = rutasOptions.find((r: any) => r.value === rutaSeleccionada || r.ruta_cve_sist === rutaSeleccionada);
+  const selectedRutaObj = rutasOptions.find((r: any) => r.value === watchedRutaId || r.ruta_cve_sist === watchedRutaId);
   const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
   const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
 
@@ -211,7 +216,6 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
                 value={field.value}
                 onChange={(e) => {
                   field.onChange(e.value);
-                  setRutaSeleccionada(e.value); // Actualiza CC
                   const rutaObj = rutasOptions.find((r: any) => r.value === e.value || r.ruta_cve_sist === e.value);
                   if (rutaObj && setValue) {
                     const nombre = rutaObj.ruta_nombre || "";

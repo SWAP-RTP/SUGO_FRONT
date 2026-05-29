@@ -31,7 +31,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const FormularioDespacho = () => {
   // hooks para obtener opciones de modulos y motivos
-  const { modulosOptions, motivosOptions } = useHook_General();
+  const { modulosOptions, motivosOptions, presentacion, rutasOptions } = useHook_General();
 
   const [pvEstados, setPvEstados] = useState([]);
   const leftColRef = useRef<HTMLDivElement>(null);
@@ -135,6 +135,59 @@ export const FormularioDespacho = () => {
     onSubmit,
     setValue
   } = PostPvEstados(modulosOptions);
+
+  // funcion para buscar y autollenar datos de economico (presentacion_pv)
+  const buscarEconomico = (valor: string) => {
+    if (!valor) {
+      setValue("op_cred", "");
+      setValue("ruta", "");
+      setValue("ruta_id", null as any);
+      return;
+    }
+
+    const ecoVal = String(valor).trim();
+    // Filtramos las presentaciones que correspondan a este económico
+    const coincidencias = presentacion.filter(
+      (p: any) => String(p.economico).trim() === ecoVal
+    );
+
+    if (coincidencias.length > 0) {
+      // Tomamos el registro más reciente (último de la lista)
+      const masReciente = coincidencias[coincidencias.length - 1];
+
+      // Auto-completamos modulo
+      if (masReciente.modulo) {
+        setValue("modulo", masReciente.modulo);
+      }
+
+      // Auto-completamos credencial (op_cred)
+      if (masReciente.credencial) {
+        setValue("op_cred", String(masReciente.credencial));
+      }
+
+      // Auto-completamos ruta y ruta_id
+      if (masReciente.ruta) {
+        setValue("ruta", masReciente.ruta);
+
+        // Buscamos coincidencia en rutasOptions para seleccionar en el dropdown
+        const rutaStr = String(masReciente.ruta).trim().toLowerCase();
+        const rutaEncontrada = rutasOptions.find((r: any) => {
+          const fullName = `${r.ruta_nombre} ${r.ruta_trayecto || ""}`.trim().toLowerCase();
+          const nameOnly = String(r.ruta_nombre).trim().toLowerCase();
+          return fullName === rutaStr || nameOnly === rutaStr;
+        });
+
+        if (rutaEncontrada) {
+          setValue("ruta_id", rutaEncontrada.value);
+        }
+      }
+    } else {
+      // Si no se encuentra, limpiamos los campos automáticos
+      setValue("op_cred", "");
+      setValue("ruta", "");
+      setValue("ruta_id", null as any);
+    }
+  };
 
 
   const toast = useRef<Toast>(null);
@@ -245,7 +298,10 @@ export const FormularioDespacho = () => {
                           <span className="p-float-label w-100">
                             <InputText
                               value={field.value}
-                              onChange={(e) => field.onChange(e.target.value)}
+                              onChange={(e) => {
+                                field.onChange(e.target.value);
+                                buscarEconomico(e.target.value);
+                              }}
                               className={`select ${fieldState.error ? "p-invalid" : ""}`}
                             />
                             <label htmlFor="economico">Economico</label>
