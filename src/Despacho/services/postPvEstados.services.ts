@@ -1,7 +1,9 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 import type { pv_estados } from "../interface/pv_estados";
 
 export const pvEstadosServices = async (data: pv_estados) => {
-  const response = await fetch("http://localhost:3000/api/pv_estados", {
+  const response = await fetch(`${API_URL}/pv_estados`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

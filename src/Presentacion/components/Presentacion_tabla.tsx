@@ -12,8 +12,9 @@ export const Presentacion_tabla = () => {
         emptyMessage={"No hay presentacion"}
       >
         <Column field="id" header="ID"></Column>
+        <Column field="economico" header="Economico"></Column>
         <Column field="credencial" header="Credencial"></Column>
-        {/* <Column field="ruta" header="Ruta"></Column> */}
+        <Column field="ruta" header="Ruta"></Column>
         <Column field="fecha" header="Fecha"></Column>
         <Column field="hora" header="Hora"></Column>
         <Column field="modulo" header="Modulo"></Column>
@@ -21,4 +22,4 @@ export const Presentacion_tabla = () => {
     </>
   );
 };
-1;
+

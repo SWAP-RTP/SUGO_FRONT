@@ -33,6 +33,7 @@ export const postHoraPresentacion = async (data: any) => {
   try {
     // Transformar los datos al formato esperado por el backend
     const datosTransformados = {
+      economico: parseInt(data.economico) || null,
       credencial: parseInt(data.credencial) || null,
       modulo: data.modulo || null,
       ruta: data.ruta || null,

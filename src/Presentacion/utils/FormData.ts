@@ -55,8 +55,10 @@ export const DataSave = (
   // usamos esto para el react form
   const { control, handleSubmit, reset, formState, setValue } = useForm({
     defaultValues: {
+      economico: "",
       credencial: "",
       modulo: null,
+      ruta: null,
     },
   });
 
@@ -84,8 +86,10 @@ export const DataSave = (
       }
     }
     reset({
+      economico: "",
       credencial: "",
       modulo: defaultModulo,
+      ruta: "",
     });
     setCredencialValida(null);
     setCredencialEncontrada(null);
@@ -142,24 +146,39 @@ export const DataSave = (
     if (!valor) {
       setCredencialValida(null); // Si está vacío, no mostramos nada
       setCredencialEncontrada(null);
+      setValue("economico", "");
+      setValue("ruta", "");
       return;
     }
 
     const valorTrim = String(valor).trim();
     const yaRegistrada = credencialesRegistradas.has(valorTrim);
 
-    // Buscamos en los tres campos: primer_t, segundo_t, tercer_t
-    const encontrado = ecoDisponibles.some(
+    // Buscamos el objeto de turno en los tres campos: primer_t, segundo_t, tercer_t
+    const turnoEncontrado = ecoDisponibles.find(
       (turno: any) =>
         String(turno.primer_t || "").trim() === valorTrim ||
         String(turno.segundo_t || "").trim() === valorTrim ||
         String(turno.tercer_t || "").trim() === valorTrim
     );
     
+    const encontrado = !!turnoEncontrado;
+    const esValido = encontrado && !yaRegistrada;
+
     // guardamos el resultado, pero si ya estaba registrada se considera inválida (aunque esté en ecoDisponibles temporalmente)
-    setCredencialValida(encontrado && !yaRegistrada);
+    setCredencialValida(esValido);
     // si encontramos coincidencia, guardamos el valor buscado para tacharlo en la tabla
     setCredencialEncontrada(encontrado ? valorTrim : null);
+
+    if (esValido && turnoEncontrado) {
+      // Auto-completamos los campos del formulario
+      setValue("economico", turnoEncontrado.economico || "");
+      setValue("ruta", turnoEncontrado.nombre_ruta || "");
+    } else {
+      // Si no es válido o no se encuentra, limpiamos los campos auto-completados
+      setValue("economico", "");
+      setValue("ruta", "");
+    }
   };
 
   return {
