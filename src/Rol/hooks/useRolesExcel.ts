@@ -14,6 +14,7 @@ import {
   extraerFilasLV,
   extraerFilasSabado,
   extraerFilasDomingo,
+  extraerModalidad,
 } from "../utils/rolExcelUtils";
 
 export const useRolesExcel = () => {
@@ -216,6 +217,7 @@ export const useRolesExcel = () => {
 
         return {
           nombreHoja,
+          modalidad: extraerModalidad(matriz),
           filas: extraerFilasRoles(matriz),
           filasLV: extraerFilasLV(matriz),
           filasSabado: extraerFilasSabado(matriz),

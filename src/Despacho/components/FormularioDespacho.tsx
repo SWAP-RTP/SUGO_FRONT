@@ -4,7 +4,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Controller } from "react-hook-form";
+import { Controller, useWatch } from "react-hook-form";
 import { Toast } from 'primereact/toast';
 import { obtenerPvEstados } from "../../General/services/pv_estados.services";
 // hooks personalizados
@@ -31,7 +31,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const FormularioDespacho = () => {
   // hooks para obtener opciones de modulos y motivos
-  const { modulosOptions, motivosOptions, presentacion, rutasOptions } = useHook_General();
+  const { modulosOptions, motivosOptions, presentacion, rutasOptions, ecoDisponibles } = useHook_General();
 
   const [pvEstados, setPvEstados] = useState([]);
   const leftColRef = useRef<HTMLDivElement>(null);
@@ -136,56 +136,98 @@ export const FormularioDespacho = () => {
     setValue
   } = PostPvEstados(modulosOptions);
 
+  const watchedEco = useWatch({
+    control,
+    name: "eco",
+  });
+
+  useEffect(() => {
+    if (watchedEco) {
+      buscarEconomico(watchedEco);
+    }
+  }, [watchedEco, rutasOptions, ecoDisponibles, presentacion, motivo]);
+
   // funcion para buscar y autollenar datos de economico (presentacion_pv)
   const buscarEconomico = (valor: string) => {
     if (!valor) {
       setValue("op_cred", "");
       setValue("ruta", "");
       setValue("ruta_id", null as any);
+      setValue("ruta_modalidad", null as any);
       return;
     }
 
     const ecoVal = String(valor).trim();
-    // Filtramos las presentaciones que correspondan a este económico
+
+    // 1. Buscamos primero en el rol de turnos activos (ecoDisponibles)
+    const turnoActivo = ecoDisponibles.find(
+      (t: any) => String(t.economico).trim() === ecoVal
+    );
+
+    // 2. Buscamos en las presentaciones (historial de firmas)
     const coincidencias = presentacion.filter(
       (p: any) => String(p.economico).trim() === ecoVal
     );
 
-    if (coincidencias.length > 0) {
-      // Tomamos el registro más reciente (último de la lista)
-      const masReciente = coincidencias[coincidencias.length - 1];
+    const masReciente = coincidencias.length > 0 ? coincidencias[coincidencias.length - 1] : null;
 
-      // Auto-completamos modulo
-      if (masReciente.modulo) {
-        setValue("modulo", masReciente.modulo);
-      }
+    // Auto-completamos modulo
+    const moduloFinal = turnoActivo?.modulo || masReciente?.modulo;
+    if (moduloFinal) {
+      setValue("modulo", moduloFinal);
+    }
 
-      // Auto-completamos credencial (op_cred)
-      if (masReciente.credencial) {
-        setValue("op_cred", String(masReciente.credencial));
-      }
+    // Auto-completamos credencial (op_cred)
+    const credencialFinal = masReciente?.credencial || turnoActivo?.primer_t || turnoActivo?.segundo_t || turnoActivo?.tercer_t;
+    if (credencialFinal) {
+      setValue("op_cred", String(credencialFinal));
+    }
 
-      // Auto-completamos ruta y ruta_id
-      if (masReciente.ruta) {
-        setValue("ruta", masReciente.ruta);
+    // Auto-completamos ruta y ruta_id
+    const rutaDeOrigen = turnoActivo?.nombre_ruta || masReciente?.ruta;
+    console.log("🔍 buscarEconomico:", {
+      valor,
+      economicoBuscado: ecoVal,
+      turnoActivoEncontrado: turnoActivo,
+      presentacionMasReciente: masReciente,
+      rutaDeOrigen,
+      totalRutasOptions: rutasOptions?.length
+    });
 
-        // Buscamos coincidencia en rutasOptions para seleccionar en el dropdown
-        const rutaStr = String(masReciente.ruta).trim().toLowerCase();
-        const rutaEncontrada = rutasOptions.find((r: any) => {
-          const fullName = `${r.ruta_nombre} ${r.ruta_trayecto || ""}`.trim().toLowerCase();
-          const nameOnly = String(r.ruta_nombre).trim().toLowerCase();
-          return fullName === rutaStr || nameOnly === rutaStr;
-        });
+    if (rutaDeOrigen) {
+      setValue("ruta", rutaDeOrigen);
 
-        if (rutaEncontrada) {
-          setValue("ruta_id", rutaEncontrada.value);
+      // Normalizar para comparación flexible (ignora espacios, guiones y mayúsculas)
+      const normalizar = (s: string) => String(s || "").trim().toLowerCase().replace(/[\s-_]/g, "");
+      const rutaNorm = normalizar(rutaDeOrigen);
+      console.log("🔍 Comparando rutaDeOrigen normalizada:", rutaNorm);
+
+      const rutaEncontrada = rutasOptions.find((r: any) => {
+        const nameNorm = normalizar(r.ruta_nombre);
+        const fullNameNorm = normalizar(`${r.ruta_nombre}${r.ruta_trayecto || ""}`);
+        const match = nameNorm === rutaNorm || fullNameNorm === rutaNorm || rutaNorm.includes(nameNorm) || nameNorm.includes(rutaNorm);
+        if (match) {
+          console.log("✅ Coincidencia encontrada en rutasOptions:", r);
         }
+        return match;
+      });
+
+      if (rutaEncontrada) {
+        console.log("👉 Estableciendo ruta_id:", rutaEncontrada.value);
+        setValue("ruta_id", rutaEncontrada.value);
+        if (rutaEncontrada.ruta_cve_servicio) {
+          console.log("👉 Estableciendo ruta_modalidad:", rutaEncontrada.ruta_cve_servicio);
+          setValue("ruta_modalidad", rutaEncontrada.ruta_cve_servicio);
+        }
+      } else {
+        console.log("❌ No se encontró ninguna coincidencia para:", rutaDeOrigen, "en las opciones de ruta:", rutasOptions);
       }
     } else {
       // Si no se encuentra, limpiamos los campos automáticos
       setValue("op_cred", "");
       setValue("ruta", "");
       setValue("ruta_id", null as any);
+      setValue("ruta_modalidad", null as any);
     }
   };
 

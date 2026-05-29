@@ -47,6 +47,7 @@ export interface FilaTurnosLV {
 
 export interface HojaRolData {
   nombreHoja: string;
+  modalidad?: string;
   filas: FilaRol[];
   filasLV: FilaTurnosLV[];
   filasSabado: FilaTurnosLV[];

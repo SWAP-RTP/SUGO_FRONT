@@ -135,6 +135,8 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
                     field.onChange(e.value);
                     setModalidadValor(e.value);
                   }}
+                  optionLabel="label"
+                  optionValue="value"
                 />
                 <label htmlFor="dd-modalidad">Modalidad</label>
               </span>
