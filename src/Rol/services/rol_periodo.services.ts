@@ -14,9 +14,9 @@ export const obtenerPeriodos = async () => {
   }
 };
 
-export const ObtenerRol = async () => {
+export const ObtenerRol = async (modulo: number) => {
   try {
-    const response = await fetch(`${API_URL}/rol_turnos`);
+    const response = await fetch(`${API_URL}/rol_turnos?modulo=${modulo}`);
     if (!response.ok) {
       throw new Error(`Error al obtener los roles_lv: ${response.statusText}`);
     }
@@ -93,9 +93,9 @@ export const GuardarTurnoEditado = async (turno: any) => {
   }
 };
 
-export const EjecutarCierreDia = async () => {
+export const EjecutarCierreDia = async (modulo: number) => {
   try {
-    const response = await fetch(`${API_URL}/cierre_dia`, {
+    const response = await fetch(`${API_URL}/cierre_dia?modulo=${modulo}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

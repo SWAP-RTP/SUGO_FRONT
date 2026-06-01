@@ -1,22 +1,25 @@
 import { Button } from 'primereact/button';
 import { confirmDialog } from 'primereact/confirmdialog';
 import { EjecutarCierreDia } from '../services/rol_periodo.services';
+//import { data } from 'react-router-dom';
 
 interface CierreDiaButtonProps {
+    modulo: number;
     onSuccess: () => void | Promise<void>;
     loading: boolean;
     setLoading: (loading: boolean) => void;
+
 }
 
-export default function CierreDiaButton({ onSuccess, loading, setLoading }: CierreDiaButtonProps) {
+export default function CierreDiaButton({ onSuccess, loading, setLoading, modulo }: CierreDiaButtonProps) {
     const handleCierre = async () => {
         try {
             setLoading(true);
-            await EjecutarCierreDia();
+            await EjecutarCierreDia(modulo);
             await onSuccess();
         } catch (error) {
             console.error("Error en cierre", error);
-            alert("Error al ejecutarel cierre de dia. Intente nuevamente.");
+            console.error("Error al ejecutarel cierre de dia. Intente nuevamente.");
         } finally {
             setLoading(false);
         }
