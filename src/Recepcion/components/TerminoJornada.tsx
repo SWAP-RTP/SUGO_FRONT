@@ -14,27 +14,33 @@ interface TerminoJornadaProps {
 
 const tiposTermino = [
   { name: "Normal", code: "N" },
-  { name: "Discontinuo", code: "D" }
+  { name: "Discontinuo", code: "D" },
 ];
 
-export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProps) => {
+export const TerminoJornada = ({
+  control,
+  errors,
+  setValue,
+}: TerminoJornadaProps) => {
   const { modalidadesOptions, rutasOptions } = useHook_General();
   const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
 
   // LOGICA DE CC - Se actualiza cuando cambia la ruta
-  const selectedRutaObj = rutasOptions.find((r: any) => r.value === rutaSeleccionada || r.ruta_cve_sist === rutaSeleccionada);
+  const selectedRutaObj = rutasOptions.find(
+    (r: any) =>
+      r.value === rutaSeleccionada || r.ruta_cve_sist === rutaSeleccionada,
+  );
   const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
   const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
 
   return (
     <>
       <div className="formulario-grid sub-form">
-
         {/* Credencial */}
         <div>
           <Controller
             control={control}
-            name="op_cred"
+            name="credencial"
             rules={{ required: "La credencial es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -48,7 +54,14 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
             )}
           />
           {errors?.op_cred && (
-            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
               {errors.op_cred.message}
             </span>
           )}
@@ -58,7 +71,7 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
         <div>
           <Controller
             control={control}
-            name="op_turno"
+            name="turno"
             rules={{ required: "El turno es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -72,7 +85,14 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
             )}
           />
           {errors?.op_turno && (
-            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
               {errors.op_turno.message}
             </span>
           )}
@@ -82,7 +102,7 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
         <div>
           <Controller
             control={control}
-            name="extintor"
+            name="extintor_1"
             rules={{ required: "El número de extintor es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -96,7 +116,14 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
             )}
           />
           {errors?.extintor && (
-            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
               {errors.extintor.message}
             </span>
           )}
@@ -106,7 +133,7 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
         <div>
           <Controller
             control={control}
-            name="ruta_modalidad"
+            name="id_modalidad"
             rules={{ required: "La modalidad es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -124,7 +151,14 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
             )}
           />
           {errors?.ruta_modalidad && (
-            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
               {errors.ruta_modalidad.message}
             </span>
           )}
@@ -134,7 +168,7 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
         <div>
           <Controller
             control={control}
-            name="ruta_id"
+            name="id_ruta"
             rules={{ required: "La ruta es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -147,7 +181,10 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
                   onChange={(e) => {
                     field.onChange(e.value);
                     setRutaSeleccionada(e.value); // Actualiza CC
-                    const rutaObj = rutasOptions.find((r: any) => r.value === e.value || r.ruta_cve_sist === e.value);
+                    const rutaObj = rutasOptions.find(
+                      (r: any) =>
+                        r.value === e.value || r.ruta_cve_sist === e.value,
+                    );
                     if (rutaObj && setValue) {
                       const nombre = rutaObj.ruta_nombre || "";
                       const trayecto = rutaObj.ruta_trayecto || "";
@@ -161,9 +198,16 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
               </span>
             )}
           />
-          {errors?.ruta_id && (
-            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
-              {errors.ruta_id.message}
+          {errors?.id_ruta && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.id_ruta.message}
             </span>
           )}
         </div>
@@ -182,7 +226,7 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
                   value={field.value}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
-                  optionValue="value"
+                  optionValue="ruta_destino_cve"
                 />
                 <label htmlFor="dd-cc">CC</label>
               </span>
@@ -211,12 +255,18 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
             )}
           />
           {errors?.tipo_termino && (
-            <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
               {errors.tipo_termino.message}
             </span>
           )}
         </div>
-
       </div>
     </>
   );

@@ -241,7 +241,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
                   value={field.value}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
-                  optionValue="value"
+                  optionValue="ruta_destino_cve"
                 />
                 <label htmlFor="dd-cc">CC</label>
               </span>

@@ -39,14 +39,15 @@ export const FormularioRecepcion = () => {
 
   // DECLARAMOS LAS COLUMNAS DE DATATABLE
   const columnas = [
-    { title: "ECO", data: "eco", responsivePriority: 1 },
-    { title: "MODULO", data: "modulo", responsivePriority: 2 },
-       { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 , render: (data) => {
-      if(data === 1){
+    { title: "ECO", data: "economico", responsivePriority: 1 },
+    { title: "MODULO", data: "id_modulo", responsivePriority: 2 },
+    { title: "EDO.ECO", data: "tipo_eco", responsivePriority: 3 , render: (data) => {
+      if(data === 1 || data === "1"){
         return "Planta";
-      }else if(data === 2){
+      }else if(data === 2 || data === "2"){
         return "Postura";
       }
+      return "";
     }},
     //{
     //title: "MOMENTO",
@@ -54,21 +55,22 @@ export const FormularioRecepcion = () => {
     //responsivePriority: 4,
     //render: (data) => formatearFecha(data),
     //},
-     { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 ,
+     { title: "TIPO DE REGISTRO", data: "eco_estatus", responsivePriority: 5 ,
     render: (data) => {
-      if(data === 1){
+      if(data === 1 || data === "1"){
         return "Despacho";
-      }else{
+      }else if(data === 2 || data === "2"){
         return "Recepcion";
       }
+      return "";
     }},
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
-    { title: "RUTA", data: "ruta", responsivePriority: 7 },
-    { title: "CC", data: "ruta_cc", responsivePriority: 7 },
-    { title: "MODALIDAD", data: "ruta_modalidad", responsivePriority: 8 },
-    { title: "OPERADOR", data: "op_cred", responsivePriority: 9 },
-    { title: "TURNO", data: "op_turno", responsivePriority: 10 },
-    { title: "EXTINTOR", data: "extintor", responsivePriority: 11 },
+    { title: "RUTA", data: "id_ruta", responsivePriority: 7 },
+    { title: "CC", data: "cc", responsivePriority: 7 },
+    { title: "MODALIDAD", data: "id_modalidad", responsivePriority: 8 },
+    { title: "OPERADOR", data: "credencial", responsivePriority: 9 },
+    { title: "TURNO", data: "turno", responsivePriority: 10 },
+    { title: "EXTINTOR", data: "extintor_1", responsivePriority: 11 },
   ];
 
   //FETCH EN UNA FUNCION REUTILIZABLE
@@ -208,7 +210,7 @@ export const FormularioRecepcion = () => {
                 {/* economico */}
                 <div>
                   <Controller
-                    name="eco"
+                    name="economico"
                     control={control}
                     rules={{ required: "El económico es obligatorio" }}
                     render={({ field, fieldState }) => (
@@ -222,7 +224,7 @@ export const FormularioRecepcion = () => {
                       </span>
                     )}
                   />
-                  {errors.eco && (
+                  {errors.economico && (
                     <span
                       style={{
                         color: "red",
@@ -231,7 +233,7 @@ export const FormularioRecepcion = () => {
                         display: "block",
                       }}
                     >
-                      {errors.eco.message}
+                      {errors.economico.message}
                     </span>
                   )}
                 </div>
@@ -239,7 +241,7 @@ export const FormularioRecepcion = () => {
                 {/* motivos */}
                 <div>
                   <Controller
-                    name="motivo_id"
+                    name="id_motivos"
                     control={control}
                     rules={{ required: "Debe seleccionar un motivo" }}
                     render={({ field }) => (
@@ -260,7 +262,7 @@ export const FormularioRecepcion = () => {
                       </span>
                     )}
                   />
-                  {errors.motivo_id && (
+                  {errors.id_motivos && (
                     <span
                       style={{
                         color: "red",
@@ -269,7 +271,7 @@ export const FormularioRecepcion = () => {
                         display: "block",
                       }}
                     >
-                      {errors.motivo_id.message}
+                      {errors.id_motivos.message}
                     </span>
                   )}
                 </div>
