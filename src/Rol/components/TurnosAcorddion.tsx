@@ -49,7 +49,7 @@ export default function TurnosAccordion({ turnosAgrupados, onEditTurno }: Turnos
                 {Object.entries(turnosAgrupados).map(([ruta, turnos]) => (
                     <AccordionTab
                         key={ruta}
-                        header={`Ruta: ${ruta} - Rol del día ${today}`}
+                        header={`Ruta: ${ruta} - Modalidad: ${turnos[0]?.modalidad || 'Sin Modalidad'} - Rol del día ${today}`}
                     >
                         <DataTable
                             value={turnos as any[]}
