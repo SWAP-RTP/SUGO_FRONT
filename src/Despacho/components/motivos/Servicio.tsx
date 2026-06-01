@@ -25,10 +25,11 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
   const [modalidadValor, setModalidadValor] = useState(null);
 
   // LOGICA DE CC - Se actualiza cuando cambia la ruta
-  const selectedRutaObj = rutasOptions.find((r: any) => r.value === watchedRutaId || r.ruta_cve_sist === watchedRutaId);
+  const selectedRutaObj = rutasOptions.find(
+    (r: any) => r.value === watchedRutaId || r.ruta_cve_sist === watchedRutaId,
+  );
   const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
   const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
-
 
   const ecoDe = [
     { label: "Planta", value: "1" },
@@ -42,7 +43,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="op_cred"
+            name="credencial"
             rules={{ required: "La credencial es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -72,7 +73,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="op_turno"
+            name="turno"
             rules={{ required: "El turno es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -102,12 +103,12 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="eco_estatus"
+            name="tipo_eco"
             rules={{ required: "El eco de es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
                 <Dropdown
-                  inputId="eco_estatus"
+                  inputId="tipo_eco"
                   className={`select ${fieldState.error ? "p-invalid" : ""}`}
                   options={ecoDe}
                   onChange={(e) => {
@@ -138,7 +139,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="extintor"
+            name="extintor_1"
             rules={{ required: "El detalle del eco es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -150,7 +151,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.extintor && (
+          {errors?.extintor_1 && (
             <span
               style={{
                 color: "red",
@@ -159,7 +160,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.extintor.message}
+              {errors.extintor_1.message}
             </span>
           )}
         </div>
@@ -168,7 +169,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="ruta_modalidad"
+            name="id_modalidad"
             rules={{ required: "La modalidad es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -218,13 +219,16 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
                 value={field.value}
                 onChange={(e) => {
                   field.onChange(e.value);
-                  const rutaObj = rutasOptions.find((r: any) => r.value === e.value || r.ruta_cve_sist === e.value);
+                  const rutaObj = rutasOptions.find(
+                    (r: any) =>
+                      r.value === e.value || r.ruta_cve_sist === e.value,
+                  );
                   if (rutaObj && setValue) {
                     const nombre = rutaObj.ruta_nombre || "";
                     const trayecto = rutaObj.ruta_trayecto || "";
                     setValue("ruta", `${nombre} ${trayecto}`.trim());
                     if (rutaObj.ruta_cve_servicio) {
-                      setValue("ruta_modalidad", rutaObj.ruta_cve_servicio);
+                      setValue("id_modalidad", rutaObj.ruta_cve_servicio);
                     }
                   }
                 }}
@@ -240,7 +244,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="ruta_cc"
+            name="cc"
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
                 <Dropdown
@@ -250,7 +254,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
                   value={field.value}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
-                  optionValue="value"
+                  optionValue="ruta_destino_cve"
                 />
                 <label htmlFor="dd-cc">CC</label>
               </span>

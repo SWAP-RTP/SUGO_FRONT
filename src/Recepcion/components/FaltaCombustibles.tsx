@@ -28,54 +28,24 @@ export const FaltaCombustibles = ({ control, errors }: FaltaCombustiblesProps) =
   return (
     <div className="formulario-grid sub-form">
       <div>
-        <Controller
-          control={control}
-          name="op_cred"
-          rules={{ required: "La credencial es obligatoria" }}
-          render={({ field, fieldState }) => (
-            <span className="p-float-label w-100">
-              <InputText id="credencial" className={`select ${fieldState.error ? "p-invalid" : ""}`} {...field} />
-              <label htmlFor="credencial">Credencial</label>
-            </span>
-          )}
-        />
-        {errors?.op_cred && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.op_cred.message}</span>}
+        <Controller control={control} name="credencial" rules={{ required: "La credencial es obligatoria" }} render={({ field, fieldState }) => (<span className="p-float-label w-100"><InputText id="credencial" className={`select ${fieldState.error ? "p-invalid" : ""}`} {...field} /><label htmlFor="credencial">Credencial</label></span>)} />
+        {errors?.credencial && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.credencial.message}</span>}
+      </div>
+
+      <div>
+        <Controller control={control} name="turno" rules={{ required: "El turno es obligatorio" }} render={({ field, fieldState }) => (<span className="p-float-label w-100"><InputText id="turno" className={`select ${fieldState.error ? "p-invalid" : ""}`} {...field} /><label htmlFor="turno">Turno</label></span>)} />
+        {errors?.turno && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.turno.message}</span>}
+      </div>
+
+      <div>
+        <Controller control={control} name="extintor_1" rules={{ required: "El número de extintor es obligatorio" }} render={({ field, fieldState }) => (<span className="p-float-label w-100"><InputText id="no-extintor" className={`select ${fieldState.error ? "p-invalid" : ""}`} {...field} /><label htmlFor="no-extintor">No.Extintor</label></span>)} />
+        {errors?.extintor_1 && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.extintor_1.message}</span>}
       </div>
 
       <div>
         <Controller
           control={control}
-          name="op_turno"
-          rules={{ required: "El turno es obligatorio" }}
-          render={({ field, fieldState }) => (
-            <span className="p-float-label w-100">
-              <InputText id="turno" className={`select ${fieldState.error ? "p-invalid" : ""}`} {...field} />
-              <label htmlFor="turno">Turno</label>
-            </span>
-          )}
-        />
-        {errors?.op_turno && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.op_turno.message}</span>}
-      </div>
-
-      <div>
-        <Controller
-          control={control}
-          name="extintor"
-          rules={{ required: "El número de extintor es obligatorio" }}
-          render={({ field, fieldState }) => (
-            <span className="p-float-label w-100">
-              <InputText id="no-extintor" className={`select ${fieldState.error ? "p-invalid" : ""}`} {...field} />
-              <label htmlFor="no-extintor">No.Extintor</label>
-            </span>
-          )}
-        />
-        {errors?.extintor && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.extintor.message}</span>}
-      </div>
-
-      <div>
-        <Controller
-          control={control}
-          name="ruta_modalidad"
+          name="id_modalidad"
           rules={{ required: "La modalidad es obligatoria" }}
           render={({ field, fieldState }) => (
             <span className="p-float-label w-100">
@@ -84,13 +54,13 @@ export const FaltaCombustibles = ({ control, errors }: FaltaCombustiblesProps) =
             </span>
           )}
         />
-        {errors?.ruta_modalidad && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.ruta_modalidad.message}</span>}
+        {errors?.id_modalidad && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.id_modalidad.message}</span>}
       </div>
 
       <div>
         <Controller
           control={control}
-          name="ruta_id"
+          name="id_ruta"
           rules={{ required: "La ruta es obligatoria" }}
           render={({ field, fieldState }) => (
             <span className="p-float-label w-100">
@@ -99,7 +69,7 @@ export const FaltaCombustibles = ({ control, errors }: FaltaCombustiblesProps) =
             </span>
           )}
         />
-        {errors?.ruta_id && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.ruta_id.message}</span>}
+        {errors?.id_ruta && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.id_ruta.message}</span>}
       </div>
 
       <div>
@@ -108,7 +78,7 @@ export const FaltaCombustibles = ({ control, errors }: FaltaCombustiblesProps) =
           name="cc"
           render={({ field, fieldState }) => (
             <span className="p-float-label w-100">
-              <Dropdown inputId="dd-cc" className={`select ${fieldState.error ? "p-invalid" : ""}`} options={rutasOptionsCC} value={field.value} onChange={(e) => field.onChange(e.value)} optionLabel="label" optionValue="value" />
+              <Dropdown inputId="dd-cc" className={`select ${fieldState.error ? "p-invalid" : ""}`} options={rutasOptionsCC} value={field.value} onChange={(e) => field.onChange(e.value)} optionLabel="label" optionValue="ruta_destino_cve" />
               <label htmlFor="dd-cc">CC</label>
             </span>
           )}

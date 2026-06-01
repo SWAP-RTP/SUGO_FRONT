@@ -5,7 +5,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Controller, useWatch } from "react-hook-form";
-import { Toast } from 'primereact/toast';
+import { Toast } from "primereact/toast";
 import { obtenerPvEstados } from "../../General/services/pv_estados.services";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
@@ -31,7 +31,13 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const FormularioDespacho = () => {
   // hooks para obtener opciones de modulos y motivos
-  const { modulosOptions, motivosOptions, presentacion, rutasOptions, ecoDisponibles } = useHook_General();
+  const {
+    modulosOptions,
+    motivosOptions,
+    presentacion,
+    rutasOptions,
+    ecoDisponibles,
+  } = useHook_General();
 
   const [pvEstados, setPvEstados] = useState([]);
   const leftColRef = useRef<HTMLDivElement>(null);
@@ -58,37 +64,50 @@ export const FormularioDespacho = () => {
 
   const columnas = [
     { title: "ID", data: "id", responsivePriority: 0 },
-    { title: "ECO", data: "eco", responsivePriority: 1 },
-    { title: "MODULO", data: "modulo", responsivePriority: 2 },
-    { title: "EDO.ECO", data: "eco_estatus", responsivePriority: 3 , render: (data) => {
-      if(data === 1){
-        return "Planta";
-      }else if(data === 2){
-        return "Postura";
-      }
-    }},
+    { title: "Hora", data: "hora", responsivePriority: 0 },
+    { title: "Fecha", data: "fecha", responsivePriority: 0 },
+    { title: "ECO", data: "economico", responsivePriority: 1 },
+    { title: "MODULO", data: "id_modulo", responsivePriority: 2 },
+    {
+      title: "EDO.ECO",
+      data: "tipo_eco",
+      responsivePriority: 3,
+      render: (data) => {
+        if (data === 1 || data === "1") {
+          return "Planta";
+        } else if (data === 2 || data === "2") {
+          return "Postura";
+        }
+        return "";
+      },
+    },
     // {
     //   title: "MOMENTO",
     //   data: "momento",
     //   responsivePriority: 4,
     //   render: (data) => formatearFecha(data),
     // },
-    { title: "TIPO DE REGISTRO", data: "tipo", responsivePriority: 5 ,
-    render: (data) => {
-      if(data === 1){
-        return "Despacho";
-      }else{
-        return "Recepcion";
-      }
-    }},
-   
+    {
+      title: "TIPO DE REGISTRO",
+      data: "eco_estatus",
+      responsivePriority: 5,
+      render: (data) => {
+        if (data === 1 || data === "1") {
+          return "Despacho";
+        } else if (data === 2 || data === "2") {
+          return "Recepcion";
+        }
+        return "";
+      },
+    },
+
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
-    { title: "RUTA", data: "ruta", responsivePriority: 7 },
-    { title: "CC", data: "ruta_cc", responsivePriority: 7 },
-    { title: "MODALIDAD", data: "ruta_modalidad", responsivePriority: 8 },
-    { title: "OPERADOR", data: "op_cred", responsivePriority: 9 },
-    { title: "TURNO", data: "op_turno", responsivePriority: 10 },
-    { title: "EXTINTOR", data: "extintor", responsivePriority: 11 },
+    { title: "RUTA", data: "id_ruta", responsivePriority: 7 },
+    { title: "CC", data: "cc", responsivePriority: 7 },
+    { title: "MODALIDAD", data: "id_modalidad", responsivePriority: 8 },
+    { title: "OPERADOR", data: "credencial", responsivePriority: 9 },
+    { title: "TURNO", data: "turno", responsivePriority: 10 },
+    { title: "EXTINTOR", data: "extintor_1", responsivePriority: 11 },
   ];
 
   const cargarDatos = async () => {
@@ -121,7 +140,6 @@ export const FormularioDespacho = () => {
     "SEFI (Nuevo)": SefiNuevo,
   };
 
-
   const MotivoRender = motivo?.desc
     ? COMPONENTES_MOTIVOS_DESPACHO[motivo.desc]
     : null;
@@ -133,12 +151,12 @@ export const FormularioDespacho = () => {
     reset,
     formState: { errors },
     onSubmit,
-    setValue
+    setValue,
   } = PostPvEstados(modulosOptions);
 
   const watchedEco = useWatch({
     control,
-    name: "eco",
+    name: "economico",
   });
 
   useEffect(() => {
@@ -146,6 +164,12 @@ export const FormularioDespacho = () => {
       buscarEconomico(watchedEco);
     }
   }, [watchedEco, rutasOptions, ecoDisponibles, presentacion, motivo]);
+
+  // Sincronizar fecha y hora cuando cambien
+  useEffect(() => {
+    setValue("hora", hora);
+    setValue("fecha", fechaactual());
+  }, [hora, setValue]);
 
   // funcion para buscar y autollenar datos de economico (presentacion_pv)
   const buscarEconomico = (valor: string) => {
@@ -161,15 +185,16 @@ export const FormularioDespacho = () => {
 
     // 1. Buscamos primero en el rol de turnos activos (ecoDisponibles)
     const turnoActivo = ecoDisponibles.find(
-      (t: any) => String(t.economico).trim() === ecoVal
+      (t: any) => String(t.economico).trim() === ecoVal,
     );
 
     // 2. Buscamos en las presentaciones (historial de firmas)
     const coincidencias = presentacion.filter(
-      (p: any) => String(p.economico).trim() === ecoVal
+      (p: any) => String(p.economico).trim() === ecoVal,
     );
 
-    const masReciente = coincidencias.length > 0 ? coincidencias[coincidencias.length - 1] : null;
+    const masReciente =
+      coincidencias.length > 0 ? coincidencias[coincidencias.length - 1] : null;
 
     // Auto-completamos modulo
     const moduloFinal = turnoActivo?.modulo || masReciente?.modulo;
@@ -178,34 +203,48 @@ export const FormularioDespacho = () => {
     }
 
     // Auto-completamos credencial (op_cred)
-    const credencialFinal = masReciente?.credencial || turnoActivo?.primer_t || turnoActivo?.segundo_t || turnoActivo?.tercer_t;
+    const credencialFinal =
+      masReciente?.credencial ||
+      turnoActivo?.primer_t ||
+      turnoActivo?.segundo_t ||
+      turnoActivo?.tercer_t;
     if (credencialFinal) {
-      setValue("op_cred", String(credencialFinal));
+      setValue("credencial", String(credencialFinal));
     }
 
     // Auto-completamos ruta y ruta_id
     const rutaDeOrigen = turnoActivo?.nombre_ruta || masReciente?.ruta;
-    console.log("🔍 buscarEconomico:", {
-      valor,
-      economicoBuscado: ecoVal,
-      turnoActivoEncontrado: turnoActivo,
-      presentacionMasReciente: masReciente,
-      rutaDeOrigen,
-      totalRutasOptions: rutasOptions?.length
-    });
+    // console.log("🔍 buscarEconomico:", {
+    //   valor,
+    //   economicoBuscado: ecoVal,
+    //   turnoActivoEncontrado: turnoActivo,
+    //   presentacionMasReciente: masReciente,
+    //   rutaDeOrigen,
+    //   totalRutasOptions: rutasOptions?.length,
+    // });
 
     if (rutaDeOrigen) {
       setValue("ruta", rutaDeOrigen);
 
       // Normalizar para comparación flexible (ignora espacios, guiones y mayúsculas)
-      const normalizar = (s: string) => String(s || "").trim().toLowerCase().replace(/[\s-_]/g, "");
+      const normalizar = (s: string) =>
+        String(s || "")
+          .trim()
+          .toLowerCase()
+          .replace(/[\s-_]/g, "");
       const rutaNorm = normalizar(rutaDeOrigen);
       console.log("🔍 Comparando rutaDeOrigen normalizada:", rutaNorm);
 
       const rutaEncontrada = rutasOptions.find((r: any) => {
         const nameNorm = normalizar(r.ruta_nombre);
-        const fullNameNorm = normalizar(`${r.ruta_nombre}${r.ruta_trayecto || ""}`);
-        const match = nameNorm === rutaNorm || fullNameNorm === rutaNorm || rutaNorm.includes(nameNorm) || nameNorm.includes(rutaNorm);
+        const fullNameNorm = normalizar(
+          `${r.ruta_nombre}${r.ruta_trayecto || ""}`,
+        );
+        const match =
+          nameNorm === rutaNorm ||
+          fullNameNorm === rutaNorm ||
+          rutaNorm.includes(nameNorm) ||
+          nameNorm.includes(rutaNorm);
         if (match) {
           console.log("✅ Coincidencia encontrada en rutasOptions:", r);
         }
@@ -216,11 +255,19 @@ export const FormularioDespacho = () => {
         console.log("👉 Estableciendo ruta_id:", rutaEncontrada.value);
         setValue("ruta_id", rutaEncontrada.value);
         if (rutaEncontrada.ruta_cve_servicio) {
-          console.log("👉 Estableciendo ruta_modalidad:", rutaEncontrada.ruta_cve_servicio);
+          console.log(
+            "👉 Estableciendo ruta_modalidad:",
+            rutaEncontrada.ruta_cve_servicio,
+          );
           setValue("ruta_modalidad", rutaEncontrada.ruta_cve_servicio);
         }
       } else {
-        console.log("❌ No se encontró ninguna coincidencia para:", rutaDeOrigen, "en las opciones de ruta:", rutasOptions);
+        console.log(
+          "❌ No se encontró ninguna coincidencia para:",
+          rutaDeOrigen,
+          "en las opciones de ruta:",
+          rutasOptions,
+        );
       }
     } else {
       // Si no se encuentra, limpiamos los campos automáticos
@@ -231,16 +278,23 @@ export const FormularioDespacho = () => {
     }
   };
 
-
   const toast = useRef<Toast>(null);
 
   const manejartoast = (mensaje: string) => {
-    toast.current?.show({ severity: "success", summary: "Éxito", detail: mensaje, });
-  }
+    toast.current?.show({
+      severity: "success",
+      summary: "Éxito",
+      detail: mensaje,
+    });
+  };
 
   const mostrarError = (mensaje: string) => {
-    toast.current?.show({ severity: "error", summary: "Error", detail: mensaje, });
-  }
+    toast.current?.show({
+      severity: "error",
+      summary: "Error",
+      detail: mensaje,
+    });
+  };
 
   //HANDLER ELIMINAR
   const handleEliminar = useCallback(
@@ -270,7 +324,6 @@ export const FormularioDespacho = () => {
 
   return (
     <>
-
       <Toast ref={toast} className="toast-desplazado" />
       <TabView>
         <TabPanel className="tabpanel" header="Despacho">
@@ -294,13 +347,12 @@ export const FormularioDespacho = () => {
                       <Controller
                         name="modulo"
                         control={control}
-
                         rules={{ required: "Debe seleccionar un modulo" }}
                         render={({ field }) => (
                           <span className="p-float-label w-100">
                             <Dropdown
                               value={field.value}
-                              name="modulo"
+                              name="id_modulo"
                               inputId="modulo"
                               options={modulosOptions}
                               optionLabel="label"
@@ -333,7 +385,7 @@ export const FormularioDespacho = () => {
                     {/* economico */}
                     <div>
                       <Controller
-                        name="eco"
+                        name="economico"
                         control={control}
                         rules={{ required: "El económico es obligatorio" }}
                         render={({ field, fieldState }) => (
@@ -350,7 +402,7 @@ export const FormularioDespacho = () => {
                           </span>
                         )}
                       />
-                      {errors.eco && (
+                      {errors.economico && (
                         <span
                           style={{
                             color: "red",
@@ -367,7 +419,7 @@ export const FormularioDespacho = () => {
                     {/* motivos */}
                     <div>
                       <Controller
-                        name="motivo_id"
+                        name="id_motivos"
                         control={control}
                         rules={{ required: "Debe seleccionar un motivo" }}
                         render={({ field }) => (
@@ -405,7 +457,11 @@ export const FormularioDespacho = () => {
 
                   {/* Componente Dinámico — recibe control del formulario padre */}
                   {MotivoRender && (
-                    <MotivoRender control={control} errors={errors} setValue={setValue} />
+                    <MotivoRender
+                      control={control}
+                      errors={errors}
+                      setValue={setValue}
+                    />
                   )}
 
                   {/* fecha y hora debajo de los inputs principales */}
@@ -419,6 +475,13 @@ export const FormularioDespacho = () => {
                         className="w-100"
                         style={{ textAlign: "center" }}
                       />
+                      <Controller
+                        name="hora"
+                        control={control}
+                        render={({ field }) => (
+                          <input type="hidden" {...field} />
+                        )}
+                      />
                     </div>
                     <div className="w-100 flex justify-content-center">
                       <label htmlFor="fecha">Fecha</label>
@@ -429,8 +492,24 @@ export const FormularioDespacho = () => {
                         className="w-100"
                         style={{ textAlign: "center" }}
                       />
+                      <Controller
+                        name="fecha"
+                        control={control}
+                        render={({ field }) => (
+                          <input type="hidden" {...field} />
+                        )}
+                      />
                     </div>
                   </div>
+
+                  {/* eco_estatus oculto */}
+                  <Controller
+                    name="eco_estatus"
+                    control={control}
+                    render={({ field }) => (
+                      <input type="hidden" {...field} value="1" />
+                    )}
+                  />
 
                   <div className="d-flex justify-content-center gap-3 mt-4 mb-4">
                     <Button
@@ -438,7 +517,11 @@ export const FormularioDespacho = () => {
                       label="Enviar"
                       severity="success"
                       onClick={handleSubmit(async (data) => {
-                        const result = await onSubmit(data, manejartoast, mostrarError);
+                        const result = await onSubmit(
+                          data,
+                          manejartoast,
+                          mostrarError,
+                        );
                         if (result) {
                           cargarDatos();
                         }
@@ -473,7 +556,8 @@ export const FormularioDespacho = () => {
         <Datatables
           data={pvEstados}
           columns={columnas}
-          onEliminar={handleEliminar} />
+          onEliminar={handleEliminar}
+        />
       </div>
     </>
   );
