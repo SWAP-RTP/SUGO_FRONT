@@ -2,9 +2,10 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 // obtenernos la api para usarlar en el front
 
-export const getPresentacionServices = async () => {
+export const getPresentacionServices = async (modulo?: number) => {
   try {
-    const response = await fetch(`${API_URL}/hora`);
+    const url = modulo !== undefined ? `${API_URL}/hora?modulo=${modulo}` : `${API_URL}/hora`;
+    const response = await fetch(url);
     if (!response) throw new Error("Error al obtener los datos");
     return response.json();
   } catch (error) {

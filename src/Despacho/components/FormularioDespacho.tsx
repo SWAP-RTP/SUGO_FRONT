@@ -7,6 +7,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Controller, useWatch } from "react-hook-form";
 import { Toast } from "primereact/toast";
 import { obtenerPvEstados } from "../../General/services/pv_estados.services";
+import { useAuth } from "../../General/hooks/useAuth";
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
 
@@ -38,6 +39,8 @@ export const FormularioDespacho = () => {
     rutasOptions,
     ecoDisponibles,
   } = useHook_General();
+
+  const { usuario } = useAuth();
 
   const [pvEstados, setPvEstados] = useState([]);
   const leftColRef = useRef<HTMLDivElement>(null);
@@ -81,12 +84,6 @@ export const FormularioDespacho = () => {
         return "";
       },
     },
-    // {
-    //   title: "MOMENTO",
-    //   data: "momento",
-    //   responsivePriority: 4,
-    //   render: (data) => formatearFecha(data),
-    // },
     {
       title: "TIPO DE REGISTRO",
       data: "eco_estatus",
@@ -110,14 +107,17 @@ export const FormularioDespacho = () => {
     { title: "EXTINTOR", data: "extintor_1", responsivePriority: 11 },
   ];
 
-  const cargarDatos = async () => {
+  const cargarDatos = useCallback(async () => {
     try {
-      const datos = await obtenerPvEstados();
+      const modulo = usuario?.data?.modulo
+        ? Number(usuario.data.modulo)
+        : undefined;
+      const datos = await obtenerPvEstados(modulo);
       setPvEstados(datos);
     } catch (error) {
       console.error("Error al cargar datos:", error);
     }
-  };
+  }, [usuario?.data?.modulo]);
 
   // Agregar después de los otros useEffect
   useEffect(() => {
@@ -127,7 +127,7 @@ export const FormularioDespacho = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [cargarDatos]);
 
   const COMPONENTES_MOTIVOS_DESPACHO: Record<string, React.ElementType> = {
     SERVICIO: Servicio,
@@ -195,12 +195,6 @@ export const FormularioDespacho = () => {
 
     const masReciente =
       coincidencias.length > 0 ? coincidencias[coincidencias.length - 1] : null;
-
-    // Auto-completamos modulo
-    const moduloFinal = turnoActivo?.modulo || masReciente?.modulo;
-    if (moduloFinal) {
-      setValue("modulo", moduloFinal);
-    }
 
     // Auto-completamos credencial (op_cred)
     const credencialFinal =
