@@ -4,9 +4,11 @@ import { useRolEditar } from '../hooks/useRolEditar';
 import TurnosAccordion from './TurnosAcorddion';
 import EditarTurnoDialog from './EditarTurnoDialog';
 import CierreDiaButton from './CierreDiaButton';
+import { useAuth } from '../../General/hooks/useAuth';
 
 export default function EditarRol() {
     const { turnosAgrupados, refetch } = useRolEditar();
+    const { usuario } = useAuth();
     // Estados locales para la UI
     const [sidebarVisible, setSidebarVisible] = useState(false);
     const [turnoSeleccionado, setTurnoSeleccionado] = useState<any>(null);
@@ -20,6 +22,7 @@ export default function EditarRol() {
             </div>
             <div className="menu_modal_rol d-flex justify-content-end align-items-end mb-4">
                 <CierreDiaButton
+                    modulo={Number(usuario?.data?.modulo)}
                     onSuccess={refetch}
                     loading={cierreLoading}
                     setLoading={setCierreLoading}
