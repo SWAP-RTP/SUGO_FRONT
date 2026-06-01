@@ -181,6 +181,8 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
                     field.onChange(e.value);
                     setModalidadValor(e.value);
                   }}
+                  optionLabel="label"
+                  optionValue="value"
                 />
                 <label htmlFor="dd-modalidad">Modalidad</label>
               </span>
@@ -221,9 +223,13 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
                     const nombre = rutaObj.ruta_nombre || "";
                     const trayecto = rutaObj.ruta_trayecto || "";
                     setValue("ruta", `${nombre} ${trayecto}`.trim());
+                    if (rutaObj.ruta_cve_servicio) {
+                      setValue("ruta_modalidad", rutaObj.ruta_cve_servicio);
+                    }
                   }
                 }}
                 optionLabel="label"
+                optionValue="value"
               />
               <label htmlFor="dd-ruta">Ruta</label>
             </span>
@@ -244,6 +250,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
                   value={field.value}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
+                  optionValue="value"
                 />
                 <label htmlFor="dd-cc">CC</label>
               </span>

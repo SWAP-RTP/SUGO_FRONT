@@ -117,6 +117,7 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
                   value={field.value}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
+                  optionValue="value"
                 />
                 <label htmlFor="dd-modalidad">Modalidad</label>
               </span>
@@ -154,6 +155,7 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
                     }
                   }}
                   optionLabel="label"
+                  optionValue="value"
                 />
                 <label htmlFor="dd-ruta">Ruta</label>
               </span>
@@ -180,6 +182,7 @@ export const TerminoJornada = ({ control, errors, setValue }: TerminoJornadaProp
                   value={field.value}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
+                  optionValue="value"
                 />
                 <label htmlFor="dd-cc">CC</label>
               </span>

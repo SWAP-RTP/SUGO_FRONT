@@ -276,8 +276,8 @@ export const extraerFilasRoles = (matriz: unknown[][]): FilaRol[] => {
       return false;
     }
 
-    // El No (id) debe existir y ser numerico para considerarlo una fila valida de operador.
-    return /^\d+$/.test(fila.id);
+    // El No (id) y el economico deben existir y ser validos para considerarlo una fila valida de operador.
+    return /^\d+$/.test(fila.id) && fila.economico.trim() !== "";
   };
 
   for (
@@ -423,7 +423,7 @@ export const extraerFilasDia = (matriz: unknown[][], dayIndex: number): FilaTurn
     const textoCompleto = normalizarTexto([id, economico, horaInicioTurno1, horaInicioCC].join(" "));
     const bloqueadas = ["JORNADA EXCEPCIONAL", "ELABORO", "CRED", "LUGAR", "CONTROLADOR DE TIEMPO"];
     if (bloqueadas.some((texto) => textoCompleto.includes(texto))) continue;
-    if (!/^\d+$/.test(id)) continue;
+    if (!/^\d+$/.test(id) || !economico.trim()) continue;
 
     filas.push({
       id, economico, horaInicioTurno1, horaInicioCC, lugarInicio1, horaTerminoTurno1, 
@@ -437,3 +437,36 @@ export const extraerFilasDia = (matriz: unknown[][], dayIndex: number): FilaTurn
 export const extraerFilasLV = (matriz: unknown[][]): FilaTurnosLV[] => extraerFilasDia(matriz, 0);
 export const extraerFilasSabado = (matriz: unknown[][]): FilaTurnosLV[] => extraerFilasDia(matriz, 1);
 export const extraerFilasDomingo = (matriz: unknown[][]): FilaTurnosLV[] => extraerFilasDia(matriz, 2);
+
+export const extraerModalidad = (matriz: unknown[][]): string => {
+  for (const fila of matriz) {
+    if (!Array.isArray(fila)) continue;
+    for (let colIdx = 0; colIdx < fila.length; colIdx++) {
+      const celda = fila[colIdx];
+      if (celda === null || celda === undefined) continue;
+
+      const celdaStr = String(celda).trim();
+      const celdaNorm = normalizarTexto(celdaStr);
+
+      if (celdaNorm.includes("MODALIDAD")) {
+        // If modality is formatted like "MODALIDAD: ECOBÚS"
+        const match = celdaStr.match(/modalidad\s*:\s*(.+)/i);
+        if (match && match[1]?.trim()) {
+          return match[1].trim();
+        }
+
+        // Look at the cells to the right in the same row
+        for (let j = colIdx + 1; j < fila.length; j++) {
+          const val = String(fila[j] || "").trim();
+          if (val) {
+            const cleanedVal = val.replace(/^:\s*/, "").trim();
+            if (cleanedVal) {
+              return cleanedVal;
+            }
+          }
+        }
+      }
+    }
+  }
+  return "";
+};

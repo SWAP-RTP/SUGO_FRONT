@@ -24,8 +24,21 @@ export const DataSave = (
   });
 
   // Limpiar credenciales de localStorage si ya desaparecieron de ecoDisponibles (porque el backend ya actualizó)
+  // y resetear todo si se detecta un nuevo rol (id_archivo diferente)
   useEffect(() => {
     if (ecoDisponibles && ecoDisponibles.length > 0) {
+      const primerRegistro = ecoDisponibles[0];
+      const idArchivoActual = primerRegistro?.id_archivo;
+      const ultimoIdArchivoGuardado = localStorage.getItem("ultimoIdArchivoSugo");
+
+      if (idArchivoActual && String(idArchivoActual) !== String(ultimoIdArchivoGuardado)) {
+        // Se cargó un nuevo rol/archivo. Limpiamos todas las credenciales marcadas.
+        setCredencialesRegistradas(new Set());
+        localStorage.removeItem("credencialesGuardadasSugo");
+        localStorage.setItem("ultimoIdArchivoSugo", String(idArchivoActual));
+        return;
+      }
+
       setCredencialesRegistradas((prev) => {
         const todasLasCredenciales = new Set(
           ecoDisponibles.flatMap(eco => [

@@ -59,6 +59,11 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
                         >
                           <div>
                             <strong>{hoja.nombreHoja}</strong>
+                            {hoja.modalidad && (
+                              <span style={{ marginLeft: "8px", color: "#0284c7", fontWeight: "bold" }}>
+                                - {hoja.modalidad}
+                              </span>
+                            )}
                             <span style={{ marginLeft: "8px", color: "#64748b" }}>
                               ({hoja.filas.length} registros)
                             </span>
@@ -125,6 +130,11 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
                       >
                         <div>
                           <strong>{hoja.nombreHoja}</strong>
+                          {hoja.modalidad && (
+                            <span style={{ marginLeft: "8px", color: "#0284c7", fontWeight: "bold" }}>
+                              - {hoja.modalidad}
+                            </span>
+                          )}
                           <span style={{ marginLeft: "8px", color: "#64748b" }}>
                             ({hoja.filasLV?.length || 0} registros)
                           </span>
@@ -196,6 +206,11 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
                       >
                         <div>
                           <strong>{hoja.nombreHoja}</strong>
+                          {hoja.modalidad && (
+                            <span style={{ marginLeft: "8px", color: "#0284c7", fontWeight: "bold" }}>
+                              - {hoja.modalidad}
+                            </span>
+                          )}
                           <span style={{ marginLeft: "8px", color: "#64748b" }}>
                             ({hoja.filasSabado?.length || 0} registros)
                           </span>
@@ -267,6 +282,11 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
                       >
                         <div>
                           <strong>{hoja.nombreHoja}</strong>
+                          {hoja.modalidad && (
+                            <span style={{ marginLeft: "8px", color: "#0284c7", fontWeight: "bold" }}>
+                              - {hoja.modalidad}
+                            </span>
+                          )}
                           <span style={{ marginLeft: "8px", color: "#64748b" }}>
                             ({hoja.filasDomingo?.length || 0} registros)
                           </span>

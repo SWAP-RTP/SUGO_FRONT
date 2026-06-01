@@ -9,9 +9,10 @@ import { useRutasCC } from "../../../General/hooks/useRutas";
 interface ServicioProps {
   control: any; // viene del formulario padre (FormularioDespacho)
   errors?: any; // para mostrar los errores de validación
+  setValue?: any;
 }
 
-export const Reemplacamiento = ({ control, errors }: ServicioProps) => {
+export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) => {
   const { modalidadesOptions, rutasOptions } = useHook_General();
   const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
   const [ecoDValor, setEcoDValor] = useState(null);
@@ -175,6 +176,8 @@ export const Reemplacamiento = ({ control, errors }: ServicioProps) => {
                     setModalidadValor(e.value);
                   }}
                   value={field.value}
+                  optionLabel="label"
+                  optionValue="value"
                 />
                 <label htmlFor="dd-modalidad">Modalidad</label>
               </span>
@@ -196,7 +199,7 @@ export const Reemplacamiento = ({ control, errors }: ServicioProps) => {
 
       <Controller
           control={control}
-          name="ruta"
+          name="ruta_id"
           rules={{ required: "La ruta es obligatoria" }}
           render={({ field, fieldState }) => (
             <span className="p-float-label w-100">
@@ -217,6 +220,7 @@ export const Reemplacamiento = ({ control, errors }: ServicioProps) => {
                   }
                 }}
                 optionLabel="label"
+                optionValue="value"
               />
               <label htmlFor="dd-ruta">Ruta</label>
             </span>
@@ -237,6 +241,7 @@ export const Reemplacamiento = ({ control, errors }: ServicioProps) => {
                   value={field.value}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
+                  optionValue="value"
                 />
                 <label htmlFor="dd-cc">CC</label>
               </span>

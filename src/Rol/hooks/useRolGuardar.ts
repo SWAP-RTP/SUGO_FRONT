@@ -1,26 +1,8 @@
 import { useState } from "react";
+import type { HojaRolData } from "../types/rol.types";
 
 
 const API_URL = import.meta.env.VITE_API_URL;
-
-interface HojaRolData {
-  nombreHoja: string;
-  filas: Array<{
-    id: string;
-    economico: string;
-    sistema: string;
-    primerTurno: string;
-    segundoTurno: string;
-    tercerTurno: string;
-    lunes: string;
-    martes: string;
-    miercoles: string;
-    jueves: string;
-    viernes: string;
-    sabado: string;
-    domingo: string;
-  }>;
-}
 
 export const useRolesGuardar = () => {
   const [cargando, setCargando] = useState(false);
