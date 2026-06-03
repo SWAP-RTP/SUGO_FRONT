@@ -24,7 +24,7 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="op_cred"
+            name="credencial"
             rules={{ required: "La credencial es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -36,7 +36,7 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.op_cred && (
+          {errors?.credencial && (
             <span
               style={{
                 color: "red",
@@ -45,7 +45,7 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.op_cred.message}
+              {errors.credencial.message}
             </span>
           )}
         </div>
@@ -54,7 +54,7 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="op_turno"
+            name="turno"
             rules={{ required: "El turno es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -66,7 +66,7 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.op_turno && (
+          {errors?.turno && (
             <span
               style={{
                 color: "red",
@@ -75,7 +75,7 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.op_turno.message}
+              {errors.turno.message}
             </span>
           )}
         </div>
@@ -84,7 +84,7 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="eco_tipo"
+            name="tipo_eco"
             rules={{ required: "El eco de es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -102,7 +102,7 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.eco_tipo && (
+          {errors?.tipo_eco && (
             <span
               style={{
                 color: "red",
@@ -111,7 +111,7 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.eco_tipo.message}
+              {errors.tipo_eco.message}
             </span>
           )}
         </div>
@@ -120,7 +120,7 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="no_extintor"
+            name="extintor_1"
             rules={{ required: "El número de extintor es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -147,16 +147,64 @@ export const SefiNuevo = ({ control, errors }: ServicioProps) => {
         </div>
 
         {/* Origen */}
-        <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="username">Origen</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="origen"
+            rules={{ required: "El origen es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="origen">Origen</label>
+              </span>
+            )}
+          />
+          {errors?.origen && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.origen.message}
+            </span>
+          )}
+        </div>
 
         {/* Destino */}
-        <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="username">Destino</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="destino"
+            rules={{ required: "El destino es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="destino">Destino</label>
+              </span>
+            )}
+          />
+          {errors?.destino && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.destino.message}
+            </span>
+          )}
+        </div>
 
         {/* Direccion */}
         <div>

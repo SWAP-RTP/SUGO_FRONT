@@ -26,7 +26,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="op_cred"
+            name="credencial"
             rules={{ required: "La credencial es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -38,7 +38,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.op_cred && (
+          {errors?.credencial && (
             <span
               style={{
                 color: "red",
@@ -47,7 +47,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.op_cred.message}
+              {errors.credencial.message}
             </span>
           )}
         </div>
@@ -56,7 +56,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="op_turno"
+            name="turno"
             rules={{ required: "El turno es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -68,7 +68,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.op_turno && (
+          {errors?.turno && (
             <span
               style={{
                 color: "red",
@@ -77,7 +77,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.op_turno.message}
+              {errors.turno.message}
             </span>
           )}
         </div>
@@ -86,7 +86,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="no_extintor"
+            name="extintor_1"
             rules={{ required: "El número de extintor es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -98,7 +98,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.no_extintor && (
+          {errors?.extintor_1 && (
             <span
               style={{
                 color: "red",
@@ -107,22 +107,46 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.no_extintor.message}
+              {errors.extintor_1.message}
             </span>
           )}
         </div>
 
         {/* No.Extintor 2 */}
-        <span className="p-float-label">
-          <InputText className="extintor 2" />
-          <label htmlFor="username">No.Extintor 2</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="extintor_2"
+            rules={{ required: "El número de extintor es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="no_extintor">Número de Extintor 2</label>
+              </span>
+            )}
+          />
+          {errors?.extintor_2 && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.extintor_2.message}
+            </span>
+          )}
+        </div>
 
         {/* Modalidad  */}
         <div>
           <Controller
             control={control}
-            name="ruta_modalidad"
+            name="id_modalidad"
             rules={{ required: "La modalidad es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -142,7 +166,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.ruta_modalidad && (
+          {errors?.id_modalidad && (
             <span
               style={{
                 color: "red",
@@ -151,7 +175,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.ruta_modalidad.message}
+              {errors.id_modalidad.message}
             </span>
           )}
         </div>
@@ -160,7 +184,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="ruta"
+            name="id_ruta"
             rules={{ required: "La ruta es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -172,7 +196,7 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.ruta && (
+          {errors?.id_ruta && (
             <span
               style={{
                 color: "red",
@@ -181,22 +205,70 @@ export const ServicioMB = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.ruta.message}
+              {errors.id_ruta.message}
             </span>
           )}
         </div>
 
         {/* Origen */}
-        <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="username">Origen*</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="origen"
+            rules={{ required: "El origen es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="ruta">Origen</label>
+              </span>
+            )}
+          />
+          {errors?.origen && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.origen.message}
+            </span>
+          )}
+        </div>
 
         {/* Destino */}
-        <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="username">Destino*</label>
-        </span>
+        <div>
+          <Controller
+            control={control}
+            name="destino"
+            rules={{ required: "El destino es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="ruta">Destino</label>
+              </span>
+            )}
+          />
+          {errors?.destino && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.destino.message}
+            </span>
+          )}
+        </div>
       </div>
     </>
   );

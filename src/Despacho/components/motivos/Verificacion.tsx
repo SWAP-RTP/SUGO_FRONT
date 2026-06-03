@@ -26,7 +26,7 @@ export const Verificacion = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="op_cred"
+            name="credencial"
             rules={{ required: "La credencial es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -38,7 +38,7 @@ export const Verificacion = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.op_cred && (
+          {errors?.credencial && (
             <span
               style={{
                 color: "red",
@@ -47,7 +47,7 @@ export const Verificacion = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.op_cred.message}
+              {errors.credencial.message}
             </span>
           )}
         </div>
@@ -56,7 +56,7 @@ export const Verificacion = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="op_turno"
+            name="turno"
             rules={{ required: "El turno es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -68,7 +68,7 @@ export const Verificacion = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.op_turno && (
+          {errors?.turno && (
             <span
               style={{
                 color: "red",
@@ -77,7 +77,7 @@ export const Verificacion = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.op_turno.message}
+              {errors.turno.message}
             </span>
           )}
         </div>
@@ -86,7 +86,7 @@ export const Verificacion = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="eco_tipo"
+            name="tipo_eco"
             rules={{ required: "El eco de es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -104,7 +104,7 @@ export const Verificacion = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.eco_tipo && (
+          {errors?.tipo_eco && (
             <span
               style={{
                 color: "red",
@@ -113,22 +113,46 @@ export const Verificacion = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.eco_tipo.message}
+              {errors.tipo_eco.message}
             </span>
           )}
         </div>
-          
+
         {/* Vericentro*/}
 
         <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="username">Vericentro</label>
+          <Controller
+            control={control}
+            name="verificentro"
+            rules={{ required: "El verificentro es obligatorio" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="vericentro">Verificentro</label>
+              </span>
+            )}
+          />
+          {errors?.vericentro && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.vericentro.message}
+            </span>
+          )}
         </span>
 
         {/* observaciones */}
         <span className="p-float-label">
           <InputText className="select" />
-          <label htmlFor="username">Observaciones</label>
+          <label htmlFor="observaciones">Observaciones</label>
         </span>
       </div>
     </>

@@ -16,8 +16,8 @@ export const PostPvEstados = (modulosOptions: any[]) => {
       economico: "",
       id_motivos: null as any,
       credencial: "" as any,
-      turno: "" as any,
-      tipo_eco: null as any,
+      turno: 1 as any,
+      tipo_eco: "1" as any,
       extintor_1: "" as any,
       extintor_2: "" as any,
       id_modalidad: null as any,
@@ -143,7 +143,8 @@ export const PostPvEstados = (modulosOptions: any[]) => {
         id_motivos: parseNumber(rawIdMotivos),
         credencial: parseNumber(data.credencial || data.op_cred),
         turno: parseNumber(data.turno || data.op_turno),
-        tipo_eco: parseNumber(data.tipo_eco || data.eco_tipo || data.eco_de) || 1,
+        tipo_eco:
+          parseNumber(data.tipo_eco || data.eco_tipo || data.eco_de) || 1,
         extintor_1: parseNumber(
           data.extintor_1 || data.no_extintor || data.extintor,
         ),
