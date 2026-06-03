@@ -1,11 +1,9 @@
+import { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-// hooks personalizados
-import { useHook_General } from "../../../General/hooks/useHook";
-import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { useRutasCC } from "../../../General/hooks/useRutas";
-
+// hooks personalizados
+import { useRutasCompletas } from "../../../General/hooks/useRutasCompletas";
 interface ServicioProps {
   control: any; // viene del formulario padre (FormularioDespacho)
   errors?: any; // para mostrar los errores de validación
@@ -13,17 +11,18 @@ interface ServicioProps {
 }
 
 export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) => {
-  const { modalidadesOptions, rutasOptions } = useHook_General();
-  const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
   const [ecoDValor, setEcoDValor] = useState(null);
   const [modalidadValor, setModalidadValor] = useState(null);
-
-
-    // LOGICA DE CC - Se actualiza cuando cambia la ruta
-    const selectedRutaObj = rutasOptions.find((r: any) => r.value === rutaSeleccionada || r.ruta_cve_sist === rutaSeleccionada);
-    const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
-    const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
-  
+  //TRAEMOS EL HOOK DE RUTAS COMPLETAS
+  const {
+    modalidadesOptions,
+    rutasFiltradas,
+    rutasOptionsCC,
+    watchedModalidadId,
+    watchedRutaId,
+    onModalidadChange,
+    onRutaChange
+  } = useRutasCompletas(control, setValue);
 
   const ecoDe = [
     { label: "Planta", value: "1" },
@@ -172,7 +171,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
                   className={`select ${fieldState.error ? "p-invalid" : ""}`}
                   options={modalidadesOptions}
                   onChange={(e) => {
-                    field.onChange(e.value);
+                    onModalidadChange(e.value, field.onChange);
                     setModalidadValor(e.value);
                   }}
                   value={field.value}
@@ -197,35 +196,30 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
           )}
         </div>
 
-      <Controller
-          control={control}
-          name="ruta_id"
-          rules={{ required: "La ruta es obligatoria" }}
-          render={({ field, fieldState }) => (
-            <span className="p-float-label w-100">
-              <Dropdown
-                inputId="dd-ruta"
-                className={`select ${fieldState.error ? "p-invalid" : ""}`}
-                options={rutasOptions}
-                filter
-                value={field.value}
-                onChange={(e) => {
-                  field.onChange(e.value);
-                  setRutaSeleccionada(e.value); // Actualiza CC
-                  const rutaObj = rutasOptions.find((r: any) => r.value === e.value || r.ruta_cve_sist === e.value);
-                  if (rutaObj && setValue) {
-                    const nombre = rutaObj.ruta_nombre || "";
-                    const trayecto = rutaObj.ruta_trayecto || "";
-                    setValue("ruta", `${nombre} ${trayecto}`.trim());
-                  }
-                }}
-                optionLabel="label"
-                optionValue="value"
-              />
-              <label htmlFor="dd-ruta">Ruta</label>
-            </span>
-          )}
-        />
+        {/* Ruta  */}
+        <div>
+          <Controller
+            control={control}
+            name="ruta_id"
+            rules={{ required: "La ruta es obligatoria" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <Dropdown
+                  inputId="dd-ruta"
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  options={rutasFiltradas}
+                  filter
+                  value={field.value}
+                  disabled={!watchedModalidadId}
+                  onChange={(e) => onRutaChange(e.value, field.onChange)}
+                  optionLabel="label"
+                  optionValue="value"
+                />
+                <label htmlFor="dd-ruta">Ruta</label>
+              </span>
+            )}
+          />
+        </div>
 
         {/* CC */}
         <div>
@@ -239,6 +233,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
                   className={`select ${fieldState.error ? "p-invalid" : ""}`}
                   options={rutasOptionsCC}
                   value={field.value}
+                  disabled={!watchedRutaId}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
                   optionValue="ruta_destino_cve"
@@ -248,8 +243,6 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
             )}
           />
         </div>
-
-
       </div>
     </>
   );

@@ -1,11 +1,9 @@
+import { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Controller } from "react-hook-form";
-// hooks personalizados
-import { useHook_General } from "../../General/hooks/useHook";
-import { useRutasCC } from "../../General/hooks/useRutas";
-import { useState } from "react";
-
+// HOOKS PERSONALIZADOS
+import { useRutasCompletas } from "../../General/hooks/useRutasCompletas";
 interface TerminoJornadaProps {
   control: any;
   errors?: any;
@@ -22,16 +20,18 @@ export const TerminoJornada = ({
   errors,
   setValue,
 }: TerminoJornadaProps) => {
-  const { modalidadesOptions, rutasOptions } = useHook_General();
-  const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
+  const [modalidadValor, setModalidadValor] = useState(null);
 
-  // LOGICA DE CC - Se actualiza cuando cambia la ruta
-  const selectedRutaObj = rutasOptions.find(
-    (r: any) =>
-      r.value === rutaSeleccionada || r.ruta_cve_sist === rutaSeleccionada,
-  );
-  const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
-  const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
+  //TRAEMOS EL HOOK DE RUTAS COMPLETAS
+  const {
+    modalidadesOptions,
+    rutasFiltradas,
+    rutasOptionsCC,
+    watchedModalidadId,
+    watchedRutaId,
+    onModalidadChange,
+    onRutaChange
+  } = useRutasCompletas(control, setValue);
 
   return (
     <>
@@ -142,7 +142,10 @@ export const TerminoJornada = ({
                   className={`select ${fieldState.error ? "p-invalid" : ""}`}
                   options={modalidadesOptions}
                   value={field.value}
-                  onChange={(e) => field.onChange(e.value)}
+                  onChange={(e) => {
+                    onModalidadChange(e.value, field.onChange);
+                    setModalidadValor(e.value);
+                  }}
                   optionLabel="label"
                   optionValue="value"
                 />
@@ -168,29 +171,18 @@ export const TerminoJornada = ({
         <div>
           <Controller
             control={control}
-            name="id_ruta"
+            name="ruta_id"
             rules={{ required: "La ruta es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
                 <Dropdown
                   inputId="dd-ruta"
                   className={`select ${fieldState.error ? "p-invalid" : ""}`}
-                  options={rutasOptions}
+                  options={rutasFiltradas}
                   filter
                   value={field.value}
-                  onChange={(e) => {
-                    field.onChange(e.value);
-                    setRutaSeleccionada(e.value); // Actualiza CC
-                    const rutaObj = rutasOptions.find(
-                      (r: any) =>
-                        r.value === e.value || r.ruta_cve_sist === e.value,
-                    );
-                    if (rutaObj && setValue) {
-                      const nombre = rutaObj.ruta_nombre || "";
-                      const trayecto = rutaObj.ruta_trayecto || "";
-                      setValue("ruta", `${nombre} ${trayecto}`.trim());
-                    }
-                  }}
+                  disabled={!watchedModalidadId}
+                  onChange={(e) => onRutaChange(e.value, field.onChange)}
                   optionLabel="label"
                   optionValue="value"
                 />
@@ -224,6 +216,7 @@ export const TerminoJornada = ({
                   className={`select ${fieldState.error ? "p-invalid" : ""}`}
                   options={rutasOptionsCC}
                   value={field.value}
+                  disabled={!watchedRutaId}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
                   optionValue="ruta_destino_cve"
