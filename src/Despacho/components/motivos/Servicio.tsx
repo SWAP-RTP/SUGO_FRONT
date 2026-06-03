@@ -1,10 +1,9 @@
+import { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { Controller, useWatch } from "react-hook-form";
+import { Controller } from "react-hook-form";
 // hooks personalizados
-import { useHook_General } from "../../../General/hooks/useHook";
-import { useRutasCC } from "../../../General/hooks/useRutas";
-import { useState } from "react";
+import { useRutasCompletas } from "../../../General/hooks/useRutasCompletas";
 
 interface ServicioProps {
   control: any; // viene del formulario padre (FormularioDespacho)
@@ -13,23 +12,18 @@ interface ServicioProps {
 }
 
 export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
-  const { modalidadesOptions, rutasOptions } = useHook_General();
-
-  // Observamos el valor de ruta_id del formulario padre
-  const watchedRutaId = useWatch({
-    control,
-    name: "ruta_id",
-  });
-
   const [ecoDValor, setEcoDValor] = useState(null);
   const [modalidadValor, setModalidadValor] = useState(null);
-
-  // LOGICA DE CC - Se actualiza cuando cambia la ruta
-  const selectedRutaObj = rutasOptions.find(
-    (r: any) => r.value === watchedRutaId || r.ruta_cve_sist === watchedRutaId,
-  );
-  const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
-  const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
+  //TRAEMOS EL HOOK DE RUTAS COMPLETAS
+  const {
+    modalidadesOptions,
+    rutasFiltradas,
+    rutasOptionsCC,
+    watchedModalidadId,
+    watchedRutaId,
+    onModalidadChange,
+    onRutaChange
+  } = useRutasCompletas(control, setValue);
 
   const ecoDe = [
     { label: "Planta", value: "1" },
@@ -179,7 +173,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
                   options={modalidadesOptions}
                   value={field.value}
                   onChange={(e) => {
-                    field.onChange(e.value);
+                    onModalidadChange(e.value, field.onChange);
                     setModalidadValor(e.value);
                   }}
                   optionLabel="label"
@@ -214,24 +208,11 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
               <Dropdown
                 inputId="dd-ruta"
                 className={`select ${fieldState.error ? "p-invalid" : ""}`}
-                options={rutasOptions}
+                options={rutasFiltradas}
                 filter
                 value={field.value}
-                onChange={(e) => {
-                  field.onChange(e.value);
-                  const rutaObj = rutasOptions.find(
-                    (r: any) =>
-                      r.value === e.value || r.ruta_cve_sist === e.value,
-                  );
-                  if (rutaObj && setValue) {
-                    const nombre = rutaObj.ruta_nombre || "";
-                    const trayecto = rutaObj.ruta_trayecto || "";
-                    setValue("ruta", `${nombre} ${trayecto}`.trim());
-                    if (rutaObj.ruta_cve_servicio) {
-                      setValue("id_modalidad", rutaObj.ruta_cve_servicio);
-                    }
-                  }
-                }}
+                disabled={!watchedModalidadId}
+                onChange={(e) => onRutaChange(e.value, field.onChange)}
                 optionLabel="label"
                 optionValue="value"
               />
@@ -252,6 +233,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
                   className={`select ${fieldState.error ? "p-invalid" : ""}`}
                   options={rutasOptionsCC}
                   value={field.value}
+                  disabled={!watchedRutaId}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
                   optionValue="ruta_destino_cve"

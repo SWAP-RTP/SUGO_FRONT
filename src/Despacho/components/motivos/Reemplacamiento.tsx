@@ -1,11 +1,9 @@
+import { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-// hooks personalizados
-import { useHook_General } from "../../../General/hooks/useHook";
-import { useState } from "react";
 import { Controller } from "react-hook-form";
-import { useRutasCC } from "../../../General/hooks/useRutas";
-
+// hooks personalizados
+import { useRutasCompletas } from "../../../General/hooks/useRutasCompletas";
 interface ServicioProps {
   control: any; // viene del formulario padre (FormularioDespacho)
   errors?: any; // para mostrar los errores de validación
@@ -177,7 +175,7 @@ export const Reemplacamiento = ({
                   className={`select ${fieldState.error ? "p-invalid" : ""}`}
                   options={modalidadesOptions}
                   onChange={(e) => {
-                    field.onChange(e.value);
+                    onModalidadChange(e.value, field.onChange);
                     setModalidadValor(e.value);
                   }}
                   value={field.value}
@@ -247,6 +245,7 @@ export const Reemplacamiento = ({
                   className={`select ${fieldState.error ? "p-invalid" : ""}`}
                   options={rutasOptionsCC}
                   value={field.value}
+                  disabled={!watchedRutaId}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
                   optionValue="ruta_destino_cve"

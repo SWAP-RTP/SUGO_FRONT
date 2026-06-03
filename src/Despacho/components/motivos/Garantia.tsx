@@ -1,10 +1,5 @@
 import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
 import { Controller } from "react-hook-form";
-// hooks personalizados
-import { useHook_General } from "../../../General/hooks/useHook";
-import { useState } from "react";
-
 interface ServicioProps {
   control: any; // viene del formulario padre (FormularioDespacho)
   errors?: any; // para mostrar los errores de validación
