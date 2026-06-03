@@ -13,7 +13,7 @@ export const Garantia = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="op_cred"
+            name="credencial"
             rules={{ required: "La credencial es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -25,7 +25,7 @@ export const Garantia = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.op_cred && (
+          {errors?.credencial && (
             <span
               style={{
                 color: "red",
@@ -34,7 +34,7 @@ export const Garantia = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.op_cred.message}
+              {errors.credencial.message}
             </span>
           )}
         </div>
@@ -43,7 +43,7 @@ export const Garantia = ({ control, errors }: ServicioProps) => {
         <div>
           <Controller
             control={control}
-            name="op_turno"
+            name="turno"
             rules={{ required: "El turno es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -55,7 +55,7 @@ export const Garantia = ({ control, errors }: ServicioProps) => {
               </span>
             )}
           />
-          {errors?.op_turno && (
+          {errors?.turno && (
             <span
               style={{
                 color: "red",
@@ -64,7 +64,7 @@ export const Garantia = ({ control, errors }: ServicioProps) => {
                 display: "block",
               }}
             >
-              {errors.op_turno.message}
+              {errors.turno.message}
             </span>
           )}
         </div>

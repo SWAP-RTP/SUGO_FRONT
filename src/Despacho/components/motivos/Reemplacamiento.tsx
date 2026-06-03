@@ -10,19 +10,23 @@ interface ServicioProps {
   setValue?: any;
 }
 
-export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) => {
+export const Reemplacamiento = ({
+  control,
+  errors,
+  setValue,
+}: ServicioProps) => {
+  const { modalidadesOptions, rutasOptions } = useHook_General();
+  const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
   const [ecoDValor, setEcoDValor] = useState(null);
   const [modalidadValor, setModalidadValor] = useState(null);
-  //TRAEMOS EL HOOK DE RUTAS COMPLETAS
-  const {
-    modalidadesOptions,
-    rutasFiltradas,
-    rutasOptionsCC,
-    watchedModalidadId,
-    watchedRutaId,
-    onModalidadChange,
-    onRutaChange
-  } = useRutasCompletas(control, setValue);
+
+  // LOGICA DE CC - Se actualiza cuando cambia la ruta
+  const selectedRutaObj = rutasOptions.find(
+    (r: any) =>
+      r.value === rutaSeleccionada || r.ruta_cve_sist === rutaSeleccionada,
+  );
+  const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
+  const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
 
   const ecoDe = [
     { label: "Planta", value: "1" },
@@ -36,7 +40,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
         <div>
           <Controller
             control={control}
-            name="op_cred"
+            name="credencial"
             rules={{ required: "La credencial es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -44,11 +48,11 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
                   className={`select ${fieldState.error ? "p-invalid" : ""}`}
                   {...field}
                 />
-                <label htmlFor="Credencial">Credencial</label>
+                <label htmlFor="credencial">Credencial</label>
               </span>
             )}
           />
-          {errors?.op_cred && (
+          {errors?.credencial && (
             <span
               style={{
                 color: "red",
@@ -57,7 +61,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
                 display: "block",
               }}
             >
-              {errors.op_cred.message}
+              {errors.credencial.message}
             </span>
           )}
         </div>
@@ -66,7 +70,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
         <div>
           <Controller
             control={control}
-            name="op_turno"
+            name="turno"
             rules={{ required: "El turno es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -78,7 +82,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
               </span>
             )}
           />
-          {errors?.op_turno && (
+          {errors?.turno && (
             <span
               style={{
                 color: "red",
@@ -87,7 +91,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
                 display: "block",
               }}
             >
-              {errors.op_turno.message}
+              {errors.turno.message}
             </span>
           )}
         </div>
@@ -96,7 +100,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
         <div>
           <Controller
             control={control}
-            name="eco_tipo"
+            name="tipo_eco"
             rules={{ required: "El eco de es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -114,7 +118,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
               </span>
             )}
           />
-          {errors?.eco_tipo && (
+          {errors?.tipo_eco && (
             <span
               style={{
                 color: "red",
@@ -123,7 +127,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
                 display: "block",
               }}
             >
-              {errors.eco_tipo.message}
+              {errors.tipo_eco.message}
             </span>
           )}
         </div>
@@ -132,7 +136,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
         <div>
           <Controller
             control={control}
-            name="no_extintor"
+            name="extintor_1"
             rules={{ required: "El número de extintor es obligatorio" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -162,7 +166,7 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
         <div>
           <Controller
             control={control}
-            name="ruta_modalidad"
+            name="id_modalidad"
             rules={{ required: "La modalidad es obligatoria" }}
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
@@ -196,30 +200,38 @@ export const Reemplacamiento = ({ control, errors, setValue }: ServicioProps) =>
           )}
         </div>
 
-        {/* Ruta  */}
-        <div>
-          <Controller
-            control={control}
-            name="ruta_id"
-            rules={{ required: "La ruta es obligatoria" }}
-            render={({ field, fieldState }) => (
-              <span className="p-float-label w-100">
-                <Dropdown
-                  inputId="dd-ruta"
-                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
-                  options={rutasFiltradas}
-                  filter
-                  value={field.value}
-                  disabled={!watchedModalidadId}
-                  onChange={(e) => onRutaChange(e.value, field.onChange)}
-                  optionLabel="label"
-                  optionValue="value"
-                />
-                <label htmlFor="dd-ruta">Ruta</label>
-              </span>
-            )}
-          />
-        </div>
+        <Controller
+          control={control}
+          name="ruta_id"
+          rules={{ required: "La ruta es obligatoria" }}
+          render={({ field, fieldState }) => (
+            <span className="p-float-label w-100">
+              <Dropdown
+                inputId="dd-ruta"
+                className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                options={rutasOptions}
+                filter
+                value={field.value}
+                onChange={(e) => {
+                  field.onChange(e.value);
+                  setRutaSeleccionada(e.value); // Actualiza CC
+                  const rutaObj = rutasOptions.find(
+                    (r: any) =>
+                      r.value === e.value || r.ruta_cve_sist === e.value,
+                  );
+                  if (rutaObj && setValue) {
+                    const nombre = rutaObj.ruta_nombre || "";
+                    const trayecto = rutaObj.ruta_trayecto || "";
+                    setValue("ruta", `${nombre} ${trayecto}`.trim());
+                  }
+                }}
+                optionLabel="label"
+                optionValue="value"
+              />
+              <label htmlFor="dd-ruta">Ruta</label>
+            </span>
+          )}
+        />
 
         {/* CC */}
         <div>

@@ -10,6 +10,7 @@ import { Controller } from "react-hook-form";
 import { useHook_General } from "../../General/hooks/useHook";
 import { Datatables } from "../../General/components/Datatables";
 import { obtenerPvEstados_Recepcion } from "../../General/services/pv_estados.services";
+import { useAuth } from "../../General/hooks/useAuth";
 import { fechaactual, RelojInput } from "../../General/utils/Date";
 //UTILS
 import { FaltaCombustibles } from "./FaltaCombustibles";
@@ -24,12 +25,12 @@ import { ServicioMb } from "./ServicioMb";
 //REACT-HOOK-FORM
 import { PostPvEstadosRecepcion } from "../utils/postPvEstadosRecepcion";
 
-
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const FormularioRecepcion = () => {
   //HOOKS USADOS EN EL COMPONENTE
   const { modulosOptions, motivosOptionsRecepcion } = useHook_General();
+  const { usuario } = useAuth();
 
   const [pvEstados, setPvEstados] = useState([]);
   const [motivo, setMotivo] = useState<any>(null);
@@ -39,31 +40,35 @@ export const FormularioRecepcion = () => {
 
   // DECLARAMOS LAS COLUMNAS DE DATATABLE
   const columnas = [
+    { title: "id", data: "id", responsivePriority: 1 },
     { title: "ECO", data: "economico", responsivePriority: 1 },
     { title: "MODULO", data: "id_modulo", responsivePriority: 2 },
-    { title: "EDO.ECO", data: "tipo_eco", responsivePriority: 3 , render: (data) => {
-      if(data === 1 || data === "1"){
-        return "Planta";
-      }else if(data === 2 || data === "2"){
-        return "Postura";
-      }
-      return "";
-    }},
-    //{
-    //title: "MOMENTO",
-    //data: "momento",
-    //responsivePriority: 4,
-    //render: (data) => formatearFecha(data),
-    //},
-     { title: "TIPO DE REGISTRO", data: "eco_estatus", responsivePriority: 5 ,
-    render: (data) => {
-      if(data === 1 || data === "1"){
-        return "Despacho";
-      }else if(data === 2 || data === "2"){
-        return "Recepcion";
-      }
-      return "";
-    }},
+    {
+      title: "EDO.ECO",
+      data: "tipo_eco",
+      responsivePriority: 3,
+      render: (data) => {
+        if (data === 1 || data === "1") {
+          return "Planta";
+        } else if (data === 2 || data === "2") {
+          return "Postura";
+        }
+        return "";
+      },
+    },
+    {
+      title: "TIPO DE REGISTRO",
+      data: "eco_estatus",
+      responsivePriority: 5,
+      render: (data) => {
+        if (data === 1 || data === "1") {
+          return "Despacho";
+        } else if (data === 2 || data === "2") {
+          return "Recepcion";
+        }
+        return "";
+      },
+    },
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
     { title: "RUTA", data: "id_ruta", responsivePriority: 7 },
     { title: "CC", data: "cc", responsivePriority: 7 },
@@ -74,14 +79,15 @@ export const FormularioRecepcion = () => {
   ];
 
   //FETCH EN UNA FUNCION REUTILIZABLE
-  const cargarDatos = async () => {
+  const cargarDatos = useCallback(async () => {
     try {
-      const datos = await obtenerPvEstados_Recepcion();
+      const modulo = usuario?.data?.modulo ? Number(usuario.data.modulo) : undefined;
+      const datos = await obtenerPvEstados_Recepcion(modulo);
       setPvEstados(datos);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     }
-  };
+  }, [usuario?.data?.modulo]);
 
   // EFFECT PARA CARGAR DATOS AL MONTAR Y CADA 5 SEGUNDOS
   useEffect(() => {
@@ -91,7 +97,7 @@ export const FormularioRecepcion = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [cargarDatos]);
 
   const COMPONENTES_MOTIVOS_RECEPCION: Record<string, React.ElementType> = {
     "TERMINO DE JORNADA": TerminoJornada,
@@ -115,16 +121,23 @@ export const FormularioRecepcion = () => {
     reset,
     formState: { errors },
     onSubmit,
-    setValue
+    setValue,
   } = PostPvEstadosRecepcion(modulosOptions);
 
-
   const manejartoast = (mensaje: string) => {
-    toast.current?.show({ severity: "success", summary: "Éxito", detail: mensaje, });
+    toast.current?.show({
+      severity: "success",
+      summary: "Éxito",
+      detail: mensaje,
+    });
   };
 
   const mostrarError = (mensaje: string) => {
-    toast.current?.show({ severity: "error", summary: "Error", detail: mensaje, });
+    toast.current?.show({
+      severity: "error",
+      summary: "Error",
+      detail: mensaje,
+    });
   };
 
   //HANDLER ELIMINAR
@@ -315,7 +328,11 @@ export const FormularioRecepcion = () => {
                   label="Enviar"
                   severity="success"
                   onClick={handleSubmit(async (data) => {
-                    const result = await onSubmit(data, manejartoast, mostrarError);
+                    const result = await onSubmit(
+                      data,
+                      manejartoast,
+                      mostrarError,
+                    );
                     if (result) {
                       cargarDatos();
                     }
@@ -347,4 +364,3 @@ export const FormularioRecepcion = () => {
     </>
   );
 };
-

@@ -8,17 +8,23 @@ import { useAuth } from "../../General/hooks/useAuth";
 export const DataSave = (
   ecoDisponibles: any[],
   modulosOptions: any[],
-  recargarTabla?: () => void
+  recargarTabla?: () => void,
 ) => {
   const { usuario } = useAuth();
 
   // usamo esto para validar la credencial
-  const [credencialValida, setCredencialValida] = useState<boolean | null>(null);
+  const [credencialValida, setCredencialValida] = useState<boolean | null>(
+    null,
+  );
   // guardamos el número de credencial validado (para tacharlo en la tabla mientras se escribe)
-  const [credencialEncontrada, setCredencialEncontrada] = useState<string | null>(null);
-  
+  const [credencialEncontrada, setCredencialEncontrada] = useState<
+    string | null
+  >(null);
+
   // acumulamos las credenciales ya enviadas exitosamente (persisten aunque se limpie el form o se recargue)
-  const [credencialesRegistradas, setCredencialesRegistradas] = useState<Set<string>>(() => {
+  const [credencialesRegistradas, setCredencialesRegistradas] = useState<
+    Set<string>
+  >(() => {
     const saved = localStorage.getItem("credencialesGuardadasSugo");
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
@@ -29,9 +35,14 @@ export const DataSave = (
     if (ecoDisponibles && ecoDisponibles.length > 0) {
       const primerRegistro = ecoDisponibles[0];
       const idArchivoActual = primerRegistro?.id_archivo;
-      const ultimoIdArchivoGuardado = localStorage.getItem("ultimoIdArchivoSugo");
+      const ultimoIdArchivoGuardado = localStorage.getItem(
+        "ultimoIdArchivoSugo",
+      );
 
-      if (idArchivoActual && String(idArchivoActual) !== String(ultimoIdArchivoGuardado)) {
+      if (
+        idArchivoActual &&
+        String(idArchivoActual) !== String(ultimoIdArchivoGuardado)
+      ) {
         // Se cargó un nuevo rol/archivo. Limpiamos todas las credenciales marcadas.
         setCredencialesRegistradas(new Set());
         localStorage.removeItem("credencialesGuardadasSugo");
@@ -41,15 +52,15 @@ export const DataSave = (
 
       setCredencialesRegistradas((prev) => {
         const todasLasCredenciales = new Set(
-          ecoDisponibles.flatMap(eco => [
+          ecoDisponibles.flatMap((eco) => [
             String(eco.primer_t || "").trim(),
             String(eco.segundo_t || "").trim(),
-            String(eco.tercer_t || "").trim()
-          ])
+            String(eco.tercer_t || "").trim(),
+          ]),
         );
         let changed = false;
         const nuevoSet = new Set<string>();
-        prev.forEach(cred => {
+        prev.forEach((cred) => {
           if (todasLasCredenciales.has(cred)) {
             nuevoSet.add(cred); // Mantenemos las que siguen existiendo
           } else {
@@ -57,7 +68,10 @@ export const DataSave = (
           }
         });
         if (changed) {
-          localStorage.setItem("credencialesGuardadasSugo", JSON.stringify(Array.from(nuevoSet)));
+          localStorage.setItem(
+            "credencialesGuardadasSugo",
+            JSON.stringify(Array.from(nuevoSet)),
+          );
           return nuevoSet;
         }
         return prev;
@@ -71,7 +85,8 @@ export const DataSave = (
       economico: "",
       credencial: "",
       modulo: null,
-      ruta: null,
+      ruta: "",
+      modalidad: "",
     },
   });
 
@@ -79,7 +94,7 @@ export const DataSave = (
   useEffect(() => {
     if (usuario?.data?.modulo && modulosOptions && modulosOptions.length > 0) {
       const moduloEncontrado = modulosOptions.find(
-        (m: any) => String(m.modulo) === String(usuario.data.modulo)
+        (m: any) => String(m.modulo) === String(usuario.data.modulo),
       );
       if (moduloEncontrado) {
         setValue("modulo", moduloEncontrado.value);
@@ -92,7 +107,7 @@ export const DataSave = (
     let defaultModulo = null;
     if (usuario?.data?.modulo && modulosOptions && modulosOptions.length > 0) {
       const moduloEncontrado = modulosOptions.find(
-        (m: any) => String(m.modulo) === String(usuario.data.modulo)
+        (m: any) => String(m.modulo) === String(usuario.data.modulo),
       );
       if (moduloEncontrado) {
         defaultModulo = moduloEncontrado.value;
@@ -103,13 +118,18 @@ export const DataSave = (
       credencial: "",
       modulo: defaultModulo,
       ruta: "",
+      modalidad: "",
     });
     setCredencialValida(null);
     setCredencialEncontrada(null);
   };
 
   // funcion para guardar los datos
-  const onSubmit = async (data: any, mostrarExito: (mensaje: string) => void, mostrarError: (mensaje: string) => void) => {
+  const onSubmit = async (
+    data: any,
+    mostrarExito: (mensaje: string) => void,
+    mostrarError: (mensaje: string) => void,
+  ) => {
     // Validar que la credencial sea válida
     if (!credencialValida) {
       mostrarError("Por favor, selecciona una credencial válida");
@@ -122,7 +142,10 @@ export const DataSave = (
       return;
     }
 
-    if (credencialEncontrada && credencialesRegistradas.has(String(credencialEncontrada).trim())) {
+    if (
+      credencialEncontrada &&
+      credencialesRegistradas.has(String(credencialEncontrada).trim())
+    ) {
       mostrarError("Esta credencial ya fue registrada anteriormente");
       return;
     }
@@ -138,7 +161,10 @@ export const DataSave = (
         const credTrim = String(credencialEncontrada).trim();
         setCredencialesRegistradas((prev) => {
           const newSet = new Set(prev).add(credTrim);
-          localStorage.setItem("credencialesGuardadasSugo", JSON.stringify(Array.from(newSet)));
+          localStorage.setItem(
+            "credencialesGuardadasSugo",
+            JSON.stringify(Array.from(newSet)),
+          );
           return newSet;
         });
       }
@@ -151,7 +177,7 @@ export const DataSave = (
     } catch (error: any) {
       console.error("Error al guardar presentación:", error);
       mostrarError("Error al guardar la presentación");
-      }
+    }
   };
 
   // funcion para buscar la credencial
@@ -172,9 +198,9 @@ export const DataSave = (
       (turno: any) =>
         String(turno.primer_t || "").trim() === valorTrim ||
         String(turno.segundo_t || "").trim() === valorTrim ||
-        String(turno.tercer_t || "").trim() === valorTrim
+        String(turno.tercer_t || "").trim() === valorTrim,
     );
-    
+
     const encontrado = !!turnoEncontrado;
     const esValido = encontrado && !yaRegistrada;
 
@@ -187,10 +213,12 @@ export const DataSave = (
       // Auto-completamos los campos del formulario
       setValue("economico", turnoEncontrado.economico || "");
       setValue("ruta", turnoEncontrado.nombre_ruta || "");
+      setValue("modalidad", turnoEncontrado.modalidad || "");
     } else {
       // Si no es válido o no se encuentra, limpiamos los campos auto-completados
       setValue("economico", "");
       setValue("ruta", "");
+      setValue("modalidad", "");
     }
   };
 
