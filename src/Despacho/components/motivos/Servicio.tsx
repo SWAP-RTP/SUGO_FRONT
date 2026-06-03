@@ -261,12 +261,6 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
             )}
           />
         </div>
-
-        {/* Entrada Operador */}
-        <span className="p-float-label input-servicio">
-          <InputText className="select" />
-          <label htmlFor="entrada">Entrada Operador</label>
-        </span>
       </div>
     </>
   );
