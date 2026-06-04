@@ -7,8 +7,8 @@ import { useAuth } from "../../General/hooks/useAuth";
 export const PostPvEstadosRecepcion = (modulosOptions: any[]) => {
     const { usuario } = useAuth();
 
-    const { control, handleSubmit, reset, formState, setValue } = useForm<pv_estados_recepcion>({
-        shouldUnregister: true,
+    const { control, handleSubmit, reset, formState, setValue, clearErrors } = useForm<any>({
+        shouldUnregister: false,
         defaultValues: {
             modulo: null as any,
             economico: "",
@@ -29,7 +29,7 @@ export const PostPvEstadosRecepcion = (modulosOptions: any[]) => {
     useEffect(() => {
         if (usuario?.data?.modulo && modulosOptions && modulosOptions.length > 0) {
             const moduloEncontrado = modulosOptions.find(
-                (m: any) => String(m.modulo) === String(usuario.data.modulo)
+                (m: any) => String(m.modulo) === String(usuario?.data?.modulo)
             );
             if (moduloEncontrado) {
                 setValue("modulo", moduloEncontrado.value);
@@ -42,7 +42,7 @@ export const PostPvEstadosRecepcion = (modulosOptions: any[]) => {
         let defaultModulo = null;
         if (usuario?.data?.modulo && modulosOptions && modulosOptions.length > 0) {
             const moduloEncontrado = modulosOptions.find(
-                (m: any) => String(m.modulo) === String(usuario.data.modulo)
+                (m: any) => String(m.modulo) === String(usuario?.data?.modulo)
             );
             if (moduloEncontrado) {
                 defaultModulo = moduloEncontrado.value;
@@ -138,7 +138,7 @@ export const PostPvEstadosRecepcion = (modulosOptions: any[]) => {
             delete payload.extintor2;
             delete payload.ruta_modalidad;
             delete payload.ruta_id;
-            delete payload.cc;
+            //delete payload.cc;
             delete payload.ruta_cc;
             delete payload.ruta;
 
@@ -160,7 +160,8 @@ export const PostPvEstadosRecepcion = (modulosOptions: any[]) => {
         reset: resetForm,
         formState,
         onSubmit,
-        setValue
+        setValue,
+        clearErrors
     };
 };
 
