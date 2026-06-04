@@ -135,14 +135,6 @@ export const FormularioDespacho = () => {
       title: "MODALIDAD",
       data: "id_modalidad",
       responsivePriority: 8,
-      render: (data: any) => {
-        if (data === 1 || data === "1") {
-          return "Ordinario";
-        } else if (data === 2 || data === "2") {
-          return "Especial";
-        }
-        return "";
-      },
     },
 
     { title: "OPERADOR", data: "credencial", responsivePriority: 9 },
