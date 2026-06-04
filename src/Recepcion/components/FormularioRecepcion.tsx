@@ -40,14 +40,16 @@ export const FormularioRecepcion = () => {
 
   // DECLARAMOS LAS COLUMNAS DE DATATABLE
   const columnas = [
-    { title: "id", data: "id", responsivePriority: 1 },
+    { title: "ID", data: "id", responsivePriority: 1 },
+    { title: "HORA", data: "hora", responsivePriority: 0 },
+    { title: "FECHA", data: "fecha", responsivePriority: 0 },
     { title: "ECO", data: "economico", responsivePriority: 1 },
     { title: "MODULO", data: "id_modulo", responsivePriority: 2 },
     {
       title: "EDO.ECO",
       data: "tipo_eco",
       responsivePriority: 3,
-      render: (data) => {
+      render: (data: any) => {
         if (data === 1 || data === "1") {
           return "Planta";
         } else if (data === 2 || data === "2") {
@@ -60,7 +62,7 @@ export const FormularioRecepcion = () => {
       title: "TIPO DE REGISTRO",
       data: "eco_estatus",
       responsivePriority: 5,
-      render: (data) => {
+      render: (data: any) => {
         if (data === 1 || data === "1") {
           return "Despacho";
         } else if (data === 2 || data === "2") {
@@ -122,6 +124,7 @@ export const FormularioRecepcion = () => {
     formState: { errors },
     onSubmit,
     setValue,
+    clearErrors
   } = PostPvEstadosRecepcion(modulosOptions);
 
   const manejartoast = (mensaje: string) => {
@@ -172,7 +175,6 @@ export const FormularioRecepcion = () => {
       <TabView>
         <TabPanel className="tabpanel" header="Recepcion">
           <div className="despacho-contenedor d-flex flex-wrap justify-content-center align-items-start gap-4">
-            {/* {ecoEncontrado && <Card_Eco data={ecoEncontrado} />} */}
             <div className="card-recepcion">
               <div className="titulo">
                 <h1>Recepcion</h1>
@@ -215,7 +217,7 @@ export const FormularioRecepcion = () => {
                         display: "block",
                       }}
                     >
-                      {errors.modulo.message}
+                      {errors.modulo.message as string}
                     </span>
                   )}
                 </div>
@@ -229,8 +231,55 @@ export const FormularioRecepcion = () => {
                     render={({ field, fieldState }) => (
                       <span className="p-float-label w-100">
                         <InputText
-                          value={field.value}
+                          value={field.value || ""}
                           onChange={(e) => field.onChange(e.target.value)}
+                          onBlur={async (e) => {
+                            field.onBlur(); // Ejecuta la validación nativa de RHF
+                            const eco = e.target.value;
+
+                            if (!eco) return;
+
+                            try {
+                              // Petición al backend 
+                              const response = await fetch(`${API_URL}/pv_estados/verificar/${eco}`);
+                              const data = await response.json();
+
+                              console.log("=== DATOS DE VERIFICACIÓN ===");
+                              console.log("data completa:", data);
+                              console.log("registro dentro de data:", data.registro);
+
+                              if (!response.ok || !data.valido) {
+                                mostrarError(data.message || "Error al validar el económico.");
+                                setValue("economico", ""); // Limpiamos el input por inválido
+                                return;
+                              }
+
+                              // Si es válido, extraemos el último registro de despacho (eco_estatus: 1)
+                              const reg = data.registro;
+
+                              // Mapeamos los campos del backend a los names de tu React Hook Form
+                              setValue("credencial", reg.credencial);
+                              setValue("turno", reg.turno);
+                              setValue("extintor_1", reg.extintor_1);
+                              setValue("id_modalidad", reg.id_modalidad, { shouldValidate: true });
+                              setValue("ruta_id", reg.id_ruta, { shouldValidate: true }); // Tu componente hijo usa 'ruta_id' mediante useRutasCompletas
+                              setValue("cc", reg.cc, { shouldValidate: true });
+                              setValue("tipo_eco", reg.tipo_eco, { shouldValidate: true });
+                              clearErrors([
+                                "credencial",
+                                "turno",
+                                "extintor_1",
+                                "id_modalidad",
+                                "ruta_id",
+                                "cc",
+                                "tipo_eco"
+                              ]);
+                              manejartoast(`Economico ${eco} en ruta verificado. Datos de despacho cargados.`);
+
+                            } catch (err) {
+                              mostrarError("No se pudo conectar con el servidor para validar el económico.");
+                            }
+                          }}
                           className={`select ${fieldState.error ? "p-invalid" : ""}`}
                         />
                         <label htmlFor="economico">Economico</label>
@@ -246,7 +295,7 @@ export const FormularioRecepcion = () => {
                         display: "block",
                       }}
                     >
-                      {errors.economico.message}
+                      {errors.economico.message as string}
                     </span>
                   )}
                 </div>
@@ -284,7 +333,7 @@ export const FormularioRecepcion = () => {
                         display: "block",
                       }}
                     >
-                      {errors.id_motivos.message}
+                      {errors.id_motivos.message as string}
                     </span>
                   )}
                 </div>
