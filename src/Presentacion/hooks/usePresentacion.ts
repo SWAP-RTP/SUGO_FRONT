@@ -12,7 +12,9 @@ export const usePresentacion = () => {
     setLoading(true);
 
     try {
-      const modulo = usuario?.data?.modulo ? Number(usuario.data.modulo) : undefined;
+      const modulo = usuario?.data?.modulo
+        ? Number(usuario.data.modulo)
+        : undefined;
       const response = await getPresentacionServices(modulo);
 
       setPresentacion(response);
@@ -30,7 +32,7 @@ export const usePresentacion = () => {
 
     const recagarPagina = setInterval(() => {
       cargarPresentacion();
-    }, 5000);
+    }, 2000);
 
     return () => clearInterval(recagarPagina);
   }, [cargarPresentacion]);

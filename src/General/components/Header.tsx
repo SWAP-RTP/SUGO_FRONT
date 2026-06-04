@@ -15,7 +15,7 @@ export const Header = ({ user }: any) => {
     },
     {
       label: "Hora de Presentacion",
-      icon: "pi pi-fw pi-pencil",
+      icon: "pi pi-fw pi-clock",
       command: () => navigate("/presentacion"),
     },
     {

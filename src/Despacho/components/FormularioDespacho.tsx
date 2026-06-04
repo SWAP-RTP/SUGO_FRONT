@@ -6,8 +6,12 @@ import { Button } from "primereact/button";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Controller, useWatch } from "react-hook-form";
 import { Toast } from "primereact/toast";
-import { obtenerPvEstados } from "../../General/services/pv_estados.services";
+import {
+  obtenerPvEstados,
+  obtenerPvEstadosActivos,
+} from "../../General/services/pv_estados.services";
 import { useAuth } from "../../General/hooks/useAuth";
+
 // hooks personalizados
 import { useHook_General } from "../../General/hooks/useHook";
 
@@ -35,6 +39,7 @@ export const FormularioDespacho = () => {
   const {
     modulosOptions,
     motivosOptions,
+    modalidadesOptions,
     presentacion,
     rutasOptions,
     ecoDisponibles,
@@ -43,7 +48,9 @@ export const FormularioDespacho = () => {
   const { usuario } = useAuth();
 
   const [pvEstados, setPvEstados] = useState([]);
+  const [activos, setActivos] = useState<any[]>([]);
   const leftColRef = useRef<HTMLDivElement>(null);
+  const ultimoAlertaEco = useRef<string | null>(null);
   const [leftColHeight, setLeftColHeight] = useState<number | string>("auto");
   const [motivo, setMotivo] = useState<any>(null);
   const [setModulo] = useState<any>(null);
@@ -69,13 +76,25 @@ export const FormularioDespacho = () => {
     { title: "ID", data: "id", responsivePriority: 0 },
     { title: "Hora", data: "hora", responsivePriority: 0 },
     { title: "Fecha", data: "fecha", responsivePriority: 0 },
-    { title: "ECO", data: "economico", responsivePriority: 1 },
+    {
+      title: "ECO",
+      data: "economico",
+      responsivePriority: 1,
+      render: (data: any, type: any, row: any) => {
+        const estatus = row?.eco_estatus;
+        const isDespacho = estatus === 1 || estatus === "1";
+        if (isDespacho) {
+          return `<span style="color: #065f46; font-weight: bold; background-color: #d1fae5; padding: 2px 6px; border-radius: 4px; border: 1px dashed #34d399;">${data}</span>`;
+        }
+        return data;
+      },
+    },
     { title: "MODULO", data: "id_modulo", responsivePriority: 2 },
     {
       title: "EDO.ECO",
       data: "tipo_eco",
       responsivePriority: 3,
-      render: (data) => {
+      render: (data: any) => {
         if (data === 1 || data === "1") {
           return "Planta";
         } else if (data === 2 || data === "2") {
@@ -88,20 +107,44 @@ export const FormularioDespacho = () => {
       title: "TIPO DE REGISTRO",
       data: "eco_estatus",
       responsivePriority: 5,
-      render: (data) => {
+      render: (data: any) => {
         if (data === 1 || data === "1") {
-          return "Despacho";
+          return `<span style="background-color: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.85em; display: inline-block; border: 1px solid #a7f3d0;">Despacho</span>`;
         } else if (data === 2 || data === "2") {
-          return "Recepcion";
+          return `<span style="background-color: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.85em; display: inline-block; border: 1px solid #fecaca;">Recepción</span>`;
         }
         return "";
       },
     },
 
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
-    { title: "RUTA", data: "id_ruta", responsivePriority: 7 },
+    {
+      title: "RUTA",
+      data: "id_ruta",
+      responsivePriority: 7,
+      render: (data: any) => {
+        if (!data) return "";
+        const opt = rutasOptions.find(
+          (r: any) => String(r.value) === String(data),
+        );
+        return opt ? opt.label : data;
+      },
+    },
     { title: "CC", data: "cc", responsivePriority: 7 },
-    { title: "MODALIDAD", data: "id_modalidad", responsivePriority: 8 },
+    {
+      title: "MODALIDAD",
+      data: "id_modalidad",
+      responsivePriority: 8,
+      render: (data: any) => {
+        if (data === 1 || data === "1") {
+          return "Ordinario";
+        } else if (data === 2 || data === "2") {
+          return "Especial";
+        }
+        return "";
+      },
+    },
+
     { title: "OPERADOR", data: "credencial", responsivePriority: 9 },
     { title: "TURNO", data: "turno", responsivePriority: 10 },
     { title: "EXTINTOR", data: "extintor_1", responsivePriority: 11 },
@@ -112,8 +155,12 @@ export const FormularioDespacho = () => {
       const modulo = usuario?.data?.modulo
         ? Number(usuario.data.modulo)
         : undefined;
-      const datos = await obtenerPvEstados(modulo);
+      const [datos, datosActivos] = await Promise.all([
+        obtenerPvEstados(modulo),
+        obtenerPvEstadosActivos(modulo),
+      ]);
       setPvEstados(datos);
+      setActivos(datosActivos);
     } catch (error) {
       console.error("Error al cargar datos:", error);
     }
@@ -163,7 +210,15 @@ export const FormularioDespacho = () => {
     if (watchedEco) {
       buscarEconomico(watchedEco);
     }
-  }, [watchedEco, rutasOptions, ecoDisponibles, presentacion, motivo]);
+  }, [
+    watchedEco,
+    rutasOptions,
+    modalidadesOptions,
+    ecoDisponibles,
+    presentacion,
+    motivo,
+    activos,
+  ]);
 
   // Sincronizar fecha y hora cuando cambien
   useEffect(() => {
@@ -174,14 +229,42 @@ export const FormularioDespacho = () => {
   // funcion para buscar y autollenar datos de economico (presentacion_pv)
   const buscarEconomico = (valor: string) => {
     if (!valor) {
+      ultimoAlertaEco.current = null;
       setValue("op_cred", "");
+      setValue("credencial", "");
       setValue("ruta", "");
       setValue("ruta_id", null as any);
+      setValue("id_ruta", null as any);
       setValue("ruta_modalidad", null as any);
+      setValue("id_modalidad", null as any);
       return;
     }
 
     const ecoVal = String(valor).trim();
+
+    const ecoValNum = Number(ecoVal);
+    const yaDespachado = activos.some(
+      (a: any) => Number(a.economico) === ecoValNum,
+    );
+    if (yaDespachado) {
+      if (ultimoAlertaEco.current !== ecoVal) {
+        mostrarError(
+          `El económico ${ecoVal} ya está en despacho y necesita terminar la jornada.`,
+        );
+        ultimoAlertaEco.current = ecoVal;
+      }
+      setValue("op_cred", "");
+      setValue("credencial", "");
+      setValue("ruta", "");
+      setValue("ruta_id", null as any);
+      setValue("id_ruta", null as any);
+      setValue("ruta_modalidad", null as any);
+      setValue("id_modalidad", null as any);
+      return;
+    }
+
+    // Si ya no está despachado, limpiamos el ref
+    ultimoAlertaEco.current = null;
 
     // 1. Buscamos primero en el rol de turnos activos (ecoDisponibles)
     const turnoActivo = ecoDisponibles.find(
@@ -196,7 +279,7 @@ export const FormularioDespacho = () => {
     const masReciente =
       coincidencias.length > 0 ? coincidencias[coincidencias.length - 1] : null;
 
-    // Auto-completamos credencial (op_cred)
+    // Auto-completamos credencial (op_cred / credencial)
     const credencialFinal =
       masReciente?.credencial ||
       turnoActivo?.primer_t ||
@@ -204,28 +287,57 @@ export const FormularioDespacho = () => {
       turnoActivo?.tercer_t;
     if (credencialFinal) {
       setValue("credencial", String(credencialFinal));
+      setValue("op_cred", String(credencialFinal));
+    } else {
+      setValue("credencial", "");
+      setValue("op_cred", "");
     }
 
-    // Auto-completamos ruta y ruta_id
-    const rutaDeOrigen = turnoActivo?.nombre_ruta || masReciente?.ruta;
-    // console.log("🔍 buscarEconomico:", {
-    //   valor,
-    //   economicoBuscado: ecoVal,
-    //   turnoActivoEncontrado: turnoActivo,
-    //   presentacionMasReciente: masReciente,
-    //   rutaDeOrigen,
-    //   totalRutasOptions: rutasOptions?.length,
-    // });
+    // Auto-completamos ruta y modalidad priorizando "hora de presentacion" (masReciente)
+    const rutaDeOrigen = masReciente?.ruta || turnoActivo?.nombre_ruta;
+    const modalidadDeOrigen = masReciente?.modalidad || turnoActivo?.modalidad;
 
+    const normalizar = (s: string) =>
+      String(s || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[\s-_]/g, "");
+
+    // 1. Intentamos establecer la modalidad primero si existe modalidadDeOrigen
+    if (modalidadDeOrigen) {
+      const modNorm = normalizar(modalidadDeOrigen);
+      const modEncontrada = modalidadesOptions.find((m: any) => {
+        const valueNorm = normalizar(m.value);
+        const labelNorm = normalizar(m.label);
+        return (
+          valueNorm === modNorm ||
+          labelNorm === modNorm ||
+          modNorm.includes(valueNorm) ||
+          valueNorm.includes(modNorm)
+        );
+      });
+
+      if (modEncontrada) {
+        console.log("👉 Estableciendo id_modalidad:", modEncontrada.value);
+        setValue("id_modalidad", modEncontrada.value);
+        setValue("ruta_modalidad", modEncontrada.value);
+      } else {
+        console.log(
+          "👉 Estableciendo id_modalidad (fallback):",
+          modalidadDeOrigen,
+        );
+        setValue("id_modalidad", modalidadDeOrigen);
+        setValue("ruta_modalidad", modalidadDeOrigen);
+      }
+    } else {
+      setValue("id_modalidad", null as any);
+      setValue("ruta_modalidad", null as any);
+    }
+
+    // 2. Intentamos establecer la ruta y opcionalmente su modalidad asociada
     if (rutaDeOrigen) {
       setValue("ruta", rutaDeOrigen);
 
-      // Normalizar para comparación flexible (ignora espacios, guiones y mayúsculas)
-      const normalizar = (s: string) =>
-        String(s || "")
-          .trim()
-          .toLowerCase()
-          .replace(/[\s-_]/g, "");
       const rutaNorm = normalizar(rutaDeOrigen);
       console.log("🔍 Comparando rutaDeOrigen normalizada:", rutaNorm);
 
@@ -246,14 +358,19 @@ export const FormularioDespacho = () => {
       });
 
       if (rutaEncontrada) {
-        console.log("👉 Estableciendo ruta_id:", rutaEncontrada.value);
+        console.log(
+          "👉 Estableciendo ruta_id e id_ruta:",
+          rutaEncontrada.value,
+        );
         setValue("ruta_id", rutaEncontrada.value);
+        setValue("id_ruta", rutaEncontrada.value);
         if (rutaEncontrada.ruta_cve_servicio) {
           console.log(
-            "👉 Estableciendo ruta_modalidad:",
+            "👉 Estableciendo ruta_modalidad e id_modalidad desde ruta:",
             rutaEncontrada.ruta_cve_servicio,
           );
           setValue("ruta_modalidad", rutaEncontrada.ruta_cve_servicio);
+          setValue("id_modalidad", rutaEncontrada.ruta_cve_servicio);
         }
       } else {
         console.log(
@@ -262,13 +379,13 @@ export const FormularioDespacho = () => {
           "en las opciones de ruta:",
           rutasOptions,
         );
+        setValue("ruta_id", null as any);
+        setValue("id_ruta", null as any);
       }
     } else {
-      // Si no se encuentra, limpiamos los campos automáticos
-      setValue("op_cred", "");
       setValue("ruta", "");
       setValue("ruta_id", null as any);
-      setValue("ruta_modalidad", null as any);
+      setValue("id_ruta", null as any);
     }
   };
 
@@ -536,7 +653,7 @@ export const FormularioDespacho = () => {
                 className="col-12 col-xl-6"
                 style={{ height: leftColHeight }}
               >
-                <Pv_catalogo />
+                <Pv_catalogo activos={activos} />
               </div>
             </div>
           </div>

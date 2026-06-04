@@ -38,8 +38,16 @@ const Pv_estadosComponent = () => {
       {!loading && !error && (
         <div
           className="pv_estados_tabla d-flex justify-content-center"
-          style={{ width: "100%" }}
+          style={{ width: "100%", flexDirection: "column", alignItems: "center" }}
         >
+          <style>{`
+            .bg-green-highlight {
+              background-color: #ecfdf5 !important;
+            }
+            .bg-green-highlight:hover {
+              background-color: #d1fae5 !important;
+            }
+          `}</style>
           <DataTable
             value={pvEstados}
             paginator
@@ -56,6 +64,11 @@ const Pv_estadosComponent = () => {
             emptyMessage="No hay datos disponibles."
             scrollable
             scrollHeight="600px"
+            rowClassName={(rowData) => {
+              const estatus = rowData.eco_estatus;
+              const isDespacho = estatus === 1 || estatus === "1" || String(estatus).toLowerCase() === "despacho";
+              return isDespacho ? "bg-green-highlight" : "";
+            }}
           >
             <Column
               field="id"
@@ -76,12 +89,63 @@ const Pv_estadosComponent = () => {
               filter
               filterPlaceholder="Buscar"
               style={{ minWidth: "6rem" }}
+              body={(rowData) => {
+                const estatus = rowData.eco_estatus;
+                const isDespacho = estatus === 1 || estatus === "1" || String(estatus).toLowerCase() === "despacho";
+                return (
+                  <span style={{ 
+                    color: isDespacho ? "#065f46" : "inherit", 
+                    fontWeight: isDespacho ? "bold" : "normal",
+                    backgroundColor: isDespacho ? "#d1fae5" : "transparent",
+                    padding: isDespacho ? "0.2rem 0.5rem" : "0",
+                    borderRadius: isDespacho ? "4px" : "0",
+                    border: isDespacho ? "1px dashed #34d399" : "none"
+                  }}>
+                    {rowData.eco}
+                  </span>
+                );
+              }}
             />
             <Column
               field="eco_estatus"
               header="Est. Eco"
               filterPlaceholder="Buscar"
-              style={{ minWidth: "5rem" }}
+              style={{ minWidth: "8rem" }}
+              body={(rowData) => {
+                const estatus = rowData.eco_estatus;
+                if (estatus === 1 || estatus === "1" || String(estatus).toLowerCase() === "despacho") {
+                  return (
+                    <span style={{ 
+                      backgroundColor: "#d1fae5", 
+                      color: "#065f46", 
+                      padding: "0.25rem 0.5rem", 
+                      borderRadius: "0.375rem", 
+                      fontWeight: "bold",
+                      fontSize: "0.85rem",
+                      display: "inline-block",
+                      border: "1px solid #a7f3d0"
+                    }}>
+                      Despacho
+                    </span>
+                  );
+                } else if (estatus === 2 || estatus === "2" || String(estatus).toLowerCase() === "recepcion" || String(estatus).toLowerCase() === "recepción") {
+                  return (
+                    <span style={{ 
+                      backgroundColor: "#fee2e2", 
+                      color: "#991b1b", 
+                      padding: "0.25rem 0.5rem", 
+                      borderRadius: "0.375rem", 
+                      fontWeight: "bold",
+                      fontSize: "0.85rem",
+                      display: "inline-block",
+                      border: "1px solid #fecaca"
+                    }}>
+                      Recepción
+                    </span>
+                  );
+                }
+                return <span>{estatus}</span>;
+              }}
             />
             <Column
               field="momento"

@@ -30,3 +30,18 @@ export const obtenerPvEstados_Recepcion = async (modulo?: number) => {
     throw error;
   }
 };
+
+export const obtenerPvEstadosActivos = async (modulo?: number) => {
+  try {
+    const url = modulo !== undefined ? `${API_URL}/pv_estados_activos?modulo=${modulo}` : `${API_URL}/pv_estados_activos`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Error al obtener los estados activos: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error en getPvEstadosActivos:", error);
+    throw error;
+  }
+};

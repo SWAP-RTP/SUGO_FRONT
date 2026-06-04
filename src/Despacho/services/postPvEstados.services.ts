@@ -12,7 +12,20 @@ export const pvEstadosServices = async (data: pv_registros) => {
   });
 
   if (!response.ok) {
-    throw new Error("Error al obtener los datos");
+    try {
+      const errData = await response.json();
+      if (errData && errData.error) {
+        throw new Error(errData.error);
+      }
+      if (errData && errData.message) {
+        throw new Error(errData.message);
+      }
+    } catch (e: any) {
+      if (e.message !== "Error al obtener los datos" && !e.message.includes("JSON")) {
+        throw e;
+      }
+    }
+    throw new Error("Error al enviar los datos");
   }
 
   return await response.json();

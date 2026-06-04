@@ -180,8 +180,8 @@ export const PostPvEstados = (modulosOptions: any[]) => {
       mostrarExito("Despacho realizado correctamente");
       resetForm();
       return result;
-    } catch (error) {
-      mostrarError("Error al enviar los datos");
+    } catch (error: any) {
+      mostrarError(error.message || "Error al enviar los datos");
     }
   };
 

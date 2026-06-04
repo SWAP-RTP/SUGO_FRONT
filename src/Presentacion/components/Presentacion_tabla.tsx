@@ -10,7 +10,7 @@ export const Presentacion_tabla = () => {
         value={presentacion}
         tableStyle={{ minWidth: "100%" }}
         emptyMessage={"No hay presentaciones registradas"}
-        rows={5}
+        rows={12}
         paginator
         rowHover
         header={

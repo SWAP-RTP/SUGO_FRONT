@@ -6,8 +6,16 @@ import {
   estiloPorDefecto,
 } from "../../Despacho/utils/pvEconomicos";
 
-export const Pv_catalogo = () => {
+interface PvCatalogoProps {
+  activos?: any[];
+}
+
+export const Pv_catalogo = ({ activos = [] }: PvCatalogoProps) => {
   const [busqueda, setBusqueda] = useState("");
+
+  const activosSet = useMemo(() => {
+    return new Set(activos.map((a: any) => Number(a.economico)));
+  }, [activos]);
 
   // Obtenemos los datos y la función para recargar
   const { ecoDisponibles } = useEcoDisponibles();
@@ -18,7 +26,9 @@ export const Pv_catalogo = () => {
     const termino = busqueda.toLowerCase();
 
     return lista.filter((eco: any) =>
-      String(eco.economico || "").toLowerCase().includes(termino)
+      String(eco.economico || "")
+        .toLowerCase()
+        .includes(termino),
     );
   }, [ecoDisponibles, busqueda]);
 
@@ -36,10 +46,13 @@ export const Pv_catalogo = () => {
     // Ordenar las rutas alfabéticamente
     return Object.keys(groups)
       .sort()
-      .reduce((acc, key) => {
-        acc[key] = groups[key];
-        return acc;
-      }, {} as Record<string, any[]>);
+      .reduce(
+        (acc, key) => {
+          acc[key] = groups[key];
+          return acc;
+        },
+        {} as Record<string, any[]>,
+      );
   }, [ecosFiltrados]);
 
   return (
@@ -83,9 +96,13 @@ export const Pv_catalogo = () => {
           {Object.keys(groupedEcos).length > 0 ? (
             Object.entries(groupedEcos).map(([ruta, unidades]) => {
               const estilo = estilos_ruta[ruta] || estiloPorDefecto;
+              const modalidad = (unidades as any)[0]?.modalidad;
 
               return (
-                <div key={ruta} className="col-6 mb-5 flex flex-column align-items-center">
+                <div
+                  key={ruta}
+                  className="col-6 mb-5 flex flex-column align-items-center"
+                >
                   {/* Separador/Sección de Ruta */}
                   <div className="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
                     <div
@@ -104,7 +121,7 @@ export const Pv_catalogo = () => {
                         letterSpacing: "0.5px",
                       }}
                     >
-                      Ruta {ruta}{" "}
+                      Ruta {ruta} - {modalidad}
                       <span className="text-muted fw-normal ms-1">
                         ({unidades.length})
                       </span>
@@ -113,41 +130,49 @@ export const Pv_catalogo = () => {
 
                   {/* Grilla de Unidades de esta Ruta */}
                   <div className="d-flex flex-wrap gap-3 justify-content-start">
-                    {unidades.map((data: any, index: number) => (
-                      <div
-                        key={index}
-                        className="eco d-flex flex-column justify-content-center align-items-center shadow-sm"
-                        style={{
-                          cursor: "pointer",
-                          backgroundColor: estilo.bg,
-                          color: estilo.text,
-                          width: "60px",
-                          height: "35px",
-                          borderRadius: "8px",
-                          transition: "transform 0.1s",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.transform = "scale(1.05)")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.transform = "scale(1)")
-                        }
-                      >
-                        <span
-                          className="fw-bold"
+                    {unidades.map((data: any, index: number) => {
+                      const isActivo = activosSet.has(Number(data.economico));
+                      return (
+                        <div
+                          key={index}
+                          className="eco d-flex flex-column justify-content-center align-items-center shadow-sm"
                           style={{
-                            fontSize: "1.1rem",
-                            lineHeight: "1",
-                            marginBottom: "2px",
+                            cursor: isActivo ? "not-allowed" : "pointer",
+                            backgroundColor: isActivo ? "#fee2e2" : estilo.bg,
+                            color: isActivo ? "#991b1b" : estilo.text,
+                            width: "60px",
+                            height: "35px",
+                            borderRadius: "8px",
+                            transition: "transform 0.1s",
+                            textDecoration: isActivo ? "line-through" : "none",
+                            border: isActivo ? "1px solid #fca5a5" : "none",
+                            opacity: isActivo ? 0.7 : 1,
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isActivo) {
+                              e.currentTarget.style.transform = "scale(1.05)";
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isActivo) {
+                              e.currentTarget.style.transform = "scale(1)";
+                            }
                           }}
                         >
-                          {data.economico}
-                        </span>
-                        <i
-                          style={{ fontSize: "0.8rem", opacity: 0.8 }}
-                        />
-                      </div>
-                    ))}
+                          <span
+                            className="fw-bold"
+                            style={{
+                              fontSize: "1.1rem",
+                              lineHeight: "1",
+                              marginBottom: "2px",
+                            }}
+                          >
+                            {data.economico}
+                          </span>
+                          <i style={{ fontSize: "0.8rem", opacity: 0.8 }} />
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
