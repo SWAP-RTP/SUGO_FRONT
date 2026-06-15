@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
 import { Header } from "./General/components/Header";
 import { Sugo_main } from "./General/components/Sugo_main";
 import { Recepcion } from "./Recepcion";

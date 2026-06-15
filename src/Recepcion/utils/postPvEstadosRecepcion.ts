@@ -67,7 +67,21 @@ export const PostPvEstadosRecepcion = (modulosOptions: any[]) => {
         try {
             const formatearFecha = (fecha: any) => {
                 if (!fecha) return new Date().toISOString().split("T")[0];
-                let dateStr = String(fecha);
+                let dateStr = String(fecha).trim();
+                if (dateStr.includes("/")) {
+                    const partes = dateStr.split("/");
+                    if (partes.length === 3) {
+                        const dia = partes[0].padStart(2, "0");
+                        const mes = partes[1].padStart(2, "0");
+                        const anio = partes[2];
+                        if (anio.length === 4) {
+                            return `${anio}-${mes}-${dia}`;
+                        }
+                        if (dia.length === 4) {
+                            return `${dia}-${mes}-${anio}`;
+                        }
+                    }
+                }
                 if (dateStr.includes(" ")) {
                     return dateStr.split(" ")[0];
                 }
