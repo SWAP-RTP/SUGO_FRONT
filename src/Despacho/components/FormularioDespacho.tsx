@@ -73,9 +73,6 @@ export const FormularioDespacho = () => {
   }, []);
 
   const columnas = [
-    { title: "ID", data: "id", responsivePriority: 0 },
-    { title: "Hora", data: "hora", responsivePriority: 0 },
-    { title: "Fecha", data: "fecha", responsivePriority: 0 },
     {
       title: "ECO",
       data: "economico",
@@ -89,6 +86,8 @@ export const FormularioDespacho = () => {
         return data;
       },
     },
+    { title: "Hora", data: "hora", responsivePriority: 0 },
+    { title: "Fecha", data: "fecha", responsivePriority: 0 },
     { title: "MODULO", data: "id_modulo", responsivePriority: 2 },
     {
       title: "EDO.ECO",
@@ -310,12 +309,12 @@ export const FormularioDespacho = () => {
       });
 
       if (modEncontrada) {
-        console.log("👉 Estableciendo id_modalidad:", modEncontrada.value);
+        console.log(" Estableciendo id_modalidad:", modEncontrada.value);
         setValue("id_modalidad", modEncontrada.value);
         setValue("ruta_modalidad", modEncontrada.value);
       } else {
         console.log(
-          "👉 Estableciendo id_modalidad (fallback):",
+          " Estableciendo id_modalidad (fallback):",
           modalidadDeOrigen,
         );
         setValue("id_modalidad", modalidadDeOrigen);
@@ -331,7 +330,7 @@ export const FormularioDespacho = () => {
       setValue("ruta", rutaDeOrigen);
 
       const rutaNorm = normalizar(rutaDeOrigen);
-      console.log("🔍 Comparando rutaDeOrigen normalizada:", rutaNorm);
+      console.log(" Comparando rutaDeOrigen normalizada:", rutaNorm);
 
       const rutaEncontrada = rutasOptions.find((r: any) => {
         const nameNorm = normalizar(r.ruta_nombre);
@@ -351,14 +350,14 @@ export const FormularioDespacho = () => {
 
       if (rutaEncontrada) {
         console.log(
-          "👉 Estableciendo ruta_id e id_ruta:",
+          "Estableciendo ruta_id e id_ruta:",
           rutaEncontrada.value,
         );
         setValue("ruta_id", rutaEncontrada.value);
         setValue("id_ruta", rutaEncontrada.value);
         if (rutaEncontrada.ruta_cve_servicio) {
           console.log(
-            "👉 Estableciendo ruta_modalidad e id_modalidad desde ruta:",
+            " Estableciendo ruta_modalidad e id_modalidad desde ruta:",
             rutaEncontrada.ruta_cve_servicio,
           );
           setValue("ruta_modalidad", rutaEncontrada.ruta_cve_servicio);
@@ -366,7 +365,7 @@ export const FormularioDespacho = () => {
         }
       } else {
         console.log(
-          "❌ No se encontró ninguna coincidencia para:",
+          " No se encontró ninguna coincidencia para:",
           rutaDeOrigen,
           "en las opciones de ruta:",
           rutasOptions,

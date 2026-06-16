@@ -40,9 +40,10 @@ export const PostPvEstados = (modulosOptions: any[]) => {
 
   // Efecto para auto-seleccionar el módulo del token del usuario
   useEffect(() => {
-    if (usuario?.data?.modulo && modulosOptions && modulosOptions.length > 0) {
+    const moduloUsuario = usuario?.data?.modulo;
+    if (moduloUsuario && modulosOptions && modulosOptions.length > 0) {
       const moduloEncontrado = modulosOptions.find(
-        (m: any) => String(m.modulo) === String(usuario.data.modulo),
+        (m: any) => String(m.modulo) === String(moduloUsuario),
       );
       if (moduloEncontrado) {
         setValue("modulo", moduloEncontrado.value);

@@ -50,7 +50,7 @@ export const parseFechaGeneral = (fecha: string): Date | null => {
 export const parseRangoPeriodo = (textoPeriodo: string): RangoPeriodo | null => {
   const texto = normalizarTexto(textoPeriodo);
   const regex =
-    /DEL\s+(\d{1,2})\s+DE\s+([A-Z]+)(?:\s+DE\s+(\d{4}))?\s+AL\s+(\d{1,2})\s+DE\s+([A-Z]+)(?:\s+DE\s+(\d{4}))?/;
+    /DEL\s+(\d{1,2})\s+DE\s+([A-Z]+)(?:\s+(?:DE\s+)?(\d{4}))?\s+AL\s+(\d{1,2})\s+DE\s+([A-Z]+)(?:\s+(?:DE\s+)?(\d{4}))?/;
   const match = texto.match(regex);
 
   if (!match) return null;
@@ -79,7 +79,7 @@ export const parseRangoPeriodo = (textoPeriodo: string): RangoPeriodo | null => 
 
 export const extraerTituloPeriodo = (matriz: unknown[][]): string | null => {
   const patron =
-    /DEL\s+\d{1,2}\s+DE\s+[A-Z]+(?:\s+DE\s+\d{4})?\s+AL\s+\d{1,2}\s+DE\s+[A-Z]+(?:\s+DE\s+\d{4})?/;
+    /DEL\s+\d{1,2}\s+DE\s+[A-Z]+(?:\s+(?:DE\s+)?\d{4})?\s+AL\s+\d{1,2}\s+DE\s+[A-Z]+(?:\s+(?:DE\s+)?\d{4})?/;
 
   for (const fila of matriz) {
     for (const celda of fila) {
@@ -117,12 +117,12 @@ export const formatearHoraExcel = (valor: unknown): string => {
     if (valor > 10) {
       fraccionTiempo = valor - Math.floor(valor);
     }
-    
+
     // Convertimos la fracción a minutos. (1 = 24 horas = 1440 minutos)
     const totalMinutos = Math.round(fraccionTiempo * 24 * 60);
     const horas = Math.floor(totalMinutos / 60) % 24;
     const minutos = totalMinutos % 60;
-    
+
     return `${horas.toString().padStart(2, "0")}:${minutos.toString().padStart(2, "0")}`;
   }
   return valorCeldaTexto(valor);
@@ -426,8 +426,8 @@ export const extraerFilasDia = (matriz: unknown[][], dayIndex: number): FilaTurn
     if (!/^\d+$/.test(id) || !economico.trim()) continue;
 
     filas.push({
-      id, economico, horaInicioTurno1, horaInicioCC, lugarInicio1, horaTerminoTurno1, 
-      lugarInicio2, horaInicio2, horaTerminoTurno2, lugarInicio3, horaInicioTurno3, 
+      id, economico, horaInicioTurno1, horaInicioCC, lugarInicio1, horaTerminoTurno1,
+      lugarInicio2, horaInicio2, horaTerminoTurno2, lugarInicio3, horaInicioTurno3,
       horaTerminoCC, lugarTerminoCC, terminoModulo, terminoTurno
     });
   }
