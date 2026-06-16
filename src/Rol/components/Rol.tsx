@@ -26,7 +26,6 @@ export const Roles = () => {
         <TabPanel header="Edicion de Rol">
           <EditarRol />
         </TabPanel>
-        <TabPanel header="Consulta de Roles"></TabPanel>
       </TabView>
     </>
   );

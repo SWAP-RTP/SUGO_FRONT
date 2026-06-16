@@ -40,10 +40,21 @@ export const FormularioRecepcion = () => {
 
   // DECLARAMOS LAS COLUMNAS DE DATATABLE
   const columnas = [
-    { title: "ID", data: "id", responsivePriority: 1 },
+    {
+      title: "ECO",
+      data: "economico",
+      responsivePriority: 1,
+      render: (data: any, type: any, row: any) => {
+        const estatus = row?.eco_estatus;
+        const isRecepcion = estatus === 2 || estatus === "2";
+        if (isRecepcion) {
+          return `<span style="color:#991b1b; font-weight: bold; background-color: #fee2e2; padding: 2px 6px; border-radius: 4px; border: 1px dashed #991b1b;">${data}</span>`;
+        }
+        return data;
+      },
+    },
     { title: "HORA", data: "hora", responsivePriority: 0 },
     { title: "FECHA", data: "fecha", responsivePriority: 0 },
-    { title: "ECO", data: "economico", responsivePriority: 1 },
     { title: "MODULO", data: "id_modulo", responsivePriority: 2 },
     {
       title: "EDO.ECO",
@@ -64,9 +75,9 @@ export const FormularioRecepcion = () => {
       responsivePriority: 5,
       render: (data: any) => {
         if (data === 1 || data === "1") {
-          return "Despacho";
+          return `<span style="background-color: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.85em; display: inline-block; border: 1px solid #a7f3d0;">Despacho</span>`;
         } else if (data === 2 || data === "2") {
-          return "Recepcion";
+          return `<span style="background-color: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.85em; display: inline-block; border: 1px solid #fecaca;">Recepción</span>`;
         }
         return "";
       },

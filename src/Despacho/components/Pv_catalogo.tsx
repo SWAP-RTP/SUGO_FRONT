@@ -1,10 +1,7 @@
 import { useState, useMemo } from "react";
 import { InputText } from "primereact/inputtext";
 import { useEcoDisponibles } from "../hooks/useEconomicos";
-import {
-  estilos_ruta,
-  estiloPorDefecto,
-} from "../../Despacho/utils/pvEconomicos";
+import { obtenerEstiloRuta } from "../../Despacho/utils/pvEconomicos";
 
 interface PvCatalogoProps {
   activos?: any[];
@@ -76,7 +73,9 @@ export const Pv_catalogo = ({ activos = [] }: PvCatalogoProps) => {
               className="text-muted fw-bold m-0"
               style={{ letterSpacing: "2px", fontSize: "0.9rem" }}
             >
+              <i className="pi pi-truck text-success me-2 fs-5"></i>
               ECONOMICOS DISPONIBLES
+
             </h5>
           </div>
 
@@ -95,7 +94,7 @@ export const Pv_catalogo = ({ activos = [] }: PvCatalogoProps) => {
         <div className="row">
           {Object.keys(groupedEcos).length > 0 ? (
             Object.entries(groupedEcos).map(([ruta, unidades]) => {
-              const estilo = estilos_ruta[ruta] || estiloPorDefecto;
+              const estilo = obtenerEstiloRuta(ruta);
               const modalidad = (unidades as any)[0]?.modalidad;
 
               return (
