@@ -1,10 +1,21 @@
 import type { pv_registros } from "../interface/pv_estados";
 import { useForm } from "react-hook-form";
-//import type { SubmitHandler } from "react-hook-form";
 import { useEffect } from "react";
 import { pvEstadosServices } from "../services/postPvEstados.services";
 import { useAuth } from "../../General/hooks/useAuth";
 
+/**
+ * PostPvEstados
+ *
+ * Hook que encapsula toda la lógica del formulario de despacho:
+ *  - Inicializa react-hook-form con los valores por defecto.
+ *  - Auto-selecciona el módulo del usuario logueado al montar.
+ *  - Expone un reset personalizado (resetForm) que mantiene el módulo.
+ *  - Construye el payload final normalizando tipos antes de enviarlo al API.
+ *
+ * @param modulosOptions - Lista de módulos disponibles para buscar el del usuario.
+ * @returns { control, handleSubmit, reset, formState, onSubmit, setValue }
+ */
 export const PostPvEstados = (modulosOptions: any[]) => {
   const { usuario } = useAuth();
 
@@ -38,7 +49,8 @@ export const PostPvEstados = (modulosOptions: any[]) => {
     },
   });
 
-  // Efecto para auto-seleccionar el módulo del token del usuario
+  // Efecto para auto-seleccionar el módulo del token del usuario.
+  // Espera a que modulosOptions cargue antes de hacer el match por número de módulo.
   useEffect(() => {
     const moduloUsuario = usuario?.data?.modulo;
     if (moduloUsuario && modulosOptions && modulosOptions.length > 0) {
@@ -51,12 +63,13 @@ export const PostPvEstados = (modulosOptions: any[]) => {
     }
   }, [usuario, modulosOptions, setValue]);
 
-  // Función de reset personalizada para mantener el módulo
+  // Reset personalizado que vuelve a pre-seleccionar el módulo del usuario
+  // después de limpiar el formulario (comportamiento estándar de reset borraría el módulo).
   const resetForm = () => {
     let defaultModulo = null;
     if (usuario?.data?.modulo && modulosOptions && modulosOptions.length > 0) {
       const moduloEncontrado = modulosOptions.find(
-        (m: any) => String(m.modulo) === String(usuario.data.modulo),
+        (m: any) => String(m.modulo) === String(usuario?.data?.modulo),
       );
       if (moduloEncontrado) {
         defaultModulo = moduloEncontrado.value;
@@ -96,7 +109,8 @@ export const PostPvEstados = (modulosOptions: any[]) => {
     mostrarError: (mensaje: string) => void,
   ) => {
     try {
-      // Formatear fecha y hora correctamente
+      // Normaliza la fecha al formato YYYY-MM-DD que espera la base de datos,
+      // manejando los formatos DD/MM/YYYY, ISO y timestamps.
       const formatearFecha = (fecha: any) => {
         if (!fecha) return new Date().toISOString().split("T")[0];
         let dateStr = String(fecha).trim();
@@ -124,6 +138,7 @@ export const PostPvEstados = (modulosOptions: any[]) => {
         return dateStr.substring(0, 10); // De cualquier forma, tomar primeros 10
       };
 
+      // Normaliza la hora al formato HH:MM:SS con padding de ceros.
       const formatearHora = (hora: any) => {
         if (!hora) return "00:00:00";
         let horaStr = String(hora).trim();
@@ -135,12 +150,15 @@ export const PostPvEstados = (modulosOptions: any[]) => {
         return `${h}:${m}:${s}`;
       };
 
+      // Convierte cualquier valor a número o null (evita strings vacíos en la BD).
       const parseNumber = (val: any) => {
         if (val === undefined || val === null || val === "") return null;
         const num = Number(val);
         return isNaN(num) ? null : num;
       };
 
+      // Resuelve los IDs de campos que pueden venir en múltiples formatos
+      // dependiendo del sub-formulario activo (motivo).
       const rawIdModulo =
         typeof data.modulo === "object" ? data.modulo.id : data.modulo;
       const rawIdMotivos =
@@ -151,6 +169,8 @@ export const PostPvEstados = (modulosOptions: any[]) => {
       const rawIdRuta = data.id_ruta || data.ruta_id;
       const rawCc = data.cc || data.ruta_cc;
 
+      // Construye el payload final con todos los campos normalizados.
+      // Usa spread del data original y sobreescribe solo los campos que necesitan conversión.
       const payload = {
         ...data,
         id_modulo: parseNumber(rawIdModulo),
@@ -175,6 +195,8 @@ export const PostPvEstados = (modulosOptions: any[]) => {
         taller: data.taller || data.ruta,
       };
 
+      // Elimina campos auxiliares del formulario que no existen en el modelo de BD.
+      // Estos campos son intermediarios usados por los sub-formularios de motivo.
       // Clean up fields that are not in the new database model
       delete payload.modulo;
       delete payload.op_cred;

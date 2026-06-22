@@ -153,6 +153,7 @@ export const DataSave = (
     try {
       data.hora = horaactual();
       data.fecha = fechaactual();
+      data.credencial_registrador = usuario?.data?.id;
       const response = await postHoraPresentacion(data);
       console.log("Presentación guardada exitosamente:", response);
       mostrarExito("Presentación guardada correctamente");
