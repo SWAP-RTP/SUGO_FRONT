@@ -1,41 +1,48 @@
+/**
+ * FormularioDespacho
+ *
+ * Componente principal del módulo de Despacho.
+ * Permite registrar la salida de una unidad (económico) del corralón,
+ * asignándole motivo, ruta, modalidad y operador.
+ *
+ * Estructura:
+ *  - Pestaña izquierda: formulario de captura con campos dinámicos según el motivo.
+ *  - Panel derecho: catálogo de parque vehicular activo (Pv_catalogo).
+ *  - Tabla inferior: historial de despachos realizados con opción de eliminar.
+ *
+ * Hooks utilizados:
+ *  - useHook_General      → catálogos generales (módulos, motivos, rutas, etc.)
+ *  - usePvEstados         → carga y polling de registros activos y tabla de despachos
+ *  - useBuscarEconomico   → autocompletado al ingresar el número económico
+ *  - PostPvEstados        → configuración del formulario react-hook-form y envío al API
+ *  - useColumnasDespacho  → definición de columnas para la tabla inferior
+ */
+
 // Componentes de PrimeReact
 import { TabView, TabPanel } from "primereact/tabview";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Controller, useWatch } from "react-hook-form";
 import { Toast } from "primereact/toast";
-import {
-  obtenerPvEstados,
-  obtenerPvEstadosActivos,
-} from "../../General/services/pv_estados.services";
-import { useAuth } from "../../General/hooks/useAuth";
+import { usePvEstados } from "../hooks/usePvEstados";
+import { useBuscarEconomico } from "../hooks/useBuscarEconomico";
 
-// hooks personalizados
+// Hooks personalizados del módulo Despacho
 import { useHook_General } from "../../General/hooks/useHook";
-
+import { COMPONENTES_MOTIVOS_DESPACHO } from "../constants/motivoDespacho";
+import { useColumnasDespacho } from "../hooks/useColumnasDespacho";
 import { Datatables } from "../../General/components/Datatables";
 import { Pv_catalogo } from "./Pv_catalogo";
 import { fechaactual, RelojInput } from "../../General/utils/Date";
 
-// Componentes de sub-formulario
-import { Servicio } from "./motivos/Servicio";
-import { Verificacion } from "./motivos/Verificacion";
-import { TallerExterno } from "./motivos/TallerExterno";
-import { Garantia } from "./motivos/Garantia";
-import { ServicioMB } from "./motivos/ServicioMB";
-import { Reemplacamiento } from "./motivos/Reemplacamiento";
-import { TransferenciaI } from "./motivos/TransferenciaI";
-import { SefiNuevo } from "./motivos/SefiNuevo";
-
-// react-hook-form
+// Hook de formulario (react-hook-form + lógica de envío)
 import { PostPvEstados } from "../utils/postPvEstados";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 export const FormularioDespacho = () => {
-  // hooks para obtener opciones de modulos y motivos
+  // Catálogos generales: módulos, motivos, modalidades, presentaciones,
+  // rutas disponibles y económicos con turno activo en el rol de turnos.
   const {
     modulosOptions,
     motivosOptions,
@@ -45,24 +52,34 @@ export const FormularioDespacho = () => {
     ecoDisponibles,
   } = useHook_General();
 
-  const { usuario } = useAuth();
+  // Referencia al componente Toast de PrimeReact para mostrar alertas.
+  const toast = useRef<Toast>(null);
 
-  const [pvEstados, setPvEstados] = useState([]);
-  const [activos, setActivos] = useState<any[]>([]);
+  // Datos de despachos: lista completa (tabla) y lista de activos (en servicio).
+  // También expone cargarDatos (refresco manual) y handleEliminar.
+  const { pvEstados, activos, cargarDatos, handleEliminar } = usePvEstados(toast);
+
+  // Referencia al div del formulario izquierdo para medir su altura
+  // y sincronizarla con el catálogo derecho (Pv_catalogo).
   const leftColRef = useRef<HTMLDivElement>(null);
-  const ultimoAlertaEco = useRef<string | null>(null);
+
+  // Altura dinámica del panel derecho, calculada con ResizeObserver.
   const [leftColHeight, setLeftColHeight] = useState<number | string>("auto");
+
+  // Motivo seleccionado en el dropdown. Controla qué sub-formulario
+  // dinámico (MotivoRender) se renderiza debajo de los campos principales.
   const [motivo, setMotivo] = useState<any>(null);
-  const [setModulo] = useState<any>(null);
+
+  // Hora en tiempo real del reloj interno (se actualiza cada segundo).
   const { hora } = RelojInput();
 
-  // EFECTO PARA SINCRONIZAR ALTURA DEL CATÁLOGO CON EL FORMULARIO
+  // Observa cambios en la altura del formulario izquierdo y actualiza
+  // leftColHeight para que el catálogo derecho tenga exactamente la misma altura.
   useEffect(() => {
     if (!leftColRef.current) return;
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
-        // Obtenemos la altura del contenedor del formulario
         setLeftColHeight(entry.target.clientHeight);
       }
     });
@@ -72,117 +89,22 @@ export const FormularioDespacho = () => {
     return () => resizeObserver.disconnect();
   }, []);
 
-  const columnas = [
-    {
-      title: "ECO",
-      data: "economico",
-      responsivePriority: 1,
-      render: (data: any, type: any, row: any) => {
-        const estatus = row?.eco_estatus;
-        const isDespacho = estatus === 1 || estatus === "1";
-        if (isDespacho) {
-          return `<span style="color: #065f46; font-weight: bold; background-color: #d1fae5; padding: 2px 6px; border-radius: 4px; border: 1px dashed #34d399;">${data}</span>`;
-        }
-        return data;
-      },
-    },
-    { title: "Hora", data: "hora", responsivePriority: 0 },
-    { title: "Fecha", data: "fecha", responsivePriority: 0 },
-    { title: "MODULO", data: "id_modulo", responsivePriority: 2 },
-    {
-      title: "EDO.ECO",
-      data: "tipo_eco",
-      responsivePriority: 3,
-      render: (data: any) => {
-        if (data === 1 || data === "1") {
-          return "Planta";
-        } else if (data === 2 || data === "2") {
-          return "Postura";
-        }
-        return "";
-      },
-    },
-    {
-      title: "TIPO DE REGISTRO",
-      data: "eco_estatus",
-      responsivePriority: 5,
-      render: (data: any) => {
-        if (data === 1 || data === "1") {
-          return `<span style="background-color: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.85em; display: inline-block; border: 1px solid #a7f3d0;">Despacho</span>`;
-        } else if (data === 2 || data === "2") {
-          return `<span style="background-color: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.85em; display: inline-block; border: 1px solid #fecaca;">Recepción</span>`;
-        }
-        return "";
-      },
-    },
+  // Columnas de la tabla inferior, generadas en función de las rutas disponibles
+  // (la columna RUTA necesita resolver el id a nombre legible).
+  const { columnas } = useColumnasDespacho(rutasOptions);
 
-    { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
-    {
-      title: "RUTA",
-      data: "id_ruta",
-      responsivePriority: 7,
-      render: (data: any) => {
-        if (!data) return "";
-        const opt = rutasOptions.find(
-          (r: any) => String(r.value) === String(data),
-        );
-        return opt ? opt.label : data;
-      },
-    },
-    { title: "CC", data: "cc", responsivePriority: 7 },
-    {
-      title: "MODALIDAD",
-      data: "id_modalidad",
-      responsivePriority: 8,
-    },
-
-    { title: "OPERADOR", data: "credencial", responsivePriority: 9 },
-    { title: "TURNO", data: "turno", responsivePriority: 10 },
-    { title: "EXTINTOR", data: "extintor_1", responsivePriority: 11 },
-  ];
-
-  const cargarDatos = useCallback(async () => {
-    try {
-      const modulo = usuario?.data?.modulo
-        ? Number(usuario.data.modulo)
-        : undefined;
-      const [datos, datosActivos] = await Promise.all([
-        obtenerPvEstados(modulo),
-        obtenerPvEstadosActivos(modulo),
-      ]);
-      setPvEstados(datos);
-      setActivos(datosActivos);
-    } catch (error) {
-      console.error("Error al cargar datos:", error);
-    }
-  }, [usuario?.data?.modulo]);
-
-  // Agregar después de los otros useEffect
-  useEffect(() => {
-    cargarDatos();
-    const interval = setInterval(() => {
-      cargarDatos();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [cargarDatos]);
-
-  const COMPONENTES_MOTIVOS_DESPACHO: Record<string, React.ElementType> = {
-    SERVICIO: Servicio,
-    VERIFICACIÓN: Verificacion,
-    "TALLER EXTERNO": TallerExterno,
-    GARANTIA: Garantia,
-    "SERVICIO MB": ServicioMB,
-    "RE EMPLACAMIENTO": Reemplacamiento,
-    "TRANSFERENCIA INTERMODULAR": TransferenciaI,
-    "SEFI (Nuevo)": SefiNuevo,
-  };
-
+  // Componente dinámico que se renderiza según el motivo seleccionado.
+  // Si el motivo tiene una clave en COMPONENTES_MOTIVOS_DESPACHO, se muestra
+  // el sub-formulario correspondiente (ej. Servicio, Verificacion, TallerExterno...).
   const MotivoRender = motivo?.desc
     ? COMPONENTES_MOTIVOS_DESPACHO[motivo.desc]
     : null;
 
-  // react-hook-form
+  // Configuración completa del formulario:
+  // - control, handleSubmit, reset, errors: API estándar de react-hook-form.
+  // - onSubmit: función de envío que normaliza los datos y llama al API.
+  // - setValue: permite modificar campos del formulario desde otros hooks.
+  // PostPvEstados también auto-selecciona el módulo del usuario logueado.
   const {
     control,
     handleSubmit,
@@ -192,196 +114,14 @@ export const FormularioDespacho = () => {
     setValue,
   } = PostPvEstados(modulosOptions);
 
-  const watchedEco = useWatch({
-    control,
-    name: "economico",
-  });
-
-  useEffect(() => {
-    if (watchedEco) {
-      buscarEconomico(watchedEco);
-    }
-  }, [
-    watchedEco,
-    rutasOptions,
-    modalidadesOptions,
-    ecoDisponibles,
-    presentacion,
-    motivo,
-    activos,
-  ]);
-
-  // Sincronizar fecha y hora cuando cambien
+  // Mantiene los campos ocultos de fecha y hora sincronizados con el reloj
+  // en tiempo real. Se actualizan cada vez que la hora cambia (cada segundo).
   useEffect(() => {
     setValue("hora", hora);
     setValue("fecha", fechaactual());
   }, [hora, setValue]);
 
-  // funcion para buscar y autollenar datos de economico (presentacion_pv)
-  const buscarEconomico = (valor: string) => {
-    if (!valor) {
-      ultimoAlertaEco.current = null;
-      setValue("op_cred", "");
-      setValue("credencial", "");
-      setValue("ruta", "");
-      setValue("ruta_id", null as any);
-      setValue("id_ruta", null as any);
-      setValue("ruta_modalidad", null as any);
-      setValue("id_modalidad", null as any);
-      return;
-    }
-
-    const ecoVal = String(valor).trim();
-
-    const ecoValNum = Number(ecoVal);
-    const yaDespachado = activos.some(
-      (a: any) => Number(a.economico) === ecoValNum,
-    );
-    if (yaDespachado) {
-      if (ultimoAlertaEco.current !== ecoVal) {
-        mostrarError(
-          `El económico ${ecoVal} ya está en despacho y necesita terminar la jornada.`,
-        );
-        ultimoAlertaEco.current = ecoVal;
-      }
-      setValue("op_cred", "");
-      setValue("credencial", "");
-      setValue("ruta", "");
-      setValue("ruta_id", null as any);
-      setValue("id_ruta", null as any);
-      setValue("ruta_modalidad", null as any);
-      setValue("id_modalidad", null as any);
-      return;
-    }
-
-    // Si ya no está despachado, limpiamos el ref
-    ultimoAlertaEco.current = null;
-
-    // 1. Buscamos primero en el rol de turnos activos (ecoDisponibles)
-    const turnoActivo = ecoDisponibles.find(
-      (t: any) => String(t.economico).trim() === ecoVal,
-    );
-
-    // 2. Buscamos en las presentaciones (historial de firmas)
-    const coincidencias = presentacion.filter(
-      (p: any) => String(p.economico).trim() === ecoVal,
-    );
-
-    const masReciente =
-      coincidencias.length > 0 ? coincidencias[coincidencias.length - 1] : null;
-
-    // Auto-completamos credencial (op_cred / credencial)
-    const credencialFinal =
-      masReciente?.credencial ||
-      turnoActivo?.primer_t ||
-      turnoActivo?.segundo_t ||
-      turnoActivo?.tercer_t;
-    if (credencialFinal) {
-      setValue("credencial", String(credencialFinal));
-      setValue("op_cred", String(credencialFinal));
-    } else {
-      setValue("credencial", "");
-      setValue("op_cred", "");
-    }
-
-    // Auto-completamos ruta y modalidad priorizando "hora de presentacion" (masReciente)
-    const rutaDeOrigen = masReciente?.ruta || turnoActivo?.nombre_ruta;
-    const modalidadDeOrigen = masReciente?.modalidad || turnoActivo?.modalidad;
-
-    const normalizar = (s: string) =>
-      String(s || "")
-        .trim()
-        .toLowerCase()
-        .replace(/[\s-_]/g, "");
-
-    // 1. Intentamos establecer la modalidad primero si existe modalidadDeOrigen
-    if (modalidadDeOrigen) {
-      const modNorm = normalizar(modalidadDeOrigen);
-      const modEncontrada = modalidadesOptions.find((m: any) => {
-        const valueNorm = normalizar(m.value);
-        const labelNorm = normalizar(m.label);
-        return (
-          valueNorm === modNorm ||
-          labelNorm === modNorm ||
-          modNorm.includes(valueNorm) ||
-          valueNorm.includes(modNorm)
-        );
-      });
-
-      if (modEncontrada) {
-        console.log(" Estableciendo id_modalidad:", modEncontrada.value);
-        setValue("id_modalidad", modEncontrada.value);
-        setValue("ruta_modalidad", modEncontrada.value);
-      } else {
-        console.log(
-          " Estableciendo id_modalidad (fallback):",
-          modalidadDeOrigen,
-        );
-        setValue("id_modalidad", modalidadDeOrigen);
-        setValue("ruta_modalidad", modalidadDeOrigen);
-      }
-    } else {
-      setValue("id_modalidad", null as any);
-      setValue("ruta_modalidad", null as any);
-    }
-
-    // 2. Intentamos establecer la ruta y opcionalmente su modalidad asociada
-    if (rutaDeOrigen) {
-      setValue("ruta", rutaDeOrigen);
-
-      const rutaNorm = normalizar(rutaDeOrigen);
-      console.log(" Comparando rutaDeOrigen normalizada:", rutaNorm);
-
-      const rutaEncontrada = rutasOptions.find((r: any) => {
-        const nameNorm = normalizar(r.ruta_nombre);
-        const fullNameNorm = normalizar(
-          `${r.ruta_nombre}${r.ruta_trayecto || ""}`,
-        );
-        const match =
-          nameNorm === rutaNorm ||
-          fullNameNorm === rutaNorm ||
-          rutaNorm.includes(nameNorm) ||
-          nameNorm.includes(rutaNorm);
-        if (match) {
-          console.log("✅ Coincidencia encontrada en rutasOptions:", r);
-        }
-        return match;
-      });
-
-      if (rutaEncontrada) {
-        console.log(
-          "Estableciendo ruta_id e id_ruta:",
-          rutaEncontrada.value,
-        );
-        setValue("ruta_id", rutaEncontrada.value);
-        setValue("id_ruta", rutaEncontrada.value);
-        if (rutaEncontrada.ruta_cve_servicio) {
-          console.log(
-            " Estableciendo ruta_modalidad e id_modalidad desde ruta:",
-            rutaEncontrada.ruta_cve_servicio,
-          );
-          setValue("ruta_modalidad", rutaEncontrada.ruta_cve_servicio);
-          setValue("id_modalidad", rutaEncontrada.ruta_cve_servicio);
-        }
-      } else {
-        console.log(
-          " No se encontró ninguna coincidencia para:",
-          rutaDeOrigen,
-          "en las opciones de ruta:",
-          rutasOptions,
-        );
-        setValue("ruta_id", null as any);
-        setValue("id_ruta", null as any);
-      }
-    } else {
-      setValue("ruta", "");
-      setValue("ruta_id", null as any);
-      setValue("id_ruta", null as any);
-    }
-  };
-
-  const toast = useRef<Toast>(null);
-
+  // Muestra una notificación de éxito (verde) en el Toast de PrimeReact.
   const manejartoast = (mensaje: string) => {
     toast.current?.show({
       severity: "success",
@@ -390,6 +130,7 @@ export const FormularioDespacho = () => {
     });
   };
 
+  // Muestra una notificación de error (rojo) en el Toast de PrimeReact.
   const mostrarError = (mensaje: string) => {
     toast.current?.show({
       severity: "error",
@@ -398,31 +139,22 @@ export const FormularioDespacho = () => {
     });
   };
 
-  //HANDLER ELIMINAR
-  const handleEliminar = useCallback(
-    async (rowData: any) => {
-      try {
-        const response = await fetch(`${API_URL}/pv_estados/${rowData.id}`, {
-          method: "DELETE",
-        });
-        if (response.ok) {
-          toast.current?.show({
-            severity: "success",
-            summary: "Eliminado",
-            detail: "Registro eliminado correctamente",
-          });
-          await cargarDatos();
-        }
-      } catch (err) {
-        toast.current?.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Hubo un error al eliminar el registro",
-        });
-      }
-    },
-    [cargarDatos],
-  );
+  // Observa el campo "economico" en tiempo real. Cuando cambia su valor,
+  // useBuscarEconomico busca en los catálogos (ecoDisponibles, presentacion)
+  // y auto-rellena credencial, ruta y modalidad si encuentra coincidencia.
+  const watchedEco = useWatch({ control, name: "economico" });
+  const { buscarEconomico } = useBuscarEconomico({
+    watchedEco,
+    setValue,
+    activos,
+    presentacion,
+    ecoDisponibles,
+    modalidadesOptions,
+    rutasOptions,
+    motivosOptions,
+    motivo,
+    mostrarError,
+  });
 
   return (
     <>
@@ -462,7 +194,6 @@ export const FormularioDespacho = () => {
                               className="select w-100"
                               onChange={(e) => {
                                 field.onChange(e.value);
-                                setModulo(e.value);
                               }}
                               disabled
                             />
@@ -479,7 +210,7 @@ export const FormularioDespacho = () => {
                             display: "block",
                           }}
                         >
-                          {errors.modulo.message}
+                          {errors.modulo.message as string}
                         </span>
                       )}
                     </div>
@@ -513,7 +244,7 @@ export const FormularioDespacho = () => {
                             display: "block",
                           }}
                         >
-                          {errors.eco.message}
+                          {errors.economico.message as string}
                         </span>
                       )}
                     </div>
@@ -551,7 +282,7 @@ export const FormularioDespacho = () => {
                             display: "block",
                           }}
                         >
-                          {errors.motivo_id.message}
+                          {errors.motivo_id.message as string}
                         </span>
                       )}
                     </div>
@@ -627,6 +358,9 @@ export const FormularioDespacho = () => {
                         if (result) {
                           cargarDatos();
                         }
+                      }, (errors) => {
+                        console.log("errores de validacionactivos", errors);
+                        console.log("valores actuales en el estado", control._formValues)
                       })}
                     />
                     <Button

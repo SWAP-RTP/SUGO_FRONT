@@ -22,52 +22,52 @@ export const Presentacion_tabla = () => {
         }
       >
         <Column
-          field="id"
-          header="ID"
-          className="text-center fw-bold"
-          headerClassName="text-center"
-        ></Column>
-        <Column
-          field="modulo"
-          header="MODULO"
-          className="text-center fw-bold"
-          headerClassName="text-center"
-        ></Column>
-        <Column
-          field="economico"
-          header="ECONÓMICO"
-          className="text-center fw-bold"
-          headerClassName="text-center"
-        ></Column>
-        <Column
           field="credencial"
           header="CREDENCIAL"
-          className="text-center fw-bold"
-          headerClassName="text-center"
-        ></Column>
-        <Column
-          field="ruta"
-          header="RUTA"
-          className="text-center fw-bolder text-primary"
-          headerClassName="text-center"
-        ></Column>
-        <Column
-          field="modalidad"
-          header="MODALIDAD"
-          className="text-center fw-bolder text-primary"
-          headerClassName="text-center"
+          className="fw-bolder text-primary"
+          align="center"
         ></Column>
         <Column
           field="fecha"
           header="FECHA"
-          className="text-center"
-          headerClassName="text-center"
+          className="text-muted"
+          align="center"
         ></Column>
         <Column
           field="hora"
           header="HORA"
-          className="text-center"
-          headerClassName="text-center"
+          className="text-muted"
+          align="center"
+        ></Column>
+        <Column
+          field="economico"
+          header="ECONÓMICO"
+          className="fw-bold"
+          align="center"
+        ></Column>
+        <Column
+          field="modulo"
+          header="MODULO"
+          className="text-muted"
+          align="center"
+        ></Column>
+        <Column
+          field="ruta"
+          header="RUTA"
+          className="fw-bolder text-primary"
+          align="center"
+        ></Column>
+        <Column
+          field="modalidad"
+          header="MODALIDAD"
+          className="fw-bolder text-primary"
+          align="center"
+        ></Column>
+        <Column
+          field="cred_registrador"
+          header="REGISTRO"
+          className="fw-bolder"
+          align="center"
         ></Column>
       </DataTable>
     </div>

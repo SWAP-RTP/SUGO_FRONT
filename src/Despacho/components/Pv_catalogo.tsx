@@ -70,22 +70,20 @@ export const Pv_catalogo = ({ activos = [] }: PvCatalogoProps) => {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
             <h5
-              className="text-muted fw-bold m-0"
+              className="text-muted fw-bold m-0 d-flex align-items-center "
               style={{ letterSpacing: "2px", fontSize: "0.9rem" }}
             >
-              <i className="pi pi-truck text-success me-2 fs-5"></i>
+              <i className="pi pi-truck text-success me-2 fs-5 "></i>
               ECONOMICOS DISPONIBLES
 
             </h5>
           </div>
-
           <span className="p-input-icon-left" style={{ width: "300px" }}>
             <InputText
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
               placeholder="Buscar por económico"
-              className="w-100 p-inputtext-sm"
-              style={{ borderRadius: "8px" }}
+              className="w-100 p-inputtext-sm rounded-pill"
             />
           </span>
         </div>

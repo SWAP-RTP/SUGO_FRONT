@@ -4,6 +4,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Controller } from "react-hook-form";
 // hooks personalizados
 import { useRutasCompletas } from "../../../General/hooks/useRutasCompletas";
+
 interface ServicioProps {
   control: any; // viene del formulario padre (FormularioDespacho)
   errors?: any; // para mostrar los errores de validación
@@ -15,18 +16,19 @@ export const Reemplacamiento = ({
   errors,
   setValue,
 }: ServicioProps) => {
-  const { modalidadesOptions, rutasOptions } = useHook_General();
-  const [rutaSeleccionada, setRutaSeleccionada] = useState(null);
   const [ecoDValor, setEcoDValor] = useState(null);
   const [modalidadValor, setModalidadValor] = useState(null);
 
-  // LOGICA DE CC - Se actualiza cuando cambia la ruta
-  const selectedRutaObj = rutasOptions.find(
-    (r: any) =>
-      r.value === rutaSeleccionada || r.ruta_cve_sist === rutaSeleccionada,
-  );
-  const rutaNombre = selectedRutaObj ? selectedRutaObj.ruta_nombre : null;
-  const { rutasOptions: rutasOptionsCC } = useRutasCC(rutaNombre);
+  // TRAEMOS EL HOOK DE RUTAS COMPLETAS
+  const {
+    modalidadesOptions,
+    rutasFiltradas,
+    rutasOptionsCC,
+    watchedModalidadId,
+    watchedRutaId,
+    onModalidadChange,
+    onRutaChange,
+  } = useRutasCompletas(control, setValue);
 
   const ecoDe = [
     { label: "Planta", value: "1" },
@@ -200,6 +202,7 @@ export const Reemplacamiento = ({
           )}
         </div>
 
+        {/* Ruta */}
         <Controller
           control={control}
           name="ruta_id"
@@ -209,22 +212,11 @@ export const Reemplacamiento = ({
               <Dropdown
                 inputId="dd-ruta"
                 className={`select ${fieldState.error ? "p-invalid" : ""}`}
-                options={rutasOptions}
+                options={rutasFiltradas}
                 filter
                 value={field.value}
-                onChange={(e) => {
-                  field.onChange(e.value);
-                  setRutaSeleccionada(e.value); // Actualiza CC
-                  const rutaObj = rutasOptions.find(
-                    (r: any) =>
-                      r.value === e.value || r.ruta_cve_sist === e.value,
-                  );
-                  if (rutaObj && setValue) {
-                    const nombre = rutaObj.ruta_nombre || "";
-                    const trayecto = rutaObj.ruta_trayecto || "";
-                    setValue("ruta", `${nombre} ${trayecto}`.trim());
-                  }
-                }}
+                disabled={!watchedModalidadId}
+                onChange={(e) => onRutaChange(e.value, field.onChange)}
                 optionLabel="label"
                 optionValue="value"
               />
@@ -237,7 +229,7 @@ export const Reemplacamiento = ({
         <div>
           <Controller
             control={control}
-            name="ruta_cc"
+            name="cc"
             render={({ field, fieldState }) => (
               <span className="p-float-label w-100">
                 <Dropdown

@@ -44,13 +44,18 @@ export const postHoraPresentacion = async (data: any) => {
       modalidad: data.modalidad || null,
       fecha: convertirFecha(data.fecha), // Convertir DD/MM/YYYY a YYYY-MM-DD
       hora: convertirHora(data.hora), // Asegurar formato HH:MM:SS
+      credencial_registrador: parseInt(data.credencial_registrador)
     };
 
     console.log("Datos enviados al backend:", datosTransformados);
+    const token = localStorage.getItem("token_sugo")
 
     const response = await fetch(`${API_URL}/horaPost`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
       body: JSON.stringify(datosTransformados),
     });
 
