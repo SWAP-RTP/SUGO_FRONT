@@ -20,7 +20,7 @@ export const TerminoJornada = ({
   errors,
   setValue,
 }: TerminoJornadaProps) => {
-  const [modalidadValor, setModalidadValor] = useState(null);
+  const [_modalidadValor, setModalidadValor] = useState(null);
 
   //TRAEMOS EL HOOK DE RUTAS COMPLETAS
   const {
@@ -219,7 +219,7 @@ export const TerminoJornada = ({
                   disabled={!watchedRutaId}
                   onChange={(e) => field.onChange(e.value)}
                   optionLabel="label"
-                  optionValue="ruta_destino_cve"
+                  optionValue="value"
                 />
                 <label htmlFor="dd-cc">CC</label>
               </span>

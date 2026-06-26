@@ -20,7 +20,15 @@ export const PostPvEstadosRecepcion = (modulosOptions: any[]) => {
             extintor_2: "",
             id_modalidad: null as any,
             id_ruta: null as any,
-            cc: null as any
+            ruta_id: null as any,
+            cc: null as any,
+            falla: "",
+            observaciones: "",
+            tipo_combustible: null as any,
+            tipo_termino: null as any,
+            origen: "",
+            destino: "",
+            ruta: ""
         }
     });
 
@@ -59,7 +67,15 @@ export const PostPvEstadosRecepcion = (modulosOptions: any[]) => {
             extintor_2: "",
             id_modalidad: null as any,
             id_ruta: null as any,
+            ruta_id: null as any,
             cc: null as any,
+            falla: "",
+            observaciones: "",
+            tipo_combustible: null as any,
+            tipo_termino: null as any,
+            origen: "",
+            destino: "",
+            ruta: ""
         });
     };
 
@@ -129,15 +145,15 @@ export const PostPvEstadosRecepcion = (modulosOptions: any[]) => {
                 tipo_eco: parseNumber(data.tipo_eco || data.eco_tipo || data.eco_de) || 1,
                 extintor_1: parseNumber(data.extintor_1 || data.extintor || data.no_extintor),
                 extintor_2: parseNumber(data.extintor_2 || data.extintor2),
-                id_modalidad: parseNumber(rawIdModalidad),
-                id_ruta: parseNumber(rawIdRuta),
-                cc: parseNumber(rawCc),
+                id_modalidad: rawIdModalidad || null,
+                id_ruta: rawIdRuta || null,
+                cc: rawCc || null,
                 tipo_termino: parseNumber(data.tipo_termino),
                 tipo_combustible: parseNumber(data.tipo_combustible),
                 fecha: formatearFecha(data.fecha),
                 hora: formatearHora(data.hora),
                 eco_estatus: parseNumber(data.eco_estatus) || 2,
-                taller: data.taller || data.ruta,
+                taller: data.taller
             };
 
             // Clean up fields that are not in the new database model

@@ -1,9 +1,6 @@
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Controller } from "react-hook-form";
-// hooks personalizados
-import { useHook_General } from "../../../General/hooks/useHook";
-import { useState } from "react";
 
 interface ServicioProps {
   control: any; // viene del formulario padre (FormularioDespacho)
@@ -15,7 +12,6 @@ const ecoDe = [
   { label: "Postura", value: "2" },
 ];
 export const TransferenciaI = ({ control, errors }: ServicioProps) => {
-  const [ecoDValor, setEcoDValor] = useState(null);
 
   return (
     <>

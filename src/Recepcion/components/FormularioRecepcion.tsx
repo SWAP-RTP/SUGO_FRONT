@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 //COMPONENTES PRIME REACT
 import { TabView, TabPanel } from "primereact/tabview";
 import { InputText } from "primereact/inputtext";
@@ -29,9 +29,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const FormularioRecepcion = () => {
   //HOOKS USADOS EN EL COMPONENTE
-  const { modulosOptions, motivosOptionsRecepcion } = useHook_General();
+  const { modulosOptions, motivosOptionsRecepcion, rutasOptions, modalidadesOptions } = useHook_General();
   const { usuario } = useAuth();
-
   const [pvEstados, setPvEstados] = useState([]);
   const [motivo, setMotivo] = useState<any>(null);
   const [setModulo] = useState<any>(null);
@@ -44,7 +43,7 @@ export const FormularioRecepcion = () => {
       title: "ECO",
       data: "economico",
       responsivePriority: 1,
-      render: (data: any, type: any, row: any) => {
+      render: (data: any, _type: any, row: any) => {
         const estatus = row?.eco_estatus;
         const isRecepcion = estatus === 2 || estatus === "2";
         if (isRecepcion) {
@@ -83,13 +82,47 @@ export const FormularioRecepcion = () => {
       },
     },
     { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
-    { title: "RUTA", data: "id_ruta", responsivePriority: 7 },
+    { title: "RUTA", data: "nombre_ruta", responsivePriority: 7 },
     { title: "CC", data: "cc", responsivePriority: 7 },
-    { title: "MODALIDAD", data: "id_modalidad", responsivePriority: 8 },
+    { title: "MODALIDAD", data: "nombre_modalidad", responsivePriority: 8 },
     { title: "OPERADOR", data: "credencial", responsivePriority: 9 },
     { title: "TURNO", data: "turno", responsivePriority: 10 },
     { title: "EXTINTOR", data: "extintor_1", responsivePriority: 11 },
   ];
+  // USE MEMO PARA ENRIQUECER LA TABLA DE RECEPCIONES
+  const pvEstadosEnriquecidos = useMemo(() =>
+    pvEstados.map((registro: any) => {
+      const idRuta = registro.id_ruta;
+      let nombreRuta = idRuta || "";
+      if (idRuta) {
+        const porId = rutasOptions.find(
+          (r: any) => String(r.value) === String(idRuta)
+        );
+        if (porId) {
+          nombreRuta = porId.label.split(" - ")[0];
+        } else {
+          const porNombre = rutasOptions.find(
+            (r: any) => {
+              const nomCompleto = `${r.ruta_nombre}${r.ruta_trayecto || ''}`.trim();
+              return nomCompleto === String(idRuta).trim();
+            }
+          );
+          if (porNombre) {
+            nombreRuta = porNombre.label.split(" - ")[0];
+          }
+        }
+      }
+      return {
+        ...registro,
+        nombre_modalidad: modalidadesOptions.find(
+          (m: any) => String(m.value) === String(registro.id_modalidad)
+        )?.label ?? registro.id_modalidad,
+        nombre_ruta: nombreRuta
+      };
+    }),
+    [pvEstados, modalidadesOptions, rutasOptions]
+  );
+
 
   //FETCH EN UNA FUNCION REUTILIZABLE
   const cargarDatos = useCallback(async () => {
@@ -267,15 +300,31 @@ export const FormularioRecepcion = () => {
 
                               // Si es válido, extraemos el último registro de despacho (eco_estatus: 1)
                               const reg = data.registro;
+                              const idRutaBuscado = String(reg.id_ruta).trim();
+                              const rutaEncontrada = rutasOptions.find((r: any) => {
+                                // 1. Comparar por ID numérico
+                                if (String(r.value) === idRutaBuscado) return true;
+                                // 2. Comparar por nombre + trayecto (ej. "134-A")
+                                const nomCompleto = `${r.ruta_nombre}${r.ruta_trayecto || ''}`.trim();
+                                if (nomCompleto === idRutaBuscado) return true;
+                                // 3. Comparar por nombre base (ej. "134")
+                                if (String(r.ruta_nombre).trim() === idRutaBuscado) return true;
+                                return false;
+                              });
+                              const rutaIdFinal = rutaEncontrada ? rutaEncontrada.value : reg.id_ruta;
+                              console.log("id_ruta buscado:", reg.id_ruta);
+                              console.log("rutasOptions total:", rutasOptions.length);
+                              console.log("rutaEncontrada:", rutaEncontrada);
+                              console.log("cc del registro:", reg.cc);
 
                               // Mapeamos los campos del backend a los names de tu React Hook Form
-                              setValue("credencial", reg.credencial);
-                              setValue("turno", reg.turno);
-                              setValue("extintor_1", reg.extintor_1);
-                              setValue("id_modalidad", reg.id_modalidad, { shouldValidate: true });
-                              setValue("ruta_id", reg.id_ruta, { shouldValidate: true }); // Tu componente hijo usa 'ruta_id' mediante useRutasCompletas
-                              setValue("cc", reg.cc, { shouldValidate: true });
-                              setValue("tipo_eco", reg.tipo_eco, { shouldValidate: true });
+                              setValue("credencial", reg.credencial || "");
+                              setValue("turno", reg.turno || "");
+                              setValue("extintor_1", reg.extintor_1 || "");
+                              setValue("id_modalidad", reg.id_modalidad ? Number(reg.id_modalidad) : null, { shouldValidate: true });
+                              setValue("ruta_id", rutaIdFinal || null, { shouldValidate: true }); // Tu componente hijo usa 'ruta_id' mediante useRutasCompletas
+                              setValue("cc", reg.cc || null, { shouldValidate: true });
+                              setValue("tipo_eco", reg.tipo_eco ? Number(reg.tipo_eco) : null, { shouldValidate: true });
                               clearErrors([
                                 "credencial",
                                 "turno",
@@ -416,7 +465,7 @@ export const FormularioRecepcion = () => {
         <h2 className="text-center mb-5">REGISTRO DE RECEPCIONES REALIZADOS</h2>
         <hr />
         <Datatables
-          data={pvEstados}
+          data={pvEstadosEnriquecidos}
           columns={columnas}
           onEliminar={handleEliminar}
         />

@@ -166,7 +166,7 @@ export const PostPvEstados = (modulosOptions: any[]) => {
           ? data.id_motivos.id
           : data.id_motivos;
       const rawIdModalidad = data.id_modalidad || data.ruta_modalidad;
-      const rawIdRuta = data.id_ruta || data.ruta_id;
+      const rawIdRuta = data.id_ruta || data.ruta_id || null;
       const rawCc = data.cc || data.ruta_cc;
 
       // Construye el payload final con todos los campos normalizados.
@@ -178,21 +178,18 @@ export const PostPvEstados = (modulosOptions: any[]) => {
         id_motivos: parseNumber(rawIdMotivos),
         credencial: parseNumber(data.credencial || data.op_cred),
         turno: parseNumber(data.turno || data.op_turno),
-        tipo_eco:
-          parseNumber(data.tipo_eco || data.eco_tipo || data.eco_de) || 1,
-        extintor_1: parseNumber(
-          data.extintor_1 || data.no_extintor || data.extintor,
-        ),
+        tipo_eco: parseNumber(data.tipo_eco || data.eco_tipo || data.eco_de) || 1,
+        extintor_1: parseNumber(data.extintor_1 || data.no_extintor || data.extintor),
         extintor_2: parseNumber(data.extintor_2 || data.extintor2),
-        id_modalidad: parseNumber(rawIdModalidad),
-        id_ruta: parseNumber(rawIdRuta),
-        cc: parseNumber(rawCc),
+        id_modalidad: rawIdModalidad || null,
+        id_ruta: rawIdRuta || null,
+        cc: rawCc || null,
         tipo_termino: parseNumber(data.tipo_termino),
         tipo_combustible: parseNumber(data.tipo_combustible),
         fecha: formatearFecha(data.fecha),
         hora: formatearHora(data.hora),
         eco_estatus: parseNumber(data.eco_estatus) || 1,
-        taller: data.taller || data.ruta,
+        taller: data.taller
       };
 
       // Elimina campos auxiliares del formulario que no existen en el modelo de BD.

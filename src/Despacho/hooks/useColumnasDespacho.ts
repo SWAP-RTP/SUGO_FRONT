@@ -9,16 +9,19 @@
  * - La columna RUTA resuelve el id numérico a nombre legible usando rutasOptions.
  * - Las columnas EDO.ECO y TIPO DE REGISTRO aplican badges de color.
  *
- * @param rutasOptions - Lista de rutas disponibles para resolver id → nombre.
  * @returns { columnas } - Array de configuración de columnas para DataTables.
  */
+
+import { useMemo } from "react";
+
 export const useColumnasDespacho = (rutasOptions: any[]) => {
-    const columnas = [
+
+    const columnas = useMemo(() => [
         {
             title: "ECO",
             data: "economico",
             responsivePriority: 1,
-            render: (data: any, type: any, row: any) => {
+            render: (data: any, _: any, row: any) => {
                 const estatus = row?.eco_estatus;
                 const isDespacho = estatus === 1 || estatus === "1";
                 if (isDespacho) {
@@ -53,24 +56,13 @@ export const useColumnasDespacho = (rutasOptions: any[]) => {
             },
         },
         { title: "MOTIVO", data: "detalleMotivo.desc", responsivePriority: 6 },
-        {
-            title: "RUTA",
-            data: "id_ruta",
-            responsivePriority: 7,
-            render: (data: any) => {
-                if (!data) return "";
-                const opt = rutasOptions.find(
-                    (r: any) => String(r.value) === String(data),
-                );
-                return opt ? opt.label : data;
-            },
-        },
+        { title: "RUTA", data: "nombre_ruta", responsivePriority: 7 },
         { title: "CC", data: "cc", responsivePriority: 7 },
-        { title: "MODALIDAD", data: "id_modalidad", responsivePriority: 8 },
+        { title: "MODALIDAD", data: "nombre_modalidad", responsivePriority: 8 },
         { title: "OPERADOR", data: "credencial", responsivePriority: 9 },
         { title: "TURNO", data: "turno", responsivePriority: 10 },
         { title: "EXTINTOR", data: "extintor_1", responsivePriority: 11 },
-    ];
+    ], [rutasOptions]);
 
     return { columnas };
 };

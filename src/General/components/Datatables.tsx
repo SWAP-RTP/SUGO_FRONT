@@ -61,7 +61,7 @@ export const Datatables = ({ data, columns, onEliminar }: DatatablesProps) => {
         },
       },
     ],
-    [JSON.stringify(columns)],
+    [columns],
   );
 
   const memoData = useMemo(() => data, [JSON.stringify(data)]);

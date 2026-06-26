@@ -10,9 +10,9 @@ interface ServicioProps {
 }
 
 export const Verificacion = ({ control, errors }: ServicioProps) => {
-  const [ecoDValor, setEcoDValor] = useState(null);
-  const [modalidadValor, setModalidadValor] = useState(null);
-  const [rutaValor, setRutaValor] = useState(null);
+  const [_ecoDValor, setEcoDValor] = useState(null);
+  // const [modalidadValor, setModalidadValor] = useState(null);
+  // const [rutaValor, setRutaValor] = useState(null);
 
   const ecoDe = [
     { label: "Planta", value: "1" },
@@ -151,8 +151,32 @@ export const Verificacion = ({ control, errors }: ServicioProps) => {
 
         {/* observaciones */}
         <span className="p-float-label">
-          <InputText className="select" />
-          <label htmlFor="observaciones">Observaciones</label>
+          <Controller
+            control={control}
+            name="observaciones"
+            rules={{ required: "Las observaciones son obligatorias" }}
+            render={({ field, fieldState }) => (
+              <span className="p-float-label w-100">
+                <InputText
+                  className={`select ${fieldState.error ? "p-invalid" : ""}`}
+                  {...field}
+                />
+                <label htmlFor="observaciones">Observaciones</label>
+              </span>
+            )}
+          />
+          {errors?.observaciones && (
+            <span
+              style={{
+                color: "red",
+                fontSize: "0.875rem",
+                marginTop: "0.25rem",
+                display: "block",
+              }}
+            >
+              {errors.observaciones.message}
+            </span>
+          )}
         </span>
       </div>
     </>
