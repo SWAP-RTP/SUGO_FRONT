@@ -12,13 +12,7 @@ interface ServicioProps {
 
 export const ServicioMB = ({ control, errors }: ServicioProps) => {
   const { modalidadesOptions } = useHook_General();
-  const [ecoDValor, setEcoDValor] = useState(null);
-  const [modalidadValor, setModalidadValor] = useState(null);
-
-  const ecoDe = [
-    { label: "Planta", value: "1" },
-    { label: "Postura", value: "2" },
-  ];
+  const [_modalidadValor, setModalidadValor] = useState(null);
   return (
     <>
       <div className="formulario-grid sub-form">

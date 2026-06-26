@@ -12,13 +12,13 @@ interface FaltaCombustiblesProps {
 }
 
 const tiposCombustible = [
-  { name: "Gasolina", code: "G" },
-  { name: "Diesel", code: "D" },
-  { name: "Gas", code: "GA" }
+  { name: "Gasolina", code: 1 },
+  { name: "Diesel", code: 2 },
+  { name: "Gas", code: 3 }
 ];
 
 export const FaltaCombustibles = ({ control, errors, setValue }: FaltaCombustiblesProps) => {
-  const [modalidadValor, setModalidadValor] = useState(null);
+  const [_modalidadValor, setModalidadValor] = useState(null);
 
   //TRAEMOS EL HOOK DE RUTAS COMPLETAS
   const {
@@ -181,7 +181,7 @@ export const FaltaCombustibles = ({ control, errors, setValue }: FaltaCombustibl
                 disabled={!watchedRutaId}
                 onChange={(e) => field.onChange(e.value)}
                 optionLabel="label"
-                optionValue="ruta_destino_cve"
+                optionValue="value"
               />
               <label htmlFor="dd-cc">CC</label>
             </span>

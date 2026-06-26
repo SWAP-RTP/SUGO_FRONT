@@ -237,7 +237,7 @@ export const Servicio = ({ control, errors, setValue }: ServicioProps) => {
                                     disabled={!watchedRutaId}
                                     onChange={(e) => field.onChange(e.value)}
                                     optionLabel="label"
-                                    optionValue="ruta_destino_cve"
+                                    optionValue="value"
                                 />
                                 <label htmlFor="dd-cc">CC</label>
                             </span>

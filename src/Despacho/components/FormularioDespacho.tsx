@@ -23,7 +23,7 @@ import { TabView, TabPanel } from "primereact/tabview";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Controller, useWatch } from "react-hook-form";
 import { Toast } from "primereact/toast";
 import { usePvEstados } from "../hooks/usePvEstados";
@@ -155,6 +155,41 @@ export const FormularioDespacho = () => {
     motivo,
     mostrarError,
   });
+  //USE MEMO PARA ENRIQUECER LA TABLA CON EL NOMBRE DE LA MODALIDAD
+  const pvEstadosEnriquecidos = useMemo(() =>
+    pvEstados.map((registro: any) => {
+      const idRuta = registro.id_ruta;
+      let nombreRuta = idRuta || "";
+      if (idRuta) {
+        // 1° intento: buscar por ID numérico (value)
+        const porId = rutasOptions.find(
+          (r: any) => String(r.value) === String(idRuta)
+        );
+        if (porId) {
+          nombreRuta = porId.label.split(" - ")[0];
+        } else {
+          // 2° intento (fallback): buscar por nombre + trayecto por si hay texto viejo en la BD
+          const porNombre = rutasOptions.find(
+            (r: any) => {
+              const nomCompleto = `${r.ruta_nombre}${r.ruta_trayecto || ''}`.trim();
+              return nomCompleto === String(idRuta).trim();
+            }
+          );
+          if (porNombre) {
+            nombreRuta = porNombre.label.split(" - ")[0];
+          }
+        }
+      }
+      return {
+        ...registro,
+        nombre_modalidad: modalidadesOptions.find(
+          (m: any) => String(m.value) === String(registro.id_modalidad)
+        )?.label ?? registro.id_modalidad,
+        nombre_ruta: nombreRuta
+      };
+    }),
+    [pvEstados, modalidadesOptions, rutasOptions]
+  );
 
   return (
     <>
@@ -227,7 +262,12 @@ export const FormularioDespacho = () => {
                               value={field.value}
                               onChange={(e) => {
                                 field.onChange(e.target.value);
-                                buscarEconomico(e.target.value);
+                                const verificado = buscarEconomico(e.target.value);
+                                if (verificado) {
+                                  manejartoast(
+                                    `Datos de despacho cargados para el economico ${e.target.value}.`
+                                  );
+                                }
                               }}
                               className={`select ${fieldState.error ? "p-invalid" : ""}`}
                             />
@@ -390,7 +430,7 @@ export const FormularioDespacho = () => {
         <h2 className="text-center mb-5">REGISTRO DE DESPACHOS REALIZADOS</h2>
         <hr />
         <Datatables
-          data={pvEstados}
+          data={pvEstadosEnriquecidos}
           columns={columnas}
           onEliminar={handleEliminar}
         />

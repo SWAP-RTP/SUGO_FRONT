@@ -71,7 +71,7 @@ export const useBuscarEconomico = ({
             setValue("id_ruta", null as any);
             setValue("ruta_modalidad", null as any);
             setValue("id_modalidad", null as any);
-            return;
+            return false;
         }
 
         const ecoVal = String(valor).trim();
@@ -94,7 +94,7 @@ export const useBuscarEconomico = ({
             setValue("id_ruta", null as any);
             setValue("ruta_modalidad", null as any);
             setValue("id_modalidad", null as any);
-            return;
+            return false;
         }
 
         ultimoAlertaEco.current = null;
@@ -167,12 +167,7 @@ export const useBuscarEconomico = ({
                 const fullNameNorm = normalizar(
                     `${r.ruta_nombre}${r.ruta_trayecto || ""}`,
                 );
-                return (
-                    nameNorm === rutaNorm ||
-                    fullNameNorm === rutaNorm ||
-                    rutaNorm.includes(nameNorm) ||
-                    nameNorm.includes(rutaNorm)
-                );
+                return fullNameNorm === rutaNorm || nameNorm === rutaNorm;
             });
 
             if (rutaEncontrada) {
@@ -191,6 +186,8 @@ export const useBuscarEconomico = ({
             setValue("ruta_id", null as any);
             setValue("id_ruta", null as any);
         }
+
+        return !!(turnoActivo || masReciente);
     };
 
     // Vigila el campo "economico" del formulario. Se ejecuta cuando:
