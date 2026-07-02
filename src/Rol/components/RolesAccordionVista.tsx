@@ -4,14 +4,41 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import type { useRolesExcel } from "../hooks/useRolesExcel";
 
+// Inferencia de tipo de retorno del hook useRolesExcel
 type UseRolesExcelReturn = ReturnType<typeof useRolesExcel>;
 
+/**
+ * RolesAccordionVistaProps
+ * 
+ * Interfaz de propiedades que recibe el componente `RolesAccordionVista`:
+ * @property {UseRolesExcelReturn["states"]} states - Objeto con los estados de las hojas de Excel parsed y visibilidad.
+ * @property {UseRolesExcelReturn["actions"]} actions - Funciones para expandir o colapsar hojas por categoría.
+ */
 interface RolesAccordionVistaProps {
   states: UseRolesExcelReturn["states"];
   actions: UseRolesExcelReturn["actions"];
 }
 
+/**
+ * RolesAccordionVista
+ * 
+ * Componente que renderiza una vista desplegable tipo Acordeón (`Accordion` de PrimeReact)
+ * para previsualizar y validar los datos extraídos de un archivo Excel de Rol de Servicio.
+ * 
+ * Estructura de pestañas:
+ * 1. **Lectura del Roles**: Resumen de metadatos (número de hojas, periodo detectado, validación) y tabla general.
+ * 2. **Turnos Lunes - Viernes**: Planificación horaria y de lugares para días hábiles de la semana.
+ * 3. **Turnos Sábado**: Planificación de turnos del día sábado.
+ * 4. **Turnos Domingo**: Planificación de turnos del día domingo.
+ */
 export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProps) => {
+  /**
+   * rowClassName
+   * 
+   * Asigna dinámicamente la clase CSS `apoyo-sefi-row` para destacar visualmente las filas marcadas como registros de apoyo.
+   * @param {any} data - Fila del DataTable.
+   * @returns {string} Nombre de la clase CSS a aplicar.
+   */
   const rowClassName = (data: any) => {
     return data.isApoyo ? "apoyo-sefi-row" : "";
   };
@@ -19,16 +46,22 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
   return (
     <div className="mt-4">
       <Accordion activeIndex={0}>
+        {/* Pestaña 1: Resumen de metadatos e información general extraída del Excel */}
         <AccordionTab header="Lectura del Roles" headerClassName="my-custom-header">
           <div className="p-3">
+            {/* Número total de hojas encontradas */}
             <p>
               <strong>Número de hojas:</strong> {states.numHojas}
             </p>
+            
+            {/* Periodo de fechas detectado en el encabezado del archivo */}
             {states.periodoDetectadoTexto && (
               <p>
                 <strong>Periodo detectado:</strong> {states.periodoDetectadoTexto}
               </p>
             )}
+
+            {/* Resultado de la validación entre la fecha seleccionada y el periodo detectado */}
             {states.periodoCoincideConSeleccion !== null && (
               <p>
                 <strong>Validación de periodo:</strong>{" "}
@@ -37,10 +70,13 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
                   : "No coincide con el seleccionado"}
               </p>
             )}
+
+            {/* Aviso si aún no se carga un archivo */}
             {states.nombresHojas.length === 0 && (
               <p>Sube un archivo Excel para extraer la información principal</p>
             )}
 
+            {/* Listado de hojas/rutas parseadas */}
             {states.hojasRoles.length > 0 && (
               <div className="mt-4">
                 <strong>Rutas/Hojas:</strong>
@@ -53,6 +89,7 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
                         key={hoja.nombreHoja}
                         style={{ border: "1px solid #d9d9d9", borderRadius: "8px" }}
                       >
+                        {/* Encabezado desplegable de la hoja */}
                         <div
                           className="d-flex justify-content-between align-items-center p-2"
                           style={{ background: "#f8f9fa", borderRadius: "8px 8px 0 0" }}
@@ -69,6 +106,7 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
                             </span>
                           </div>
 
+                          {/* Botón para alternar visibilidad de la hoja */}
                           <Button
                             type="button"
                             icon={abierta ? "pi pi-minus" : "pi pi-plus"}
@@ -79,6 +117,7 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
                           />
                         </div>
 
+                        {/* Contenido expandible con la tabla de datos generales */}
                         {abierta && (
                           <div className="p-2">
                             {hoja.filas.length > 0 ? (
@@ -112,6 +151,8 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
             )}
           </div>
         </AccordionTab>
+
+        {/* Pestaña 2: Detalle de horarios para días Lunes a Viernes */}
         <AccordionTab header="Turnos Lunes - Viernes" headerClassName="my-custom-header">
           <div className="p-3">
             {states.hojasRoles.length > 0 ? (
@@ -188,6 +229,8 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
             )}
           </div>
         </AccordionTab>
+
+        {/* Pestaña 3: Detalle de horarios para el día Sábado */}
         <AccordionTab header="Turnos Sábado" headerClassName="my-custom-header">
           <div className="p-3">
             {states.hojasRoles.length > 0 ? (
@@ -264,6 +307,8 @@ export const RolesAccordionVista = ({ states, actions }: RolesAccordionVistaProp
             )}
           </div>
         </AccordionTab>
+
+        {/* Pestaña 4: Detalle de horarios para el día Domingo */}
         <AccordionTab header="Turnos Domingo" headerClassName="my-custom-header">
           <div className="p-3">
             {states.hojasRoles.length > 0 ? (

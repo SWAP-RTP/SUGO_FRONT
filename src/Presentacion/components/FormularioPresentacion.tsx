@@ -4,6 +4,24 @@ import { Button } from 'primereact/button';
 import { Controller, type UseFormHandleSubmit, type FieldValues } from 'react-hook-form';
 import { fechaactual } from '../../General/utils/Date';
 
+/**
+ * FormularioPresentacionProps
+ * 
+ * Interfaz de propiedades del componente `FormularioPresentacion`:
+ * @property {any} control - Objeto `control` de React Hook Form para vinculación de componentes controlados.
+ * @property {any} errors - Errores de validación capturados por React Hook Form.
+ * @property {UseFormHandleSubmit<FieldValues>} handleSubmit - Envoltorio de envío de formulario de React Hook Form.
+ * @property {any} onSubmit - Callback asíncrono para enviar el registro al backend.
+ * @property {any} reset - Función para resetear/limpiar todos los campos del formulario.
+ * @property {any} buscarCredencial - Función debounce/búsqueda inmediata de la credencial en el catálogo.
+ * @property {boolean | null} credencialValida - Estado de validación (true: encontrada, false: inválida, null: inicial/limpio).
+ * @property {any} setCredencialValida - Función actualizadora del estado de validez de la credencial.
+ * @property {any[]} modulosOptions - Opciones de módulos para el selector dropdown.
+ * @property {string} hora - Hora actual en tiempo real proporcionada por el reloj activo.
+ * @property {string} fecha - Fecha actual formateada.
+ * @property {any} manejartoast - Callback para mostrar alertas/toasts en pantalla.
+ * @property {any} mostrarError - Callback para manejar errores visuales.
+ */
 interface FormularioPresentacionProps {
     control: any;
     errors: any;
@@ -20,6 +38,18 @@ interface FormularioPresentacionProps {
     mostrarError: any;
 }
 
+/**
+ * FormularioPresentacion
+ * 
+ * Componente que renderiza el formulario de captura para la **Hora de Presentación** de operadores.
+ * 
+ * Flujo de operación:
+ * 1. El usuario digita únicamente la `credencial` del operador.
+ * 2. Se invoca automáticamente `buscarCredencial(...)`, autocompletando de forma deshabilitada
+ *    los campos de `económico`, `módulo`, `ruta` y `modalidad`.
+ * 3. `Hora` y `Fecha` son capturadas automáticamente del sistema en tiempo real.
+ * 4. Al presionar "Guardar", se envían los datos validados y se notifica vía toast.
+ */
 export default function FormularioPresentacion({
     control,
     handleSubmit,
@@ -35,45 +65,42 @@ export default function FormularioPresentacion({
 }: FormularioPresentacionProps) {
     return (
         <>
-            {/* Form container */}
+            {/* Contenedor principal de la tarjeta del formulario */}
             <div className="card_presentacion mx-auto">
-                {/* titulo */}
+                {/* Título de la vista */}
                 <div className="titulo">
                     <h1>Hora de Presentación</h1>
                     <hr />
                 </div>
 
-                {/* primera fila : economico y credencial */}
+                {/* Primera fila de captura: Credencial (búsqueda), Económico (deshabilitado) y Módulo */}
                 <div className="d-flex align-items-center gap-4 justify-content-center">
+                    {/* Campo: Credencial del Operador */}
                     <Controller
                         name="credencial"
-                        // control es la funcion que maneja el estado de los inputs
                         control={control}
-                        // rules son las validaciones que se le hacen al input
                         rules={{ required: "La credencial es obligatoria" }}
-                        // render es la funcion que renderiza el input
                         render={({ field, fieldState }) => (
-                            // p-float-label es para que el label se mueva cuando el input tiene valor
                             <span className="p-float-label w-100">
                                 <InputText
-                                    // value es el valor del input
                                     value={field.value}
-                                    // onChange es la funcion que se ejecuta cuando el input cambia
                                     onChange={(e) => {
                                         field.onChange(e.target.value);
+                                        // Busca automáticamente los datos asociados a la credencial ingresada
                                         buscarCredencial(e.target.value);
                                     }}
                                     className={`select  ${fieldState.error ? "p-invalid" : ""}`}
                                 />
                                 <label htmlFor={field.name}>Credencial</label>
-                                {/* si credencialValida es false mostramos un mensaje de error */}
+
+                                {/* Mensaje dinámico si la credencial no fue encontrada */}
                                 {credencialValida === false && (
                                     <small style={{ color: "red" }}>
                                         Credencial invalida
                                     </small>
                                 )}
 
-                                {/* si credencialValida es true mostramos un mensaje de exito */}
+                                {/* Mensaje dinámico de confirmación si la credencial existe */}
                                 {credencialValida === true && (
                                     <small style={{ color: "green" }}>
                                         Credencial encontrada
@@ -89,7 +116,7 @@ export default function FormularioPresentacion({
                         )}
                     />
 
-                    {/* Economico */}
+                    {/* Campo: Número Económico del vehículo (autocompletado, deshabilitado) */}
                     <Controller
                         name="economico"
                         control={control}
@@ -108,7 +135,8 @@ export default function FormularioPresentacion({
                             </span>
                         )}
                     />
-                    {/* Modulo */}
+
+                    {/* Campo: Módulo asignado (autocompletado, deshabilitado) */}
                     <Controller
                         name="modulo"
                         control={control}
@@ -135,12 +163,12 @@ export default function FormularioPresentacion({
                     />
                 </div>
 
-                {/* segunda fila : modulos  y ruta*/}
+                {/* Segunda fila de captura: Ruta y Modalidad (autocompletadas, deshabilitadas) */}
                 <div
                     className="d-flex align-items-center gap-4 mt-2 justify-content-center"
                     style={{ paddingTop: "1.5rem" }}
                 >
-                    {/* Ruta */}
+                    {/* Campo: Nombre y Trayecto de la Ruta */}
                     <Controller
                         name="ruta"
                         control={control}
@@ -163,7 +191,8 @@ export default function FormularioPresentacion({
                             </span>
                         )}
                     />
-                    {/* Modalidad */}
+
+                    {/* Campo: Modalidad del Servicio */}
                     <Controller
                         name="modalidad"
                         control={control}
@@ -187,12 +216,13 @@ export default function FormularioPresentacion({
                         )}
                     />
                 </div>
-                {/* tercera fila : fecha y hora */}
+
+                {/* Tercera fila: Marcas de tiempo de Fecha y Hora (automáticas del sistema) */}
                 <div
                     className="d-flex align-items-center gap-4 mt-2 justify-content-center"
                     style={{ paddingTop: "1.5rem" }}
                 >
-                    {/* Hora */}
+                    {/* Hora del Reloj Activo */}
                     <span className="p-float-label input-presentacion">
                         <InputText
                             name="hora"
@@ -202,7 +232,8 @@ export default function FormularioPresentacion({
                         />
                         <label htmlFor="Hora">Hora</label>
                     </span>
-                    {/* Fecha */}
+
+                    {/* Fecha Actual Local */}
                     <span className="p-float-label input-presentacion">
                         <InputText
                             name="fecha"
@@ -214,7 +245,9 @@ export default function FormularioPresentacion({
                     </span>
                 </div>
 
+                {/* Acciones del Formulario: Botones Guardar y Limpiar */}
                 <div className="d-flex justify-content-center gap-3 mt-5">
+                    {/* Botón de envío que invoca onSubmit tras validar los campos con React Hook Form */}
                     <Button
                         icon="pi pi-save"
                         className="p-button-sm small"
@@ -225,6 +258,8 @@ export default function FormularioPresentacion({
                             onSubmit(data, manejartoast, mostrarError),
                         )}
                     />
+
+                    {/* Botón de limpieza que resetea el estado de los inputs y limpia la alerta de credencial */}
                     <Button
                         icon="pi pi-times"
                         className="p-button-sm small"
@@ -259,7 +294,6 @@ export default function FormularioPresentacion({
                     </div>
                 </div>
             </div>
-
         </>
     )
 }

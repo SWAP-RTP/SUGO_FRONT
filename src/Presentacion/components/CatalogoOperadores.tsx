@@ -6,20 +6,49 @@ import { InputText } from 'primereact/inputtext';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 
+/**
+ * CatalogoOperadoresProps
+ * 
+ * Interfaz de propiedades que recibe el componente `CatalogoOperadores`:
+ * @property {any[]} ecoDisponibles - Arreglo de vehículos económicos disponibles con sus credenciales por turno.
+ * @property {string | null} credencialEncontrada - Credencial actualmente digitada en el buscador principal (pendiente de confirmar).
+ * @property {Set<string>} credencialesRegistradas - Conjunto Set(O(1)) de credenciales que ya fueron guardadas exitosamente en la sesión actual.
+ */
 interface CatalogoOperadoresProps {
     ecoDisponibles: any[];
     credencialEncontrada: string | null;
     credencialesRegistradas: Set<string>;
 }
 
+/**
+ * CatalogoOperadores
+ * 
+ * Componente que renderiza una tabla interactiva (`DataTable` de PrimeReact) con el catálogo
+ * de operadores y unidades disponibles.
+ * 
+ * Características clave:
+ * 1. Paginador y buscador global en tiempo real por económico, credenciales (T1, T2, T3), ruta o modalidad.
+ * 2. Visualización condicional inteligente de credenciales por turno:
+ *    - Naranja/Tachado: Credencial actualmente activa en la búsqueda del formulario.
+ *    - Gris/Tachado con Badge "✓": Credencial registrada exitosamente.
+ *    - Texto normal: Credencial disponible para su asignación.
+ */
 export default function CatalogoOperadores({ credencialEncontrada,
     credencialesRegistradas,
     ecoDisponibles
 }: CatalogoOperadoresProps) {
+    // Estado de filtros globales de la DataTable (coincidencia parcial CONTAINS)
     const [filters, setFilters] = useState<any>({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     });
+    // Valor del texto digitado en el buscador de la tabla
     const [globalFilterValue, setGlobalFilterValue] = useState('');
+
+    /**
+     * onGlobalFilterChange
+     * 
+     * Manejador que actualiza el filtro de la tabla a medida que el usuario escribe en la barra de búsqueda.
+     */
     const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const _filters = { ...filters };
@@ -34,6 +63,11 @@ export default function CatalogoOperadores({ credencialEncontrada,
         setGlobalFilterValue(value);
     };
 
+    /**
+     * renderHeader
+     * 
+     * Renderiza el encabezado superior de la tabla con título de sección e input de búsqueda global.
+     */
     const renderHeader = () => {
         return (
             <>
@@ -59,9 +93,18 @@ export default function CatalogoOperadores({ credencialEncontrada,
 
     const header = renderHeader()
 
-    // Template para tachar la celda según su estado:
-    // - rojo/tachado: credencial actualmente escrita en el input (pendiente de guardar)
-    // - gris/tachado: credencial ya guardada en esta sesión (registrada)
+    /**
+     * credencialBodyTemplate
+     * 
+     * Plantilla de renderizado de celdas para las columnas de credenciales (primer_t, segundo_t, tercer_t).
+     * Aplica reglas de formato visual según el estado actual de la credencial:
+     * - Si coincide con la credencial del input de búsqueda: Texto naranja con tachado (`line-through`).
+     * - Si fue registrada anteriormente en la sesión: Texto gris con tachado y badge verde de confirmación `✓`.
+     * - Caso contrario: Renderiza el número de credencial limpio.
+     * 
+     * @param {any} rowData - Datos del renglón actual de la tabla.
+     * @param {string} field - Nombre de la propiedad del objeto (`primer_t`, `segundo_t`, `tercer_t`).
+     */
     const credencialBodyTemplate = (rowData: any, field: string) => {
         const valor = rowData[field];
 
@@ -131,8 +174,10 @@ export default function CatalogoOperadores({ credencialEncontrada,
         // Normal: credencial disponible
         return <span>{valor}</span>;
     };
+
     return (
         <div className="card_elegant_table">
+            {/* Componente DataTable de PrimeReact configurado con paginador de 5 filas y filtro global */}
             <DataTable
                 value={ecoDisponibles}
                 paginator

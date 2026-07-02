@@ -1,5 +1,9 @@
 import type { RangoPeriodo, FilaRol, FilaTurnosLV } from "../types/rol.types";
 
+/**
+ * Diccionario/Mapa de equivalencias de nombres de meses en español a sus respectivos índices de mes (0-11).
+ * Incluye variantes ortográficas comunes en encabezados de libros de trabajo Excel.
+ */
 export const meses: Record<string, number> = {
   ENERO: 0,
   FEBRERO: 1,
@@ -16,6 +20,17 @@ export const meses: Record<string, number> = {
   DICIEMBRE: 11,
 };
 
+/**
+ * normalizarTexto
+ * 
+ * Limpia y estandariza una cadena de texto para comparaciones seguras de expresiones regulares:
+ * - Elimina acentos y diacríticos mediante descomposición Unicode `NFD`.
+ * - Convierte el texto a mayúsculas.
+ * - Reemplaza múltiples espacios en blanco por un solo espacio.
+ * 
+ * @param {string} texto - Cadena original.
+ * @returns {string} Cadena normalizada sin acentos ni espacios extra.
+ */
 export const normalizarTexto = (texto: string): string =>
   texto
     .normalize("NFD")
@@ -24,11 +39,20 @@ export const normalizarTexto = (texto: string): string =>
     .replace(/\s+/g, " ")
     .trim();
 
+/**
+ * parseFechaGeneral
+ * 
+ * Convierte formatos de fecha en cadenas (`YYYY-MM-DD`, `DD/MM/YYYY` o cadenas ISO) a objetos `Date`.
+ * 
+ * @param {string} fecha - Cadena de fecha a interpretar.
+ * @returns {Date | null} Objeto `Date` resultante o `null` si es una fecha inválida.
+ */
 export const parseFechaGeneral = (fecha: string): Date | null => {
   if (!fecha) return null;
 
   const valor = fecha.trim().split(" ")[0];
 
+  // Intenta match con formato ISO YYYY-MM-DD
   const matchYyyyMmDd = valor.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   if (matchYyyyMmDd) {
     const [, yyyy, mm, dd] = matchYyyyMmDd;
@@ -36,6 +60,7 @@ export const parseFechaGeneral = (fecha: string): Date | null => {
     return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 
+  // Intenta match con formato latino DD/MM/YYYY
   const matchDdMmYyyy = valor.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (matchDdMmYyyy) {
     const [, dd, mm, yyyy] = matchDdMmYyyy;
@@ -43,10 +68,20 @@ export const parseFechaGeneral = (fecha: string): Date | null => {
     return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 
+  // Fallback directo con el constructor de Date
   const parsed = new Date(valor);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 };
 
+/**
+ * parseRangoPeriodo
+ * 
+ * Analiza la cadena de título del periodo mediante una expresión regular compleja.
+ * Ejemplo de texto aceptado: `"DEL 01 DE ENERO DE 2026 AL 15 DE ENERO DE 2026"`
+ * 
+ * @param {string} textoPeriodo - Cadena de texto del título extraído del Excel.
+ * @returns {RangoPeriodo | null} Objeto `{ inicio: Date, fin: Date }` o `null` si no coincide.
+ */
 export const parseRangoPeriodo = (textoPeriodo: string): RangoPeriodo | null => {
   const texto = normalizarTexto(textoPeriodo);
   const regex =
@@ -77,6 +112,15 @@ export const parseRangoPeriodo = (textoPeriodo: string): RangoPeriodo | null => 
   return { inicio, fin };
 };
 
+/**
+ * extraerTituloPeriodo
+ * 
+ * Escanea de forma exhaustiva la matriz bidimensional de la primera hoja del libro de Excel
+ * buscando la celda que contiene el patrón de texto del rango de fechas.
+ * 
+ * @param {unknown[][]} matriz - Matriz de celdas de la hoja de trabajo.
+ * @returns {string | null} Cadena de texto encontrada o `null`.
+ */
 export const extraerTituloPeriodo = (matriz: unknown[][]): string | null => {
   const patron =
     /DEL\s+\d{1,2}\s+DE\s+[A-Z]+(?:\s+(?:DE\s+)?\d{4})?\s+AL\s+\d{1,2}\s+DE\s+[A-Z]+(?:\s+(?:DE\s+)?\d{4})?/;
@@ -96,29 +140,64 @@ export const extraerTituloPeriodo = (matriz: unknown[][]): string | null => {
   return null;
 };
 
+/**
+ * mismaFecha
+ * 
+ * Compara dos instancias de `Date` comprobando la coincidencia exacta de Año, Mes y Día.
+ * 
+ * @param {Date} a - Primera fecha.
+ * @param {Date} b - Segunda fecha.
+ * @returns {boolean} `true` si corresponden al mismo día natural.
+ */
 export const mismaFecha = (a: Date, b: Date): boolean =>
   a.getFullYear() === b.getFullYear() &&
   a.getMonth() === b.getMonth() &&
   a.getDate() === b.getDate();
 
+/**
+ * valorCeldaTexto
+ * 
+ * Convierte de forma segura el valor de cualquier celda a texto limpio sin espacios sobrantes.
+ * 
+ * @param {unknown} valor - Contenido de la celda en Excel.
+ * @returns {string} Valor transformado a string.
+ */
 export const valorCeldaTexto = (valor: unknown): string => {
   if (valor === null || valor === undefined) return "";
   if (typeof valor === "string") return valor.trim();
   return String(valor).trim();
 };
 
+/**
+ * contieneTexto
+ * 
+ * Verifica si el valor de una celda contiene alguno de los fragmentos buscados en una lista de candidatos.
+ * 
+ * @param {string[]} candidatos - Arreglo de opciones de texto a buscar.
+ * @param {string} valor - Texto de la celda normalizada.
+ * @returns {boolean} `true` si coincide con alguno.
+ */
 export const contieneTexto = (candidatos: string[], valor: string): boolean =>
   valor ? candidatos.some((texto) => valor.includes(texto)) : false;
 
+/**
+ * formatearHoraExcel
+ * 
+ * Convierte representaciones numéricas de tiempo en Excel (fracciones decimales entre 0 y 1)
+ * a cadenas de tiempo formateadas `HH:MM`.
+ * 
+ * @param {unknown} valor - Número flotante o cadena recibida de Excel.
+ * @returns {string} Cadena de hora en formato `HH:MM`.
+ */
 export const formatearHoraExcel = (valor: unknown): string => {
   if (typeof valor === "number") {
-    // Si el valor es una fecha completa de Excel (ej. 45000), tomamos solo la parte decimal
+    // Si el valor incluye fecha completa de Excel (ej: > 10), extrae únicamente la fracción de tiempo
     let fraccionTiempo = valor;
     if (valor > 10) {
       fraccionTiempo = valor - Math.floor(valor);
     }
 
-    // Convertimos la fracción a minutos. (1 = 24 horas = 1440 minutos)
+    // Convierte la fracción a minutos totales (1 dia = 1440 min)
     const totalMinutos = Math.round(fraccionTiempo * 24 * 60);
     const horas = Math.floor(totalMinutos / 60) % 24;
     const minutos = totalMinutos % 60;
@@ -128,6 +207,15 @@ export const formatearHoraExcel = (valor: unknown): string => {
   return valorCeldaTexto(valor);
 };
 
+/**
+ * detectarEncabezadosRoles
+ * 
+ * Recorre la matriz de celdas para identificar el índice de la fila y columnas de encabezado
+ * de la tabla principal de roles (No, Económico, Sistema, 1er Turno, 2do Turno, 3er Turno y Días).
+ * 
+ * @param {unknown[][]} matriz - Matriz de celdas de la hoja Excel.
+ * @returns {Object | null} Índices de fila y columna detectados o `null`.
+ */
 export const detectarEncabezadosRoles = (matriz: unknown[][]) => {
   for (let filaIndex = 0; filaIndex < matriz.length; filaIndex += 1) {
     const fila = matriz[filaIndex] ?? [];
@@ -200,9 +288,8 @@ export const detectarEncabezadosRoles = (matriz: unknown[][]) => {
       if (idxDomingo === -1 && (contieneTexto(["DOMINGO", "DOM"], texto) || texto === "D")) idxDomingo = colIndex;
     });
 
-    // Fallback: Si aún no se encuentran, buscar en toda la matriz la fila que contenga los días
+    // Fallback para calcular la posición de los días si no tienen títulos explícitos
     if (idxLunes === -1 || idxMartes === -1) {
-      // Intentamos asumir que están inmediatamente después del 3er Turno, si es que existen
       if (idxTercerTurno !== -1) {
         idxLunes = idxTercerTurno + 1;
         idxMartes = idxTercerTurno + 2;
@@ -244,12 +331,22 @@ export const detectarEncabezadosRoles = (matriz: unknown[][]) => {
   return null;
 };
 
+/**
+ * extraerFilasRoles
+ * 
+ * Extrae y limpia las filas operativas de roles generales a partir de los encabezados detectados.
+ * Filtra firmas, notas al pie y filas no numéricas.
+ * 
+ * @param {unknown[][]} matriz - Matriz de datos de la hoja.
+ * @returns {FilaRol[]} Arreglo de filas de rol limpias.
+ */
 export const extraerFilasRoles = (matriz: unknown[][]): FilaRol[] => {
   const encabezados = detectarEncabezadosRoles(matriz);
   if (!encabezados) return [];
 
   const filas: FilaRol[] = [];
 
+  // Función interna para discriminar filas informativas o firmas al pie de página
   const esFilaOperativa = (fila: FilaRol): boolean => {
     const textoCompleto = normalizarTexto(
       [
@@ -276,7 +373,7 @@ export const extraerFilasRoles = (matriz: unknown[][]): FilaRol[] => {
       return false;
     }
 
-    // El No (id) y el economico deben existir y ser validos para considerarlo una fila valida de operador.
+    // Verifica que el número consecutivo y el económico sean numéricos y no vacíos
     return /^\d+$/.test(fila.id) && fila.economico.trim() !== "";
   };
 
@@ -337,6 +434,14 @@ export const extraerFilasRoles = (matriz: unknown[][]): FilaRol[] => {
   return filas;
 };
 
+/**
+ * detectarEncabezadosDias
+ * 
+ * Localiza la posición de las columnas de horarios detallados para cada bloque de día de la semana.
+ * 
+ * @param {unknown[][]} matriz - Matriz de datos de la hoja.
+ * @returns {Object | null} Objeto con la fila de encabezados e índices iniciales por día.
+ */
 export const detectarEncabezadosDias = (matriz: unknown[][]) => {
   for (let filaIndex = 0; filaIndex < matriz.length; filaIndex += 1) {
     const fila = matriz[filaIndex] ?? [];
@@ -369,6 +474,16 @@ export const detectarEncabezadosDias = (matriz: unknown[][]) => {
   return null;
 };
 
+/**
+ * extraerFilasDia
+ * 
+ * Parsea y extrae las filas de horarios detallados para una categoría de día específico
+ * (Lunes a Viernes [0], Sábado [1], Domingo [2]). Detecta automáticamente registros especiales "APOYO A SEFI".
+ * 
+ * @param {unknown[][]} matriz - Matriz de datos de la hoja Excel.
+ * @param {number} dayIndex - Índice de la categoría de día (0, 1 o 2).
+ * @returns {FilaTurnosLV[]} Arreglo de filas de horarios formateados.
+ */
 export const extraerFilasDia = (matriz: unknown[][], dayIndex: number): FilaTurnosLV[] => {
   const encabezados = detectarEncabezadosDias(matriz);
   if (!encabezados || encabezados.startIndices[dayIndex] === undefined) return [];
@@ -396,6 +511,8 @@ export const extraerFilasDia = (matriz: unknown[][], dayIndex: number): FilaTurn
     const terminoTurno = formatearHoraExcel(fila[startIdx + 12]);
 
     const textoFilaCompleta = normalizarTexto(fila.map(v => valorCeldaTexto(v)).join(" "));
+
+    // Identificación y marcado de filas especiales de apoyo
     if (textoFilaCompleta.includes("APOYO A SEFI")) {
       filas.push({
         id: "",
@@ -434,10 +551,20 @@ export const extraerFilasDia = (matriz: unknown[][], dayIndex: number): FilaTurn
   return filas;
 };
 
+// Wrappers especializados para la extracción por categoría de días
 export const extraerFilasLV = (matriz: unknown[][]): FilaTurnosLV[] => extraerFilasDia(matriz, 0);
 export const extraerFilasSabado = (matriz: unknown[][]): FilaTurnosLV[] => extraerFilasDia(matriz, 1);
 export const extraerFilasDomingo = (matriz: unknown[][]): FilaTurnosLV[] => extraerFilasDia(matriz, 2);
 
+/**
+ * extraerModalidad
+ * 
+ * Escanea la matriz de la hoja buscando la etiqueta `"MODALIDAD"` y extrae el valor contiguo o separado por dos puntos `:`.
+ * Ejemplo: `"MODALIDAD: ECOBÚS"` -> `"ECOBÚS"`
+ * 
+ * @param {unknown[][]} matriz - Matriz de datos de la hoja de trabajo.
+ * @returns {string} Nombre de la modalidad extraída o cadena vacía.
+ */
 export const extraerModalidad = (matriz: unknown[][]): string => {
   for (const fila of matriz) {
     if (!Array.isArray(fila)) continue;
@@ -449,13 +576,13 @@ export const extraerModalidad = (matriz: unknown[][]): string => {
       const celdaNorm = normalizarTexto(celdaStr);
 
       if (celdaNorm.includes("MODALIDAD")) {
-        // If modality is formatted like "MODALIDAD: ECOBÚS"
+        // Formato con dos puntos dentro de la misma celda
         const match = celdaStr.match(/modalidad\s*:\s*(.+)/i);
         if (match && match[1]?.trim()) {
           return match[1].trim();
         }
 
-        // Look at the cells to the right in the same row
+        // Búsqueda en las celdas a la derecha dentro de la misma fila
         for (let j = colIdx + 1; j < fila.length; j++) {
           const val = String(fila[j] || "").trim();
           if (val) {

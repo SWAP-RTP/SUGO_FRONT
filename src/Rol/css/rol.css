@@ -1,23 +1,30 @@
+/* ==========================================================================
+   HOJA DE ESTILOS DEL MÓDULO DE ROL DE SERVICIO
+   ========================================================================== */
+
+/* Estilo de título con color gris tenue */
 .tittle {
   color: #7b7b7c !important;
 }
 
+/* Ajuste de margen superior para elementos de casilla de verificación */
 .check {
   margin-top: -20px !important;
 }
 
-/* En rol.css */
+/* Estilos para enlaces en encabezados personalizados del acordeón */
 .my-custom-header a {
   text-decoration: none !important;
   color: #535151 !important;
 }
 
+/* Efecto hover sobre los enlaces del encabezado del acordeón */
 .my-custom-header a:hover {
   text-decoration: none !important;
   color: #0b2c8a !important;
 }
 
-/* tamaño telefono */
+/* Adaptación responsiva para contenedores de selectores en pantallas pequeñas (a partir de 340px) */
 @media screen and (min-width: 340px) {
   .selects {
     display: flex;
@@ -27,11 +34,16 @@
   }
 }
 
-/* Estilos para las filas de "APOYO A SEFI" en los DataTables */
+/* ==========================================================================
+   ESTILOS PARA FILAS DE "APOYO A SEFI" EN LOS DATATABLES
+   ========================================================================== */
+
+/* Fondo azul slate claro para destacar registros de apoyo */
 .apoyo-sefi-row {
   background-color: #f1f5f9 !important;
 }
 
+/* Formato de celdas internas de filas de apoyo (sin bordes laterales internos, texto en negrita centrado) */
 .apoyo-sefi-row td {
   border-left: none !important;
   border-right: none !important;
@@ -41,14 +53,21 @@
   letter-spacing: 0.5px;
 }
 
+/* Borde izquierdo delimitador para la primera celda de la fila de apoyo */
 .apoyo-sefi-row td:first-child {
   border-left: 1px solid #dee2e6 !important;
 }
 
+/* Borde derecho delimitador para la última celda de la fila de apoyo */
 .apoyo-sefi-row td:last-child {
   border-right: 1px solid #dee2e6 !important;
 }
 
+/* ==========================================================================
+   BARRA CONTENEDORA Y ELEMENTOS DEL MÓDULO DE ROL
+   ========================================================================== */
+
+/* Contenedor superior con fondo translúcido y bordes redondeados para botones de acción */
 .menu_modal_rol {
   background-color: #fcfcfc56;
   border-radius: 1rem;
@@ -56,11 +75,13 @@
   padding: .5rem;
 }
 
+/* Iconos temáticos del módulo de rol en verde primario */
 .icons-rol {
   font-size: 1.5rem;
   color: var(--primary-green);
 }
 
+/* Tipografía del título del módulo de rol */
 .titulo-rol {
   font-size: 1.2rem;
   font-weight: 600;

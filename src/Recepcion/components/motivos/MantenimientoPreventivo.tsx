@@ -3,15 +3,15 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Controller } from 'react-hook-form';
 //HOOKS PERSONALIZADOS
-import { useRutasCompletas } from "../../General/hooks/useRutasCompletas";
+import { useRutasCompletas } from "../../../General/hooks/useRutasCompletas";
 
-interface ResguardoProps {
+interface MantenimientoPreventivoProps {
     control: any;
     errors?: any;
     setValue?: any;
 }
 
-export const Resguardo = ({ control, errors, setValue }: ResguardoProps) => {
+export const MantenimientoPreventivo = ({ control, errors, setValue }: MantenimientoPreventivoProps) => {
     const [_modalidadValor, setModalidadValor] = useState(null);
 
     //TRAEMOS EL HOOK DE RUTAS COMPLETAS
