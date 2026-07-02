@@ -3,7 +3,7 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Controller } from 'react-hook-form';
 // hooks personalizados
-import { useRutasCompletas } from "../../General/hooks/useRutasCompletas";
+import { useRutasCompletas } from "../../../General/hooks/useRutasCompletas";
 
 interface FaltaCombustiblesProps {
   control: any;

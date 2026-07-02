@@ -1,3 +1,8 @@
+/* ==========================================================================
+   HOJA DE ESTILOS DEL MÓDULO DE HORA DE PRESENTACIÓN
+   ========================================================================== */
+
+/* Tarjeta contenedora principal del formulario de Hora de Presentación */
 .card_presentacion {
   background-color: #f4f6f8;
   width: 100%;
@@ -10,13 +15,18 @@
   box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.04);
 }
 
+/* Contenedor del catálogo visual de operadores */
 .catalogo_operadores {
   width: 100%;
   max-width: 900px;
   padding-left: 2rem;
 }
 
-/* Elegant Table matching the image */
+/* ==========================================================================
+   ESTILOS DE TABLA ELEGANTE PERSONALIZADA (DataTable PrimeReact)
+   ========================================================================== */
+
+/* Tarjeta contenedora de la tabla con sombras suaves y bordes redondeados */
 .card_elegant_table {
   background-color: #f4f6f8;
   border-radius: 1rem;
@@ -27,6 +37,7 @@
   max-height: 900px;
 }
 
+/* Encabezado superior del contenedor de la tabla */
 .card_elegant_table .p-datatable .p-datatable-header {
   background-color: transparent;
   border: none;
@@ -34,6 +45,7 @@
   color: #111827; /* Texto del header más oscuro */
 }
 
+/* Encabezados de columnas (th) en la tabla elegante */
 .card_elegant_table .p-datatable .p-datatable-thead > tr > th {
   background-color: transparent;
   color: #374151; /* Gris oscuro para alto contraste */
@@ -46,23 +58,27 @@
   padding: 1rem 0.5rem;
 }
 
+/* Filas del cuerpo de la tabla (tbody tr) */
 .card_elegant_table .p-datatable .p-datatable-tbody > tr {
   border-bottom: 1px solid #eef0f3;
   transition: all 0.2s ease;
   background-color: transparent;
 }
 
+/* Efecto hover sobre la fila al pasar el cursor (borde inferior verde vibrante) */
 .card_elegant_table .p-datatable .p-datatable-tbody > tr:hover {
   background-color: #f1f5f9;
   border-bottom: 2px solid #00c853;
 }
 
+/* Subrayado de texto al hacer hover en las celdas */
 .card_elegant_table .p-datatable .p-datatable-tbody > tr:hover > td {
   text-decoration: underline;
   text-decoration-color: currentColor;
   text-underline-offset: 6px;
 }
 
+/* Celdas de datos (td) en la tabla elegante */
 .card_elegant_table .p-datatable .p-datatable-tbody > tr > td {
   border: none;
   padding: 1.2rem 0.5rem;
@@ -72,9 +88,11 @@
   letter-spacing: 0.5px;
 }
 
-/* =========================================
-   Paginator Custom Styling (No Icons)
-   ========================================= */
+/* ==========================================================================
+   ESTILOS PERSONALIZADOS DEL PAGINADOR PRIMEREACT
+   ========================================================================== */
+
+/* Contenedor transparente centrado para el paginador */
 .card_elegant_table .p-paginator {
   background-color: transparent;
   border: none;
@@ -82,6 +100,7 @@
   justify-content: center;
 }
 
+/* Botones de navegación de páginas (primera, anterior, números, siguiente, última) */
 .card_elegant_table .p-paginator .p-paginator-first,
 .card_elegant_table .p-paginator .p-paginator-prev,
 .card_elegant_table .p-paginator .p-paginator-next,
@@ -102,12 +121,14 @@
   justify-content: center;
 }
 
+/* Destacado visual de la página activa en el paginador (verde) */
 .card_elegant_table .p-paginator .p-paginator-page.p-highlight {
   background-color: #00c853; /* Verde para destacar página activa */
   border-color: #00c853;
   color: #ffffff;
 }
 
+/* Efecto hover sobre los botones del paginador no activos */
 .card_elegant_table .p-paginator .p-paginator-first:not(.p-disabled):hover,
 .card_elegant_table .p-paginator .p-paginator-prev:not(.p-disabled):hover,
 .card_elegant_table .p-paginator .p-paginator-next:not(.p-disabled):hover,
@@ -118,6 +139,7 @@
   border-color: #cbd5e1;
 }
 
+/* Estilos para botones del paginador deshabilitados */
 .card_elegant_table .p-paginator .p-disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -125,28 +147,33 @@
   border-color: #e5e7eb;
 }
 
-/* Reemplazar los iconos por texto limpio en el paginador */
+/* Reemplazo de los iconos por símbolos/flechas de texto limpio mediante pseudo-elementos ::before */
+
+/* Flecha izquierda doble << para ir a la primera página */
 .card_elegant_table .p-paginator .p-paginator-first::before {
-  content: "\00ab"; /* Flecha izquierda doble << */
+  content: "\00ab";
   font-size: 1.1rem;
 }
 
+/* Flecha izquierda simple < para ir a la página anterior */
 .card_elegant_table .p-paginator .p-paginator-prev::before {
-  content: "\2039"; /* Flecha izquierda simple < */
+  content: "\2039";
   font-size: 1.1rem;
 }
 
+/* Flecha derecha simple > para ir a la página siguiente */
 .card_elegant_table .p-paginator .p-paginator-next::before {
-  content: "\203a"; /* Flecha derecha simple > */
+  content: "\203a";
   font-size: 1.1rem;
 }
 
+/* Flecha derecha doble >> para ir a la última página */
 .card_elegant_table .p-paginator .p-paginator-last::before {
-  content: "\00bb"; /* Flecha derecha doble >> */
+  content: "\00bb";
   font-size: 1.1rem;
 }
 
-/* Ocultar iconos predeterminados de PrimeReact en el paginador */
+/* Oculta los SVG/iconos predeterminados del paquete PrimeReact en los botones del paginador */
 .card_elegant_table .p-paginator button span.p-paginator-icon {
   display: none !important;
 }

@@ -198,12 +198,11 @@ export const FormularioDespacho = () => {
         <TabPanel className="tabpanel" header="Despacho">
           <div className="container-fluid px-4 py-3">
             <div className="row align-items-start gap-4 gap-xl-0">
-              {/* Lado Izquierdo: Formulario y Card Eco */}
+              {/* Lado Izquierdo: Formulario*/}
               <div
                 ref={leftColRef}
                 className="col-12 col-xl-6 d-flex flex-column align-items-center gap-4 mb-4 mb-xl-0"
               >
-                {/* {ecoEncontrado && <Card_Eco data={ecoEncontrado} />} */}
                 <div className="card w-100 shadow-sm p-3">
                   <div className="titulo">
                     <h1>Despacho</h1>
@@ -265,7 +264,7 @@ export const FormularioDespacho = () => {
                                 const verificado = buscarEconomico(e.target.value);
                                 if (verificado) {
                                   manejartoast(
-                                    `Datos de despacho cargados para el economico ${e.target.value}.`
+                                    `Datos de Despacho cargados para el economico ${e.target.value}.`
                                   );
                                 }
                               }}

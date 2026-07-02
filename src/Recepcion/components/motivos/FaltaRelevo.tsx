@@ -2,16 +2,15 @@ import { useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Controller } from 'react-hook-form';
-//HOOKS PERSONALIZADOS
-import { useRutasCompletas } from "../../General/hooks/useRutasCompletas";
-
-interface MantenimientoPreventivoProps {
+//HOOKS PERSOMALIZADOS
+import { useRutasCompletas } from "../../../General/hooks/useRutasCompletas";
+interface FaltaRelevoProps {
     control: any;
     errors?: any;
     setValue?: any;
 }
 
-export const MantenimientoPreventivo = ({ control, errors, setValue }: MantenimientoPreventivoProps) => {
+export const FaltaRelevo = ({ control, errors, setValue }: FaltaRelevoProps) => {
     const [_modalidadValor, setModalidadValor] = useState(null);
 
     //TRAEMOS EL HOOK DE RUTAS COMPLETAS
@@ -27,7 +26,6 @@ export const MantenimientoPreventivo = ({ control, errors, setValue }: Mantenimi
 
     return (
         <div className="formulario-grid sub-form">
-            {/* Credencial */}
             <div>
                 <Controller
                     control={control}
@@ -37,21 +35,12 @@ export const MantenimientoPreventivo = ({ control, errors, setValue }: Mantenimi
                         <span className="p-float-label w-100">
                             <InputText
                                 id="credencial"
-                                className={`select ${fieldState.error ? "p-invalid" : ""}`}
-                                {...field}
-                            />
+                                className={`select ${fieldState.error ? "p-invalid" : ""}`} {...field} />
                             <label htmlFor="credencial">Credencial</label>
-                        </span>
-                    )}
-                />
-                {errors?.credencial && (
-                    <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
-                        {errors.credencial.message}
-                    </span>
-                )}
+                        </span>)} />
+                {errors?.credencial && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.credencial.message}</span>}
             </div>
 
-            {/* Turno */}
             <div>
                 <Controller
                     control={control}
@@ -61,21 +50,12 @@ export const MantenimientoPreventivo = ({ control, errors, setValue }: Mantenimi
                         <span className="p-float-label w-100">
                             <InputText
                                 id="turno"
-                                className={`select ${fieldState.error ? "p-invalid" : ""}`}
-                                {...field}
-                            />
+                                className={`select ${fieldState.error ? "p-invalid" : ""}`} {...field} />
                             <label htmlFor="turno">Turno</label>
-                        </span>
-                    )}
-                />
-                {errors?.turno && (
-                    <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
-                        {errors.turno.message}
-                    </span>
-                )}
+                        </span>)} />
+                {errors?.turno && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.turno.message}</span>}
             </div>
 
-            {/* No.Extintor */}
             <div>
                 <Controller
                     control={control}
@@ -85,26 +65,16 @@ export const MantenimientoPreventivo = ({ control, errors, setValue }: Mantenimi
                         <span className="p-float-label w-100">
                             <InputText
                                 id="no-extintor"
-                                className={`select ${fieldState.error ? "p-invalid" : ""}`}
-                                {...field}
-                            />
+                                className={`select ${fieldState.error ? "p-invalid" : ""}`} {...field} />
                             <label htmlFor="no-extintor">No.Extintor</label>
-                        </span>
-                    )}
-                />
-                {errors?.extintor_1 && (
-                    <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
-                        {errors.extintor_1.message}
-                    </span>
-                )}
+                        </span>)} />
+                {errors?.extintor_1 && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.extintor_1.message}</span>}
             </div>
 
-            {/* Modalidad */}
             <div>
                 <Controller
                     control={control}
-                    name="id_modalidad"
-                    rules={{ required: "La modalidad es obligatoria" }}
+                    name="id_modalidad" rules={{ required: "La modalidad es obligatoria" }}
                     render={({ field, fieldState }) => (
                         <span className="p-float-label w-100">
                             <Dropdown
@@ -117,20 +87,12 @@ export const MantenimientoPreventivo = ({ control, errors, setValue }: Mantenimi
                                     setModalidadValor(e.value);
                                 }}
                                 optionLabel="label"
-                                optionValue="value"
-                            />
+                                optionValue="value" />
                             <label htmlFor="dd-modalidad">Modalidad</label>
-                        </span>
-                    )}
-                />
-                {errors?.id_modalidad && (
-                    <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
-                        {errors.id_modalidad.message}
-                    </span>
-                )}
+                        </span>)} />
+                {errors?.id_modalidad && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.id_modalidad.message}</span>}
             </div>
 
-            {/* Ruta */}
             <div>
                 <Controller
                     control={control}
@@ -147,26 +109,19 @@ export const MantenimientoPreventivo = ({ control, errors, setValue }: Mantenimi
                                 disabled={!watchedModalidadId}
                                 onChange={(e) => onRutaChange(e.value, field.onChange)}
                                 optionLabel="label"
-                                optionValue="value"
-                            />
+                                optionValue="value" />
                             <label htmlFor="dd-ruta">Ruta</label>
-                        </span>
-                    )}
-                />
-                {errors?.ruta_id && (
-                    <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>
-                        {errors.ruta_id.message}
-                    </span>
-                )}
+                        </span>)} />
+                {errors?.ruta_id && <span style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", display: "block" }}>{errors.ruta_id.message}</span>}
             </div>
 
-            {/* CC */}
             <div>
                 <Controller
                     control={control}
                     name="cc"
                     render={({ field, fieldState }) => (
-                        <span className="p-float-label w-100">
+                        <span
+                            className="p-float-label w-100">
                             <Dropdown
                                 inputId="dd-cc"
                                 className={`select ${fieldState.error ? "p-invalid" : ""}`}
@@ -175,26 +130,9 @@ export const MantenimientoPreventivo = ({ control, errors, setValue }: Mantenimi
                                 disabled={!watchedRutaId}
                                 onChange={(e) => field.onChange(e.value)}
                                 optionLabel="label"
-                                optionValue="value"
-                            />
+                                optionValue="value" />
                             <label htmlFor="dd-cc">CC</label>
-                        </span>
-                    )}
-                />
-            </div>
-
-            {/* Observaciones */}
-            <div>
-                <Controller
-                    control={control}
-                    name="observaciones"
-                    render={({ field }) => (
-                        <span className="p-float-label w-100">
-                            <InputText id="observaciones" className="select" {...field} />
-                            <label htmlFor="observaciones">Observaciones</label>
-                        </span>
-                    )}
-                />
+                        </span>)} />
             </div>
         </div>
     );

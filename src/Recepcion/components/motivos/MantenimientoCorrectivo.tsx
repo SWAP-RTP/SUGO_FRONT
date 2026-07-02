@@ -3,7 +3,7 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Controller } from 'react-hook-form';
 //HOOKS PERSONALIZADOS
-import { useRutasCompletas } from "../../General/hooks/useRutasCompletas";
+import { useRutasCompletas } from "../../../General/hooks/useRutasCompletas";
 interface MantenimientoCorrectivoProps {
     control: any;
     errors?: any;

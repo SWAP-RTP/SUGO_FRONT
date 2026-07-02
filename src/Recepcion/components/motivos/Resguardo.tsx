@@ -3,15 +3,15 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Controller } from 'react-hook-form';
 //HOOKS PERSONALIZADOS
-import { useRutasCompletas } from "../../General/hooks/useRutasCompletas";
+import { useRutasCompletas } from "../../../General/hooks/useRutasCompletas";
 
-interface RegresoAvaluoProps {
+interface ResguardoProps {
     control: any;
     errors?: any;
     setValue?: any;
 }
 
-export const RegresoAvaluo = ({ control, errors, setValue }: RegresoAvaluoProps) => {
+export const Resguardo = ({ control, errors, setValue }: ResguardoProps) => {
     const [_modalidadValor, setModalidadValor] = useState(null);
 
     //TRAEMOS EL HOOK DE RUTAS COMPLETAS
@@ -178,6 +178,20 @@ export const RegresoAvaluo = ({ control, errors, setValue }: RegresoAvaluoProps)
                                 optionValue="value"
                             />
                             <label htmlFor="dd-cc">CC</label>
+                        </span>
+                    )}
+                />
+            </div>
+
+            {/* Observaciones */}
+            <div>
+                <Controller
+                    control={control}
+                    name="observaciones"
+                    render={({ field }) => (
+                        <span className="p-float-label w-100">
+                            <InputText id="observaciones" className="select" {...field} />
+                            <label htmlFor="observaciones">Observaciones</label>
                         </span>
                     )}
                 />

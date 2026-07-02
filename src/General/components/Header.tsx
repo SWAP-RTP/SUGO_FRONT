@@ -2,6 +2,19 @@ import { Menubar } from "primereact/menubar";
 import { Tooltip } from "primereact/tooltip";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Header
+ * 
+ * Componente de barra de navegación principal de la aplicación.
+ * Utiliza el componente `Menubar` de PrimeReact para construir la navegación del sistema.
+ * 
+ * Muestra:
+ * 1. Rutas principales de la aplicación (Rol, Presentación, Despacho, Recepción y Mantenimiento).
+ * 2. Datos del usuario autenticado actual (nombre y número de módulo/patio asignado).
+ * 3. Fecha actual en formato amigable español (México).
+ * 
+ * @param {any} props.user - Objeto con la información del usuario de sesión actual.
+ */
 export const Header = ({ user }: any) => {
   // uso del hook useNavigate para la navegación programática entre rutas
   const navigate = useNavigate();
@@ -35,6 +48,7 @@ export const Header = ({ user }: any) => {
     },
   ];
 
+  // Formatea la fecha de hoy para mostrarla de forma legible en el header
   const today = new Date().toLocaleDateString("es-MX", {
     weekday: "long",
     year: "numeric",
@@ -42,9 +56,7 @@ export const Header = ({ user }: any) => {
     day: "numeric",
   });
 
-  // console.log(user);
-
-  // Elementos que se mostrarán al final (lado derecho) del Menubar
+  // Elementos que se mostrarán al final (lado derecho) del Menubar (Perfil del usuario y Fecha)
   const end = (
     <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
       {/* Información del usuario y módulo */}
@@ -56,6 +68,7 @@ export const Header = ({ user }: any) => {
         <div
           style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}
         >
+          {/* Nombre del Usuario */}
           <span
             style={{
               fontSize: "0.95rem",
@@ -68,6 +81,7 @@ export const Header = ({ user }: any) => {
           >
             {user?.data.name || "Dev"}
           </span>
+          {/* Módulo / Patio Asignado */}
           <span
             style={{
               fontSize: "1.1rem",
@@ -79,6 +93,7 @@ export const Header = ({ user }: any) => {
           >
             Módulo: {user?.data.modulo || "No asignado"}
           </span>
+          {/* Fecha Actual */}
           <span
             style={{
               fontSize: "0.85rem",
@@ -92,6 +107,7 @@ export const Header = ({ user }: any) => {
           </span>
         </div>
       </div>
+      {/* Tooltip auxiliar del botón de logout (si se añade a futuro) */}
       <Tooltip
         target=".logout-btn"
         position="bottom"

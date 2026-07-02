@@ -1,5 +1,14 @@
+// URL base de la API obtenida desde las variables de entorno de Vite
 const API_URL = import.meta.env.VITE_API_URL;
 
+/**
+ * obtenerPeriodos
+ * 
+ * Consulta la lista de periodos de servicio configurados en el backend mediante HTTP GET al endpoint `/periodos`.
+ * 
+ * @returns {Promise<Array>} Promesa que resuelve a la lista de periodos.
+ * @throws {Error} Si la respuesta HTTP indica falla.
+ */
 export const obtenerPeriodos = async () => {
   try {
     const response = await fetch(`${API_URL}/periodos`);
@@ -14,6 +23,15 @@ export const obtenerPeriodos = async () => {
   }
 };
 
+/**
+ * ObtenerRol
+ * 
+ * Consulta los turnos del Rol de Servicio asignados a un módulo mediante HTTP GET al endpoint `/rol_turnos`.
+ * 
+ * @param {number} modulo - Identificador numérico del módulo/patio a filtrar.
+ * @returns {Promise<Array>} Promesa que resuelve a la lista de turnos del módulo.
+ * @throws {Error} Si ocurre una falla en la solicitud.
+ */
 export const ObtenerRol = async (modulo: number) => {
   try {
     const response = await fetch(`${API_URL}/rol_turnos?modulo=${modulo}`);
@@ -28,7 +46,13 @@ export const ObtenerRol = async (modulo: number) => {
   }
 };
 
-
+/**
+ * ObtenerRolLV
+ * 
+ * Consulta el detalle de horarios y lugares para días de Lunes a Viernes mediante HTTP GET al endpoint `/detalle_lv`.
+ * 
+ * @returns {Promise<Array>} Promesa que resuelve a la lista detallada de turnos L-V.
+ */
 export const ObtenerRolLV = async () => {
   try {
     const response = await fetch(`${API_URL}/detalle_lv`);
@@ -43,6 +67,13 @@ export const ObtenerRolLV = async () => {
   }
 };
 
+/**
+ * ObtenerRolSD
+ * 
+ * Consulta el detalle de horarios y lugares para el día Sábado mediante HTTP GET al endpoint `/detalle_sd`.
+ * 
+ * @returns {Promise<Array>} Promesa que resuelve al detalle de turnos del Sábado.
+ */
 export const ObtenerRolSD = async () => {
   try {
     const response = await fetch(`${API_URL}/detalle_sd`);
@@ -57,7 +88,13 @@ export const ObtenerRolSD = async () => {
   }
 };
 
-
+/**
+ * ObtenerRolDOM
+ * 
+ * Consulta el detalle de horarios y lugares para el día Domingo mediante HTTP GET al endpoint `/detalle_dom`.
+ * 
+ * @returns {Promise<Array>} Promesa que resuelve al detalle de turnos del Domingo.
+ */
 export const ObtenerRolDOM = async () => {
   try {
     const response = await fetch(`${API_URL}/detalle_dom`);
@@ -72,7 +109,15 @@ export const ObtenerRolDOM = async () => {
   }
 };
 
-
+/**
+ * GuardarTurnoEditado
+ * 
+ * Envía la actualización de un turno modificado al backend mediante HTTP POST al endpoint `/rol_turnos_edit`.
+ * 
+ * @param {any} turno - Objeto con los datos actualizados del turno (`id`, `economico`, `primer_t`, `segundo_t`, `tercer_t`).
+ * @returns {Promise<any>} Respuesta JSON de confirmación del backend.
+ * @throws {Error} Si la llamada a la API falla.
+ */
 export const GuardarTurnoEditado = async (turno: any) => {
   try {
     const response = await fetch(`${API_URL}/rol_turnos_edit`, {
@@ -93,6 +138,16 @@ export const GuardarTurnoEditado = async (turno: any) => {
   }
 };
 
+/**
+ * EjecutarCierreDia
+ * 
+ * Invoca el procedimiento almacenado/asíncrono de **Cierre de Día** para un módulo específico
+ * mediante una petición HTTP POST al endpoint `/cierre_dia?modulo=${modulo}`.
+ * 
+ * @param {number} modulo - Identificador del módulo/patio a procesar.
+ * @returns {Promise<any>} Objeto JSON con el resultado de confirmación del cierre de jornada.
+ * @throws {Error} Si la operación no se completa exitosamente.
+ */
 export const EjecutarCierreDia = async (modulo: number) => {
   try {
     const response = await fetch(`${API_URL}/cierre_dia?modulo=${modulo}`, {

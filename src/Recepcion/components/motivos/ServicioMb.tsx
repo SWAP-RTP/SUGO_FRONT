@@ -1,7 +1,7 @@
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Controller } from 'react-hook-form';
-import { useHook_General } from "../../General/hooks/useHook";
+import { useHook_General } from "../../../General/hooks/useHook";
 
 interface ServicioMbProps {
     control: any;

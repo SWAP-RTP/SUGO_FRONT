@@ -1,7 +1,21 @@
 import { useState, useEffect, useMemo } from "react";
 import { obtenerRutas, obtenerRutasCC } from "../services/rutas.services";
+
+/**
+ * useRutas
+ * 
+ * Hook personalizado que consulta la lista total de rutas de transporte desde la API
+ * y las mapea al formato de dropdown (label/value) para la interfaz de usuario.
+ * 
+ * @returns {Object} Un objeto con:
+ *   - rutasOptions: Listado formateado con etiquetas descriptivas completas.
+ *   - rutas: Arreglo original con las rutas obtenidas.
+ */
 export const useRutas = () => {
+  // Estado que almacena la lista cruda de rutas
   const [rutas, setRutas] = useState([]);
+
+  // Consulta las rutas asíncronamente al montar el componente
   useEffect(() => {
     const getRutas = async () => {
       try {
@@ -13,6 +27,8 @@ export const useRutas = () => {
     };
     getRutas();
   }, []);
+
+  // Mapea de forma memorizada los datos agregando etiquetas detalladas con origen y destino
   const rutasOptions = useMemo(
     () =>
       rutas.map((r: any) => ({
@@ -22,11 +38,27 @@ export const useRutas = () => {
       })),
     [rutas],
   );
+
   return { rutasOptions, rutas };
 };
-// Agregamos null | undefined para evitar errores si aún no se selecciona ruta
+
+/**
+ * useRutasCC
+ * 
+ * Hook personalizado que consulta y maneja las rutas de Centro de Costos (CC)
+ * filtrando dinámicamente según el nombre o clave de la ruta seleccionada.
+ * Filtra de forma memorizada los destinos duplicados.
+ * 
+ * @param {number | null | undefined} rutaNombre - Clave o nombre de la ruta para filtrar en el backend.
+ * @returns {Object} Un objeto con:
+ *   - rutasOptions: Destinos únicos mapeados para selectores dropdown.
+ *   - rutascc: Arreglo de rutas del centro de costos obtenido.
+ */
 export const useRutasCC = (rutaNombre: number | null | undefined) => {
-  const [rutascc, setRutascc] = useState([]);
+  // Estado para guardar las rutas de Centro de Costos obtenidas
+  const [rutascc, setRutascc] = useState<any>([]);
+
+  // Efecto que re-consulta el backend cada vez que cambia el identificador de la ruta
   useEffect(() => {
     // Si no hay ruta seleccionada, limpiamos el array y evitamos la petición al back
     if (!rutaNombre) {
@@ -35,10 +67,10 @@ export const useRutasCC = (rutaNombre: number | null | undefined) => {
     }
     const getRutas = async () => {
       try {
-        // Hacemos el llamado a tu servicio enviando el nombre
+        // Hacemos el llamado al servicio enviando el identificador
         const rutasData = await obtenerRutasCC(rutaNombre);
 
-        // Verificamos que el servidor haya devuelto un arreglo correctamente
+        // Verificamos que el servidor haya devuelto un arreglo correctamente en cualquiera de sus formatos
         if (Array.isArray(rutasData)) {
           setRutascc(rutasData);
         } else if (rutasData && Array.isArray(rutasData.data)) {
@@ -54,11 +86,18 @@ export const useRutasCC = (rutaNombre: number | null | undefined) => {
     getRutas();
   }, [rutaNombre]);
 
-  // Dependencia actualizada para ejecutarse cada vez que cambie la ruta
+  /**
+   * rutasOptions
+   * 
+   * Filtra de forma memorizada los elementos de `rutascc` para eliminar 
+   * destinos duplicados basándose en un Set auxiliar de comparación.
+   */
   const rutasOptions = useMemo(() => {
     const unicas: any[] = [];
     const destinosVistos = new Set();
+
     rutascc.forEach((r: any) => {
+      // Clave única construida para detectar duplicidad
       const labelStr = `${r.destino_nombre || 'Sin Destino'} - ${r.destino_descripcion || ''}`.trim();
       if (!destinosVistos.has(labelStr)) {
         destinosVistos.add(labelStr);

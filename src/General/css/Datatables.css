@@ -1,4 +1,8 @@
-/* CSS DE LA TABLA */
+/* ==========================================================================
+   CSS DE LA TABLA - CONFIGURACIÓN DE DATA TABLES PERSONALIZADA
+   ========================================================================== */
+
+/* Contenedor principal que envuelve a la tabla DataTables */
 .contenedor-tabla {
     background-color: #e2e8f0;
     padding: 1.5rem;
@@ -9,13 +13,15 @@
     width: 100% !important;
     max-width: 1800px;
     padding: 0 15px;
-    overflow-x: hidden !important;
+    overflow-x: hidden !important; /* Evita scrolls horizontales indeseados en layouts flex */
 }
 
+/* Forzado del ancho total del objeto de tabla de DataTables */
 table.dataTable {
     width: 100% !important;
 }
 
+/* Estilos para el encabezado (thead / th) de la tabla */
 table.dataTable thead th {
     background-color: #475569;
     color: white;
@@ -25,13 +31,14 @@ table.dataTable thead th {
     text-align: center !important;
 }
 
+/* Estilos generales para las celdas de datos (tbody / td) */
 table.dataTable tbody td {
     padding: 12px 16px;
     vertical-align: middle;
     color: #1E293B;
     border-bottom: 1px solid #f1f5f9;
     text-align: center !important;
-    white-space: normal !important;
+    white-space: normal !important; /* Permite saltos de línea automáticos en celdas con texto largo */
     min-width: 80px;
     width: auto !important;
     font-weight: bold;
@@ -73,7 +80,7 @@ table.dataTable tbody tr:nth-of-type(even) td {
     }
 }
 
-/* CONTENEDOR CELDA ACCIONES */
+/* CONTENEDOR CELDA ACCIONES (Contiene botones de borrar y expandir) */
 .celda-acciones {
     vertical-align: middle !important;
     min-width: 100px !important;
@@ -87,10 +94,12 @@ table.dataTable tbody tr:nth-of-type(even) td {
     min-width: 80px;
 }
 
+/* Alineación para la información detallada responsiva expandible (child table) */
 table.dataTable>tbody>tr.child td.child {
     text-align: left !important;
 }
 
+/* Ajustes de fila y bordes de la lista de detalles responsiva en móviles */
 table.dataTable>tbody>tr.child ul.dtr-details li {
     text-align: left !important;
     display: flex;
@@ -100,6 +109,7 @@ table.dataTable>tbody>tr.child ul.dtr-details li {
     padding: 8px 0;
 }
 
+/* Títulos de las celdas en el detalle expandido */
 table.dataTable>tbody>tr.child span.dtr-title {
     /* min-width: 150px; */
     font-weight: bold;
@@ -107,7 +117,6 @@ table.dataTable>tbody>tr.child span.dtr-title {
 }
 
 /* CSS BOTON ELIMINAR */
-
 .btn-eliminar {
     background: none;
     border: none;
@@ -127,31 +136,34 @@ table.dataTable>tbody>tr.child span.dtr-title {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
 }
 
+/* Control del botón personalizado para expandir/colapsar en Responsive */
 .control-expandir {
     display: none;
     width: 30px;
     height: 30px;
     position: relative;
     cursor: pointer;
-
 }
 
+/* Muestra el control expandir solo cuando la tabla está colapsada (dispositivos móviles/pequeños) */
 table.dataTable.collapsed .control-expandir {
     display: inline-block !important;
 }
 
+/* Animación de hover del botón de eliminación */
 .btn-eliminar:hover {
     transform: scale(1.2);
     color: #b91c1c;
 }
 
-/* CSS DEL BOTON DE DETALLES  */
+/* CSS DEL BOTON DE DETALLES */
 table.dataTable tbody tr td.dtr-control,
 table.dataTable thead th th.dtr-control {
     position: relative !important;
     cursor: pointer;
 }
 
+/* Renderización del símbolo "+" verde en el control expandir cuando la fila está cerrada */
 table.dataTable.collapsed>tbody>tr:not(.parent):not(.dt-hasChild)>td.celda-acciones .control-expandir::before {
     background-color: #5e8f32 !important;
     content: "+" !important;
@@ -170,6 +182,7 @@ table.dataTable.collapsed>tbody>tr:not(.parent):not(.dt-hasChild)>td.celda-accio
     transition: transform 0.2s;
 }
 
+/* Renderización del símbolo "-" rojo en el control expandir cuando la fila está abierta */
 table.dataTable.collapsed>tbody>tr.parent>td.celda-acciones .control-expandir::before,
 table.dataTable.collapsed>tbody>tr.dt-hasChild>td.celda-acciones .control-expandir::before {
     background-color: #ef4444 !important;
@@ -189,6 +202,7 @@ table.dataTable.collapsed>tbody>tr.dt-hasChild>td.celda-acciones .control-expand
     transition: transform 0.2s;
 }
 
+/* Efecto hover sobre el control expandir responsivo */
 table.dataTable.collapsed>tbody>tr>td.celda-acciones .control-expandir:hover::before {
     transform: scale(1.2) !important;
 }
@@ -198,6 +212,7 @@ table.dataTable.collapsed>tbody>tr>td.celda-acciones .control-expandir:hover::be
     cursor: default;
 } */
 
+/* Estilos aplicados al input del buscador nativo de DataTables */
 .dt-search input {
     border: 1px solid #cbd5e1;
     border-radius: 8px;
@@ -205,6 +220,7 @@ table.dataTable.collapsed>tbody>tr>td.celda-acciones .control-expandir:hover::be
     transition: all 0.2s;
 }
 
+/* Cambio de color de borde al enfocar el buscador */
 .dt-search input:focus {
     border-color: #3b82f6;
 }
