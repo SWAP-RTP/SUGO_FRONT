@@ -40,6 +40,9 @@ export default function CierreDiaButton({ onSuccess, loading, setLoading, modulo
             setLoading(true);
             await EjecutarCierreDia(modulo);
             await onSuccess();
+            // Limpia el registro local de operadores marcados como presentados en el catálogo 
+            // de despacho para que vuelvan a estar disponibles al iniciar la nueva jornada
+            localStorage.removeItem("credencialesGuardadasSugo");
         } catch (error) {
             console.error("Error en cierre", error);
             console.error("Error al ejecutar el cierre de día. Intente nuevamente.");
@@ -87,7 +90,7 @@ export default function CierreDiaButton({ onSuccess, loading, setLoading, modulo
                     }
                 }
             `}</style>
-            
+
             {/* Botón interactivo de PrimeReact configurado con variante de peligro (danger) */}
             <Button
                 className="btn-cierre-responsivo"
