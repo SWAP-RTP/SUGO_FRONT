@@ -20,7 +20,7 @@ interface PeriodoItem {
 /**
  * parseFecha
  * 
- * Función auxiliar para parsear cadenas de fecha con formato mexicano `dd/mm/yyyy` o formato ISO a objetos `Date`.
+ * Función auxiliar para parsear cadenas de fecha con formato `dd/mm/yyyy` o formato ISO a objetos `Date`.
  * 
  * @param {string} fecha - Cadena de texto a convertir.
  * @returns {Date | null} Objeto `Date` válido o `null` si no se puede interpretar.

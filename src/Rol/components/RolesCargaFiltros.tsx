@@ -70,9 +70,7 @@ export const RolesCargaFiltros = ({
   }, [
     isModuloAdmin,
     userModuloStr,
-    generalData.modulosOptions,
-    states.moduloSeleccionado,
-    actions,
+    generalData.modulosOptions
   ]);
 
   return (
@@ -103,8 +101,8 @@ export const RolesCargaFiltros = ({
 
             // Lógica de descarga dinámica del archivo desde la carpeta /public
             const link = document.createElement("a");
-            link.href = "/ROL DE OPERADORES PLANTILLA.xlsx";
-            link.download = "ROL DE OPERADORES PLANTILLA.xlsx";
+            link.href = "/ROL DE OPERADORES - PLANTILLA.xlsx";
+            link.download = "ROL DE OPERADORES - PLANTILLA.xlsx";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
